@@ -3,3 +3,4 @@
 
 export * from './quran.service';
 export * from './quran-sync.service';
+export * from './quran-cache.service';

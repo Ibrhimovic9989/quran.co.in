@@ -2,26 +2,20 @@
 // Displays all surahs
 
 import { SurahList } from '@/components/quran/surah-list';
-import { QuranService } from '@/lib/services';
+import { QuranCacheService } from '@/lib/services/quran-cache.service';
 
 // Force dynamic rendering - don't try to fetch at build time
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 60; // Cache for 60 seconds
 
 export default async function QuranPage() {
   try {
-    const quranService = new QuranService('TEMPORARY_API');
-    const surahs = await quranService.getAllSurahs();
-
-    // Add surah numbers
-    const surahsWithNumbers = surahs.map((surah, index) => ({
-      ...surah,
-      surahNo: index + 1,
-    }));
+    const cacheService = new QuranCacheService();
+    const surahs = await cacheService.getAllSurahs('TEMPORARY_API');
 
     return (
       <div className="min-h-screen bg-black">
-        <SurahList surahs={surahsWithNumbers} />
+        <SurahList surahs={surahs} />
       </div>
     );
   } catch (error) {
@@ -33,7 +27,7 @@ export default async function QuranPage() {
           {error instanceof Error ? error.message : 'Failed to load surahs'}
         </p>
         <p className="text-sm text-gray-500 mt-4">
-          Please check the API endpoint and try again.
+          Please refresh the page or try again later.
         </p>
       </div>
     );

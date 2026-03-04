@@ -21,12 +21,24 @@ export class QuranRepository {
   }
 
   /**
-   * Find all surahs
+   * Find all surahs (optimized query)
    */
   async findAllSurahs(apiProvider?: ApiProvider): Promise<any[]> {
     return prisma.surah.findMany({
       where: apiProvider ? { apiProvider } : undefined,
       orderBy: { number: 'asc' },
+      select: {
+        id: true,
+        number: true,
+        name: true,
+        englishName: true,
+        arabicName: true,
+        englishNameTranslation: true,
+        numberOfAyahs: true,
+        revelationType: true,
+        metadata: true,
+        // Don't select relationships to reduce data transfer
+      },
     });
   }
 
