@@ -11,6 +11,15 @@ export async function middleware(request: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET 
   });
 
+  // Redirect authenticated users away from sign-in page
+  if (request.nextUrl.pathname.startsWith('/sign-in')) {
+    if (token) {
+      // If authenticated, redirect to dashboard
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+    return NextResponse.next();
+  }
+
   // Protect dashboard routes
   if (request.nextUrl.pathname.startsWith('/dashboard')) {
     if (!token) {
@@ -37,5 +46,6 @@ export const config = {
   matcher: [
     '/dashboard/:path*',
     '/api/protected/:path*',
+    '/sign-in',
   ],
 };

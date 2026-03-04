@@ -2,8 +2,18 @@
 // Google OAuth sign-in page
 
 import { SignInButton } from '@/components/auth/sign-in-button';
+import { getCurrentSession } from '@/lib/auth/session';
+import { redirect } from 'next/navigation';
 
-export default function SignInPage() {
+export default async function SignInPage() {
+  // Check if user is already authenticated
+  const session = await getCurrentSession();
+  
+  // If already signed in, redirect to dashboard
+  if (session?.user) {
+    redirect('/dashboard');
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
