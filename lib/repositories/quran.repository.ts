@@ -132,7 +132,7 @@ export class QuranRepository {
   }
 
   /**
-   * Find ayahs by surah number
+   * Find ayahs by surah number (optimized query)
    */
   async findAyahsBySurah(
     surahNumber: number,
@@ -144,6 +144,16 @@ export class QuranRepository {
         apiProvider,
       },
       orderBy: { number: 'asc' },
+      select: {
+        id: true,
+        number: true,
+        surahNumber: true,
+        arabicText: true,
+        translationText: true,
+        transliteration: true,
+        metadata: true,
+        // Don't select relationships to reduce data transfer
+      },
     });
   }
 

@@ -1,9 +1,9 @@
 // Surah Display Component
-// Displays a complete surah with all ayahs, audio, translations, and tafsir
+// Displays a complete surah with lazy-loaded ayahs, audio, translations, and tafsir
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Container } from '@/components/ui/container';
 import { Heading, Text } from '@/components/ui/typography';
 import { AyahDisplay } from './ayah-display';
@@ -15,8 +15,30 @@ interface SurahDisplayProps {
   tafsirs?: Map<string, TafsirResponse>; // Map of "surahNo_ayahNo" to tafsir
 }
 
+const AYAHS_PER_BATCH = 20;
+const INITIAL_AYAHS = 20;
+
 export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
-  const [showAllTranslations, setShowAllTranslations] = useState(false);
+  const [visibleAyahs, setVisibleAyahs] = useState(INITIAL_AYAHS);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Memoize visible ayahs for performance
+  const visibleAyahsList = useMemo(() => {
+    return surah.english.slice(0, visibleAyahs);
+  }, [surah.english, visibleAyahs]);
+
+  const hasMore = visibleAyahs < surah.english.length;
+  const totalAyahs = surah.english.length;
+
+  const loadMoreAyahs = () => {
+    if (isLoading || !hasMore) return;
+    
+    setIsLoading(true);
+    setTimeout(() => {
+      setVisibleAyahs((prev) => Math.min(prev + AYAHS_PER_BATCH, totalAyahs));
+      setIsLoading(false);
+    }, 50);
+  };
 
   return (
     <Container>
@@ -48,14 +70,14 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
         </div>
 
         <div className="space-y-6">
-          {surah.english.map((translation, index) => {
+          {visibleAyahsList.map((translation, index) => {
             const ayahNo = index + 1;
             const tafsirKey = `${surah.surahNo}_${ayahNo}`;
             const tafsir = tafsirs?.get(tafsirKey);
 
             return (
               <AyahDisplay
-                key={index}
+                key={ayahNo}
                 ayah={{
                   ...surah,
                   ayahNo,
@@ -74,6 +96,31 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
             );
           })}
         </div>
+
+        {/* Load More Ayahs */}
+        {hasMore && (
+          <div className="mt-8 text-center">
+            <button
+              onClick={loadMoreAyahs}
+              disabled={isLoading}
+              className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? (
+                'Loading...'
+              ) : (
+                `Load More Ayahs (${totalAyahs - visibleAyahs} remaining)`
+              )}
+            </button>
+          </div>
+        )}
+
+        {!hasMore && totalAyahs > INITIAL_AYAHS && (
+          <div className="mt-8 text-center">
+            <Text className="text-gray-400">
+              All {totalAyahs} ayahs loaded
+            </Text>
+          </div>
+        )}
       </div>
     </Container>
   );

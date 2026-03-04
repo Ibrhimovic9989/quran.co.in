@@ -2,13 +2,13 @@
 // Displays a complete surah with audio, translations, and tafsir
 
 import { SurahDisplay } from '@/components/quran/surah-display';
-import { QuranService } from '@/lib/services';
+import { QuranCacheService } from '@/lib/services/quran-cache.service';
 import { notFound } from 'next/navigation';
 import type { TafsirResponse } from '@/types/quran-api';
 
 // Force dynamic rendering - don't try to fetch at build time
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 60; // Cache for 60 seconds
 
 export default async function SurahPage({
   params,
@@ -23,11 +23,21 @@ export default async function SurahPage({
   }
 
   try {
-    const quranService = new QuranService('TEMPORARY_API');
-    const surah = await quranService.getSurah(surahNo);
+    const cacheService = new QuranCacheService();
+    const surah = await cacheService.getSurah(surahNo, 'TEMPORARY_API');
 
-    // Fetch tafsir for all ayahs (optional - can be slow, so we'll do it on-demand)
-    // For now, we'll fetch tafsir on-demand when user clicks
+    if (!surah) {
+      return (
+        <div className="min-h-screen bg-black text-white p-8">
+          <h1 className="text-2xl mb-4">Surah Not Found</h1>
+          <p className="text-gray-400">
+            Unable to load surah {surahNo}. Please try again later.
+          </p>
+        </div>
+      );
+    }
+
+    // Fetch tafsir on-demand when user clicks (not here)
     const tafsirs = new Map<string, TafsirResponse>();
 
     return (
