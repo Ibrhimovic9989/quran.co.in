@@ -4,6 +4,10 @@
 import { SurahList } from '@/components/quran/surah-list';
 import { QuranService } from '@/lib/services';
 
+// Force dynamic rendering - don't try to fetch at build time
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function QuranPage() {
   try {
     const quranService = new QuranService('TEMPORARY_API');
