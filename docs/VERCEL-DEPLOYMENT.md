@@ -35,9 +35,13 @@
 - `NEXTAUTH_SECRET` - Your secret key (generate a new one for production)
   - Generate: `openssl rand -base64 32`
   - Or use: https://generate-secret.vercel.app/32
-- `NEXTAUTH_URL` - Your production URL
-  - **Important:** Set this AFTER first deployment to your actual Vercel URL
+- `NEXTAUTH_URL` - **CRITICAL: Your production URL**
+  - **MUST be set to your actual Vercel domain**
+  - **DO NOT use `http://localhost:3000` in production**
+  - Format: `https://your-project-name.vercel.app`
   - Example: `https://quran-co-in.vercel.app`
+  - **This must match exactly what you see in your Vercel deployment URL**
+  - If you have a custom domain, use that instead
 
 **Google OAuth:**
 - `GOOGLE_CLIENT_ID` - Your Google OAuth Client ID
