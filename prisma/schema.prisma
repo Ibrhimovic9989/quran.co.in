@@ -1,0 +1,283 @@
+// Prisma Schema for Quran.co.in
+// Designed to be modular, extensible, and support multiple API sources
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  extensions = [vector]
+}
+
+// ============================================
+// ENUMS - Centralized and extensible
+// ============================================
+
+enum ApiProvider {
+  QURAN_COM      // quran.com API
+  TEMPORARY_API  // Temporary Quran API
+  CUSTOM         // Future custom APIs
+}
+
+enum RevelationType {
+  MECCAN
+  MEDINAN
+}
+
+// ============================================
+// USER MANAGEMENT
+// ============================================
+
+model User {
+  id        String   @id @default(uuid())
+  clerkId   String   @unique // NextAuth user ID
+  email     String   @unique
+  name      String
+  imageUrl  String?
+  emailVerified DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // NextAuth relationships
+  accounts  Account[]
+  sessions  Session[]
+
+  // Application relationships
+  bookmarks Bookmark[]
+  notes     Note[]
+  readingHistory ReadingHistory[]
+
+  @@index([clerkId])
+  @@index([email])
+  @@map("users")
+}
+
+// ============================================
+// NEXTAUTH TABLES
+// ============================================
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?  @db.Text
+  access_token      String?  @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?  @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ============================================
+// QURAN DATA - API Agnostic Design
+// ============================================
+
+model Surah {
+  id              String         @id @default(uuid())
+  number          Int            @unique
+  name            String
+  englishName     String
+  arabicName      String
+  englishNameTranslation String?
+  numberOfAyahs   Int
+  revelationType  RevelationType
+  apiProvider     ApiProvider    @default(TEMPORARY_API)
+  apiSourceId     String?        // External API's ID for this surah
+  
+  // Flexible metadata for different APIs
+  metadata        Json?          // Store API-specific data
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  // Relationships
+  ayahs           Ayah[]
+  bookmarks       Bookmark[]
+  notes           Note[]
+  readingHistory  ReadingHistory[]
+
+  @@unique([number, apiProvider])
+  @@index([number])
+  @@index([apiProvider])
+  @@map("surahs")
+}
+
+model Ayah {
+  id              String    @id @default(uuid())
+  surahId         String
+  surahNumber     Int
+  number          Int       // Ayah number within surah
+  numberInSurah   Int?      // Alternative numbering if different
+  apiProvider     ApiProvider @default(TEMPORARY_API)
+  apiSourceId     String?   // External API's ID for this ayah
+  
+  // Core content - always present
+  arabicText      String    @db.Text
+  translationText String?   @db.Text
+  
+  // Optional content - varies by API
+  transliteration String?  @db.Text
+  audioUrl        String?
+  
+  // Flexible metadata for different APIs
+  metadata        Json?    // Store API-specific data (translations, tafsir refs, etc.)
+  
+  // Vector embedding for RAG (future)
+  embedding       Unsupported("vector(1536)")?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relationships
+  surah           Surah     @relation(fields: [surahId], references: [id], onDelete: Cascade)
+  bookmarks       Bookmark[]
+  notes           Note[]
+  readingHistory  ReadingHistory[]
+
+  @@unique([surahNumber, number, apiProvider])
+  @@index([surahId])
+  @@index([surahNumber, number])
+  @@index([apiProvider])
+  @@map("ayahs")
+}
+
+// ============================================
+// USER INTERACTIONS
+// ============================================
+
+model Bookmark {
+  id          String   @id @default(uuid())
+  userId      String
+  surahId     String?
+  surahNumber Int
+  ayahId      String?
+  ayahNumber  Int?
+  note        String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  surah       Surah?   @relation(fields: [surahId], references: [id], onDelete: Cascade)
+  ayah        Ayah?    @relation(fields: [ayahId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, surahNumber, ayahNumber])
+  @@index([userId])
+  @@index([surahNumber, ayahNumber])
+  @@map("bookmarks")
+}
+
+model Note {
+  id          String   @id @default(uuid())
+  userId      String
+  surahId     String?
+  surahNumber Int
+  ayahId      String?
+  ayahNumber  Int?
+  noteText    String   @db.Text
+  isPrivate   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  surah       Surah?   @relation(fields: [surahId], references: [id], onDelete: Cascade)
+  ayah        Ayah?    @relation(fields: [ayahId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([surahNumber, ayahNumber])
+  @@map("notes")
+}
+
+model ReadingHistory {
+  id          String   @id @default(uuid())
+  userId      String
+  surahId     String?
+  surahNumber Int
+  ayahId      String?
+  ayahNumber  Int?
+  readAt      DateTime @default(now())
+
+  // Relationships
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  surah       Surah?   @relation(fields: [surahId], references: [id], onDelete: Cascade)
+  ayah        Ayah?    @relation(fields: [ayahId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+  @@index([surahNumber, ayahNumber])
+  @@map("reading_history")
+}
+
+// ============================================
+// API CONFIGURATION & SYNC
+// ============================================
+
+model ApiConfiguration {
+  id            String      @id @default(uuid())
+  provider      ApiProvider @unique
+  apiKey        String?     // Encrypted in production
+  baseUrl       String
+  isActive      Boolean     @default(true)
+  lastSyncedAt  DateTime?
+  syncVersion   Int         @default(1)
+  
+  // Flexible configuration for different APIs
+  config        Json?       // API-specific settings
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("api_configurations")
+}
+
+// ============================================
+// VECTOR EMBEDDINGS (for RAG)
+// ============================================
+
+model VerseEmbedding {
+  id          String   @id @default(uuid())
+  ayahId      String   @unique
+  surahNumber Int
+  ayahNumber  Int
+  embedding   Unsupported("vector(1536)") // OpenAI ada-002 dimension
+  model       String   @default("text-embedding-ada-002")
+  version     Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([surahNumber, ayahNumber])
+  @@map("verse_embeddings")
+}

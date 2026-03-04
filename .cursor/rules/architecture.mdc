@@ -1,0 +1,151 @@
+---
+alwaysApply: true
+description: Core architectural and coding principles for the Quran.co.in project
+---
+
+# Quran.co.in Architecture & Coding Principles
+
+## Core Principles
+
+### 1. Modularity & Component Structure
+- **VERY MODULAR ARCHITECTURE**: Every component, utility, and module must be highly modular
+- Each component should have a single, well-defined responsibility
+- Components should be reusable and composable
+- Follow a clear component hierarchy and structure
+- Separate concerns: UI components, business logic, data access, utilities
+
+### 2. SOLID Principles
+- **Single Responsibility Principle (SRP)**: Each class/function/component should have only one reason to change
+- **Open/Closed Principle**: Open for extension, closed for modification
+- **Liskov Substitution Principle**: Derived classes must be substitutable for their base classes
+- **Interface Segregation Principle**: Many client-specific interfaces are better than one general-purpose interface
+- **Dependency Inversion Principle**: Depend on abstractions, not concretions
+
+### 3. File Size & Code Organization
+- **MAXIMUM 300 LINES PER FILE**: If a file exceeds 300 lines, it MUST be refactored into smaller, focused modules
+- Split large files into multiple smaller files with clear responsibilities
+- Use barrel exports (index.ts) to organize related modules
+- Group related functionality together
+
+### 4. Data Structures
+- **Use appropriate data structures**: Don't default to arrays everywhere
+- Use **Hash Maps/Objects/Map** when you need:
+  - Fast lookups by key
+  - Unique key-value pairs
+  - O(1) access time
+- Use **Arrays** only when:
+  - Order matters
+  - You need sequential access
+  - Duplicates are allowed and order is important
+- Use **Sets** for unique collections
+- Choose the right data structure for the problem
+
+### 5. File Creation Workflow
+- **ALWAYS CREATE FILES BEFORE WRITING CODE**: To avoid tool timeout issues
+- Create empty files or file stubs first
+- Then populate them with code
+- This ensures proper file structure and prevents timeouts
+
+### 6. Refactoring-Friendly Code
+- Write code with future refactoring in mind
+- Use clear, descriptive names
+- Avoid deep nesting (max 3-4 levels)
+- Extract complex logic into separate functions
+- Keep functions small and focused
+- Use dependency injection where appropriate
+
+### 7. Project Structure Guidelines
+
+```
+components/
+  ├── ui/              # Pure UI components (buttons, inputs, etc.)
+  ├── auth/            # Authentication-specific components
+  ├── quran/           # Quran-specific components
+  └── layout/          # Layout components
+
+lib/
+  ├── utils/           # Pure utility functions
+  ├── services/        # Business logic services
+  ├── repositories/    # Data access layer
+  └── types/           # Type definitions
+
+hooks/                 # Custom React hooks
+  ├── useAuth.ts
+  ├── useQuran.ts
+  └── ...
+
+types/                 # Shared TypeScript types
+  ├── user.ts
+  ├── quran.ts
+  └── ...
+```
+
+### 8. Code Quality Standards
+- **TypeScript**: Use strict mode, proper typing, avoid `any`
+- **Error Handling**: Always handle errors gracefully
+- **Naming**: Use descriptive, self-documenting names
+- **Comments**: Comment complex logic, not obvious code
+- **Imports**: Organize imports (external, internal, relative)
+- **Exports**: Use named exports for better tree-shaking
+
+### 9. Component Guidelines
+- Keep components small and focused
+- Extract logic into custom hooks
+- Use composition over inheritance
+- Props should be well-typed interfaces
+- Avoid prop drilling (use context or state management)
+- Separate presentational and container components
+
+### 10. Service Layer Pattern
+- Business logic goes in service classes/functions
+- Data access goes in repository classes/functions
+- Services depend on repositories, not directly on database
+- This enables easy testing and future refactoring
+
+### 11. Example: Proper Modular Structure
+
+**BAD** (Monolithic):
+```typescript
+// ❌ 500+ lines, multiple responsibilities
+export function handleUserAndQuranData() { ... }
+```
+
+**GOOD** (Modular):
+```typescript
+// ✅ User service (max 300 lines)
+// lib/services/user.service.ts
+export class UserService { ... }
+
+// ✅ Quran service (max 300 lines)
+// lib/services/quran.service.ts
+export class QuranService { ... }
+
+// ✅ User repository (max 300 lines)
+// lib/repositories/user.repository.ts
+export class UserRepository { ... }
+```
+
+### 12. Data Structure Examples
+
+**BAD** (Using array for lookups):
+```typescript
+// ❌ O(n) lookup time
+const users = [{ id: 1, name: 'John' }, ...];
+const user = users.find(u => u.id === userId);
+```
+
+**GOOD** (Using Map for lookups):
+```typescript
+// ✅ O(1) lookup time
+const usersMap = new Map<number, User>();
+usersMap.set(1, { id: 1, name: 'John' });
+const user = usersMap.get(userId);
+```
+
+### 13. Always Remember
+- **Modularity First**: Break things down into smaller, focused pieces
+- **SRP**: One responsibility per module/component/function
+- **300 Lines Max**: Refactor if exceeded
+- **Right Data Structure**: Choose based on use case
+- **Create Files First**: Avoid timeout issues
+- **Future-Proof**: Write code that's easy to refactor
