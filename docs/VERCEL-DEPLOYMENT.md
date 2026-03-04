@@ -17,23 +17,38 @@
 
 ### 2. Configure Environment Variables
 
-In Vercel project settings, add these environment variables:
+**Important:** Set environment variables directly in Vercel Dashboard, NOT as secrets.
 
-#### Database
+1. Go to your project in Vercel Dashboard
+2. Navigate to **Settings** → **Environment Variables**
+3. Add each variable for **Production**, **Preview**, and **Development** environments:
+
+#### Required Environment Variables
+
+**Database:**
 - `DATABASE_URL` - Your Supabase connection string (pooler)
+  - Example: `postgresql://postgres.xxx:password@aws-1-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true`
 - `DIRECT_URL` - Your Supabase direct connection string
+  - Example: `postgresql://postgres.xxx:password@aws-1-ap-south-1.pooler.supabase.com:5432/postgres`
 
-#### NextAuth
+**NextAuth:**
 - `NEXTAUTH_SECRET` - Your secret key (generate a new one for production)
-- `NEXTAUTH_URL` - Your production URL (e.g., `https://quran-co-in.vercel.app`)
+  - Generate: `openssl rand -base64 32`
+  - Or use: https://generate-secret.vercel.app/32
+- `NEXTAUTH_URL` - Your production URL
+  - **Important:** Set this AFTER first deployment to your actual Vercel URL
+  - Example: `https://quran-co-in.vercel.app`
 
-#### Google OAuth
+**Google OAuth:**
 - `GOOGLE_CLIENT_ID` - Your Google OAuth Client ID
 - `GOOGLE_CLIENT_SECRET` - Your Google OAuth Client Secret
 
-#### Optional
-- `NEXT_PUBLIC_APP_URL` - Your production URL
-- `QURAN_API_URL` - Quran API base URL (defaults to quranapi.pages.dev)
+#### Optional Environment Variables
+
+- `NEXT_PUBLIC_APP_URL` - Your production URL (same as NEXTAUTH_URL)
+- `QURAN_API_URL` - Quran API base URL (defaults to `https://quranapi.pages.dev`)
+
+**Note:** Do NOT use the `@secret_name` syntax. Enter the actual values directly.
 
 ### 3. Update Google OAuth Settings
 
