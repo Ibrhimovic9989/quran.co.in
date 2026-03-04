@@ -16,7 +16,7 @@ interface SurahDisplayProps {
 }
 
 const AYAHS_PER_BATCH = 20;
-const INITIAL_AYAHS = 20;
+const INITIAL_AYAHS = 20; // Load first 20 ayahs immediately
 
 export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
   const [visibleAyahs, setVisibleAyahs] = useState(INITIAL_AYAHS);
@@ -34,10 +34,11 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
     if (isLoading || !hasMore) return;
     
     setIsLoading(true);
-    setTimeout(() => {
+    // Use requestAnimationFrame for instant UI update
+    requestAnimationFrame(() => {
       setVisibleAyahs((prev) => Math.min(prev + AYAHS_PER_BATCH, totalAyahs));
       setIsLoading(false);
-    }, 50);
+    });
   };
 
   return (

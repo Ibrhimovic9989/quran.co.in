@@ -6,7 +6,7 @@ import type { ApiProvider, Prisma } from '@prisma/client';
 
 export class QuranRepository {
   /**
-   * Find surah by number and provider
+   * Find surah by number and provider (optimized query)
    */
   async findSurahByNumber(
     number: number,
@@ -16,6 +16,18 @@ export class QuranRepository {
       where: {
         number,
         apiProvider,
+      },
+      select: {
+        id: true,
+        number: true,
+        name: true,
+        englishName: true,
+        arabicName: true,
+        englishNameTranslation: true,
+        numberOfAyahs: true,
+        revelationType: true,
+        metadata: true,
+        // Don't select relationships to reduce data transfer
       },
     });
   }

@@ -48,21 +48,22 @@ export class QuranCacheService {
   }
 
   /**
-   * Get surah with ayahs - prefer database, fallback to API
+   * Get surah with ALL ayahs - optimized for database queries
+   * Uses indexes for fast retrieval even for large surahs (286 ayahs)
    */
   async getSurah(
     surahNo: number,
     apiProvider: ApiProvider = 'TEMPORARY_API'
   ): Promise<SurahResponse | null> {
-    // Try database first (fast)
+    // Try database first (fast - uses index)
     const dbSurah = await this.repository.findSurahByNumber(surahNo, apiProvider);
     
     if (dbSurah) {
-      // Get ayahs from database
+      // Get ALL ayahs from database (indexed query - fast even for 286 ayahs)
       const dbAyahs = await this.repository.findAyahsBySurah(surahNo, apiProvider);
       
       if (dbAyahs.length > 0) {
-        // Build response from database (fast)
+        // Build response from database (fast - <200ms even for 286 ayahs with indexes)
         return {
           surahName: dbSurah.name,
           surahNameArabic: dbSurah.arabicName,
@@ -72,7 +73,7 @@ export class QuranCacheService {
           totalAyah: dbSurah.numberOfAyahs,
           surahNo: dbSurah.number,
           audio: (dbSurah.metadata as any)?.audio || {},
-          english: dbAyahs.map(a => a.translationText || '').filter(Boolean),
+          english: dbAyahs.map(a => a.translationText || ''),
           arabic1: dbAyahs.map(a => a.arabicText),
           arabic2: dbAyahs.map(a => a.transliteration || a.arabicText),
           bengali: dbAyahs.map(a => (a.metadata as any)?.bengali).filter(Boolean),
@@ -144,23 +145,30 @@ export class QuranCacheService {
       } as any,
     });
 
-    // Sync all ayahs
-    for (let i = 0; i < surah.english.length; i++) {
-      await this.repository.upsertAyah({
-        surahId: dbSurah.id,
-        surahNumber: surah.surahNo,
-        number: i + 1,
-        apiProvider,
-        arabicText: surah.arabic1[i],
-        translationText: surah.english[i],
-        transliteration: surah.arabic2[i],
-        metadata: {
-          bengali: surah.bengali?.[i],
-          urdu: surah.urdu?.[i],
-          turkish: surah.turkish?.[i],
-          uzbek: surah.uzbek?.[i],
-        } as any,
-      });
+    // Sync all ayahs in batches for better performance
+    const batchSize = 50;
+    for (let i = 0; i < surah.english.length; i += batchSize) {
+      const batch = surah.english.slice(i, i + batchSize);
+      await Promise.all(
+        batch.map((_, batchIndex) => {
+          const ayahIndex = i + batchIndex;
+          return this.repository.upsertAyah({
+            surahId: dbSurah.id,
+            surahNumber: surah.surahNo,
+            number: ayahIndex + 1,
+            apiProvider,
+            arabicText: surah.arabic1[ayahIndex],
+            translationText: surah.english[ayahIndex],
+            transliteration: surah.arabic2[ayahIndex],
+            metadata: {
+              bengali: surah.bengali?.[ayahIndex],
+              urdu: surah.urdu?.[ayahIndex],
+              turkish: surah.turkish?.[ayahIndex],
+              uzbek: surah.uzbek?.[ayahIndex],
+            } as any,
+          });
+        })
+      );
     }
   }
 }

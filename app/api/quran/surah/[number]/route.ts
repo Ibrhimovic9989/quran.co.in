@@ -1,8 +1,11 @@
 // API Route: Get a specific surah
-// Returns complete surah data
+// Returns surah data with caching
 
 import { NextResponse } from 'next/server';
-import { QuranService } from '@/lib/services';
+import { QuranCacheService } from '@/lib/services/quran-cache.service';
+
+// Cache for 5 minutes
+export const revalidate = 300;
 
 export async function GET(
   request: Request,
@@ -19,10 +22,24 @@ export async function GET(
       );
     }
 
-    const quranService = new QuranService('TEMPORARY_API');
-    const surah = await quranService.getSurah(surahNo);
+    const cacheService = new QuranCacheService();
+    const surah = await cacheService.getSurah(surahNo, 'TEMPORARY_API');
 
-    return NextResponse.json({ surah });
+    if (!surah) {
+      return NextResponse.json(
+        { error: 'Surah not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { surah },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+        },
+      }
+    );
   } catch (error) {
     console.error('Error fetching surah:', error);
     return NextResponse.json(
