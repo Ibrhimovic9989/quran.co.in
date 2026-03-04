@@ -58,7 +58,7 @@ export class QuranRepository {
         englishNameTranslation: data.englishNameTranslation,
         numberOfAyahs: data.numberOfAyahs,
         revelationType: data.revelationType,
-        metadata: data.metadata,
+        metadata: data.metadata as any,
       },
       create: {
         number: data.number,
@@ -69,7 +69,7 @@ export class QuranRepository {
         numberOfAyahs: data.numberOfAyahs,
         revelationType: data.revelationType,
         apiProvider: data.apiProvider,
-        metadata: data.metadata,
+        metadata: data.metadata as any,
       },
     });
   }
@@ -85,7 +85,9 @@ export class QuranRepository {
   ): Promise<any> {
     return prisma.surah.update({
       where: { id },
-      data,
+      data: {
+        metadata: data.metadata as any,
+      },
     });
   }
 
@@ -160,7 +162,7 @@ export class QuranRepository {
         translationText: data.translationText,
         transliteration: data.transliteration,
         audioUrl: data.audioUrl,
-        metadata: data.metadata,
+        metadata: data.metadata as any,
       },
       create: {
         surahId: data.surahId,
@@ -171,7 +173,7 @@ export class QuranRepository {
         translationText: data.translationText,
         transliteration: data.transliteration,
         audioUrl: data.audioUrl,
-        metadata: data.metadata,
+        metadata: data.metadata as any,
       },
     });
   }
@@ -187,7 +189,9 @@ export class QuranRepository {
   ): Promise<any> {
     return prisma.ayah.update({
       where: { id },
-      data,
+      data: {
+        metadata: data.metadata as any,
+      },
     });
   }
 }

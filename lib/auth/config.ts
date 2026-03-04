@@ -1,11 +1,11 @@
 // NextAuth Configuration
 // Google OAuth authentication setup
 
-import { NextAuthOptions } from 'next-auth';
+import type { NextAuthConfig } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { UserRepository } from '@/lib/repositories';
 
-export const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthConfig = {
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
     GoogleProvider({
@@ -24,7 +24,7 @@ export const authOptions: NextAuthOptions = {
           if (!existingUser) {
             // Create user in our database
             await userRepo.create({
-              clerkId: user.id, // Using NextAuth ID as identifier
+              clerkId: user.id || '', // Using NextAuth ID as identifier
               email: user.email,
               name: user.name || user.email.split('@')[0],
               imageUrl: user.image || undefined,
@@ -32,10 +32,12 @@ export const authOptions: NextAuthOptions = {
           } else {
             // Update user if exists - try by clerkId first, then by id
             try {
-              await userRepo.updateByClerkId(user.id, {
-                name: user.name || existingUser.name,
-                imageUrl: user.image || existingUser.imageUrl,
-              });
+              if (user.id) {
+                await userRepo.updateByClerkId(user.id, {
+                  name: user.name || existingUser.name,
+                  imageUrl: user.image || existingUser.imageUrl,
+                });
+              }
             } catch (error) {
               // If update fails, try by id
               await userRepo.update(existingUser.id, {
@@ -53,8 +55,8 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.email = user.email;
+        token.id = user.id || undefined;
+        token.email = user.email || undefined;
         // Try to get user from database and store in token
         try {
           if (user.email) {

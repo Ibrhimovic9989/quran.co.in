@@ -9,34 +9,49 @@ export class UserRepository {
    * Find user by Clerk ID
    */
   async findByClerkId(clerkId: string): Promise<User | null> {
-    return prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { clerkId },
     });
+    if (!user) return null;
+    return {
+      ...user,
+      imageUrl: user.imageUrl || undefined,
+    } as User;
   }
 
   /**
    * Find user by email
    */
   async findByEmail(email: string): Promise<User | null> {
-    return prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email },
     });
+    if (!user) return null;
+    return {
+      ...user,
+      imageUrl: user.imageUrl || undefined,
+    } as User;
   }
 
   /**
    * Find user by ID
    */
   async findById(id: string): Promise<User | null> {
-    return prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id },
     });
+    if (!user) return null;
+    return {
+      ...user,
+      imageUrl: user.imageUrl || undefined,
+    } as User;
   }
 
   /**
    * Create a new user
    */
   async create(data: UserCreateInput): Promise<User> {
-    return prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         clerkId: data.clerkId,
         email: data.email,
@@ -44,32 +59,44 @@ export class UserRepository {
         imageUrl: data.imageUrl,
       },
     });
+    return {
+      ...user,
+      imageUrl: user.imageUrl || undefined,
+    } as User;
   }
 
   /**
    * Update user by ID
    */
   async update(id: string, data: UserUpdateInput): Promise<User> {
-    return prisma.user.update({
+    const user = await prisma.user.update({
       where: { id },
       data: {
         name: data.name,
         imageUrl: data.imageUrl,
       },
     });
+    return {
+      ...user,
+      imageUrl: user.imageUrl || undefined,
+    } as User;
   }
 
   /**
    * Update user by Clerk ID
    */
   async updateByClerkId(clerkId: string, data: UserUpdateInput): Promise<User> {
-    return prisma.user.update({
+    const user = await prisma.user.update({
       where: { clerkId },
       data: {
         name: data.name,
         imageUrl: data.imageUrl,
       },
     });
+    return {
+      ...user,
+      imageUrl: user.imageUrl || undefined,
+    } as User;
   }
 
   /**

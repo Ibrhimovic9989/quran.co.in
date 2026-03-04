@@ -53,7 +53,7 @@ export class QuranService {
         apiProvider,
         metadata: {
           surahNameArabicLong: surah.surahNameArabicLong,
-        },
+        } as any,
       });
     }
 
@@ -86,7 +86,7 @@ export class QuranService {
           bengali: ayah.bengali,
           urdu: ayah.urdu,
           audio: ayah.audio,
-        },
+        } as any,
       });
     }
 
@@ -115,7 +115,7 @@ export class QuranService {
       metadata: {
         surahNameArabicLong: surah.surahNameArabicLong,
         audio: surah.audio,
-      },
+      } as any,
     });
 
     // Sync all ayahs
@@ -131,7 +131,7 @@ export class QuranService {
         metadata: {
           bengali: surah.bengali?.[i],
           urdu: surah.urdu?.[i],
-        },
+        } as any,
       });
     }
 

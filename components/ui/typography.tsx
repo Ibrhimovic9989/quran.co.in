@@ -1,6 +1,7 @@
 // Typography Components
 // Reusable text components
 
+import React from 'react';
 import { cn } from '@/lib/utils/cn';
 
 interface TextProps {
@@ -36,11 +37,11 @@ export function Heading({
     6: 'text-base',
   };
 
-  const Component = `h${level}` as keyof JSX.IntrinsicElements;
+  const HeadingTag = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 
   return (
-    <Component className={cn(baseClasses, levelClasses[level], className)}>
+    <HeadingTag className={cn(baseClasses, levelClasses[level], className)}>
       {children}
-    </Component>
+    </HeadingTag>
   );
 }
