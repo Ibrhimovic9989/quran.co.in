@@ -173,6 +173,8 @@ export function AudioPlayer({
     }
   };
 
+  // At ayah level, always use 'ayah' mode - no need for mode change handler
+  // This function is kept for potential future use but not called for ayah level
   const handleModeChange = (mode: PlayMode) => {
     if (audioRef.current && isPlaying) {
       audioRef.current.pause();
