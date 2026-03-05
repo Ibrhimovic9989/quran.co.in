@@ -14,7 +14,7 @@ export { Heading, Text } from './typography';
 
 // Special Components
 export { ShaderAnimation } from './shader-animation';
-export { SplashScreen } from './splash-screen';
+export { PageLoader } from './page-loader';
 export { SplineScene } from './spline-scene';
 export { SketchfabEmbed } from './sketchfab-embed';
 export { Spotlight } from './spotlight';

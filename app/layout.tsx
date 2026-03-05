@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google';
 import { AuthProvider } from '@/components/auth/auth-provider';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
-import { SplashScreen } from '@/components/ui/splash-screen';
+import { PageLoader } from '@/components/ui/page-loader';
 import '@/app/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -29,7 +29,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <SplashScreen />
+          <PageLoader />
           <Navbar />
           {children}
           <Footer />

@@ -18,7 +18,7 @@ interface HeroSectionProps {
 
 export function HeroSection({}: HeroSectionProps) {
   return (
-    <section className="w-full min-h-[100vh] md:min-h-[90vh] bg-gradient-to-b from-white via-white to-gray-50/30 relative overflow-hidden flex items-center">
+    <section className="w-full min-h-[auto] md:min-h-[90vh] bg-gradient-to-b from-white via-white to-gray-50/30 relative overflow-hidden flex items-center py-4 md:py-0">
       {/* Subtle background gradient for depth */}
       <Spotlight
         className="-top-40 left-0 md:left-60 md:-top-20 opacity-20"
@@ -26,11 +26,11 @@ export function HeroSection({}: HeroSectionProps) {
       />
       
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 w-full">
-        <div className="flex flex-col md:flex-row items-center gap-2 md:gap-8 lg:gap-12">
+        <div className="flex flex-col md:flex-row items-center gap-0 md:gap-8 lg:gap-12">
           {/* Left content - Text & CTAs - Mobile First - Ultra Compact */}
-          <div className="flex-1 w-full md:w-auto py-2 md:py-12 relative z-10 flex flex-col justify-center">
+          <div className="flex-1 w-full md:w-auto py-0 md:py-12 relative z-10 flex flex-col justify-center">
             {/* Badge/Trust Indicator - Mobile optimized - Smaller */}
-            <div className="inline-flex items-center gap-1 mb-1.5 px-2 py-0.5 bg-gray-100 rounded-full w-fit text-[10px] md:text-xs">
+            <div className="inline-flex items-center gap-1 mb-1 px-2 py-0.5 bg-gray-100 rounded-full w-fit text-[10px] md:text-xs">
               <BookOpen className="w-2.5 h-2.5 text-gray-700" />
               <span className="font-medium text-gray-700">
                 114 Surahs • Free
@@ -40,7 +40,7 @@ export function HeroSection({}: HeroSectionProps) {
             {/* Main Headline - Mobile optimized - Compact */}
             <Heading 
               level={1} 
-              className="text-xl sm:text-2xl md:text-6xl lg:text-6xl xl:text-7xl font-bold text-gray-900 mb-1.5 md:mb-4 leading-[1.1] tracking-tight"
+              className="text-xl sm:text-2xl md:text-6xl lg:text-6xl xl:text-7xl font-bold text-gray-900 mb-1 md:mb-4 leading-[1.1] tracking-tight"
             >
               Your Gateway to the{' '}
               <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent whitespace-nowrap">
@@ -49,17 +49,17 @@ export function HeroSection({}: HeroSectionProps) {
             </Heading>
 
             {/* Subheadline - Mobile optimized - Compact */}
-            <Text className="text-[10px] md:text-lg lg:text-xl text-gray-700 max-w-2xl mb-1.5 md:mb-3 leading-tight md:leading-relaxed">
+            <Text className="text-[10px] md:text-lg lg:text-xl text-gray-700 max-w-2xl mb-1 md:mb-3 leading-tight md:leading-relaxed">
               Read, listen, and study the divine words with beautiful translations, authentic recitations, and comprehensive tafsir.
             </Text>
             
             {/* Verse - Mobile optimized - Compact */}
-            <Text className="text-[9px] md:text-base text-gray-600 max-w-2xl mb-2 md:mb-6 leading-tight md:leading-relaxed">
+            <Text className="text-[9px] md:text-base text-gray-600 max-w-2xl mb-1.5 md:mb-6 leading-tight md:leading-relaxed">
               Allah says: <span className="italic">"And We have certainly made the Quran easy for remembrance, so is there any who will remember?"</span>
             </Text>
 
             {/* Key Benefits - Mobile optimized - Compact, inline */}
-            <div className="flex flex-wrap gap-1.5 mb-2 md:mb-6 md:flex-row md:gap-3">
+            <div className="flex flex-wrap gap-1.5 mb-1.5 md:mb-6 md:flex-row md:gap-3">
               <div className="flex items-center gap-1 text-gray-700">
                 <div className="w-1 h-1 bg-gray-900 rounded-full"></div>
                 <span className="text-[10px] md:text-sm font-medium">5 Translation Languages</span>
@@ -75,8 +75,8 @@ export function HeroSection({}: HeroSectionProps) {
             </div>
 
             {/* 3D Quran Scene - Mobile only, between text and buttons - Smaller */}
-            <div className="flex-1 w-full relative min-h-[120px] flex items-center justify-center mb-2 md:hidden">
-              <div className="relative w-full h-full max-w-[120px] scale-75">
+            <div className="flex-1 w-full relative min-h-[100px] flex items-center justify-center mb-1.5 md:hidden">
+              <div className="relative w-full h-full max-w-[100px] scale-70">
                 <Quran3D className="w-full h-full" autoRotate={true} />
                 {/* Decorative elements - smaller on mobile */}
                 <div className="absolute -top-1 -right-1 w-6 h-6 bg-gray-100 rounded-full blur-xl opacity-50"></div>
@@ -85,7 +85,7 @@ export function HeroSection({}: HeroSectionProps) {
             </div>
 
             {/* CTA Buttons - Mobile optimized - Compact */}
-            <div className="flex flex-col gap-1.5 md:flex-row md:gap-3 mb-2 md:mb-4">
+            <div className="flex flex-col gap-1.5 md:flex-row md:gap-3 mb-1 md:mb-4">
               {/* Primary CTA - Explore */}
               <Link href="/quran" className="group">
                 <ShimmerButton
