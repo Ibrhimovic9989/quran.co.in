@@ -43,9 +43,9 @@ export function AudioPlayer({
     ...data,
   }));
 
-  // Fetch ayah-specific audio when mode changes to 'ayah'
+  // Fetch ayah-specific audio when at ayah level (always fetch for ayah level)
   useEffect(() => {
-    if (playMode === 'ayah' && ayahNo && !ayahAudioData) {
+    if (ayahNo && !ayahAudioData) {
       setIsLoadingAudio(true);
       fetch(`/api/quran/audio/${surahNo}/${ayahNo}`)
         .then((res) => res.json())
@@ -61,7 +61,7 @@ export function AudioPlayer({
           setIsLoadingAudio(false);
         });
     }
-  }, [playMode, ayahNo, surahNo, ayahAudioData]);
+  }, [ayahNo, surahNo, ayahAudioData]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -74,10 +74,12 @@ export function AudioPlayer({
   }, []);
 
   const getCurrentAudioData = (): AudioReciters => {
-    if (playMode === 'ayah' && ayahAudioData) {
+    // At ayah level, always use ayah audio if available
+    if (ayahNo && ayahAudioData) {
       return ayahAudioData;
     }
-    return audioData; // Surah audio
+    // At surah level or if ayah audio not available, use surah audio
+    return audioData;
   };
 
   const handlePlay = () => {
@@ -199,29 +201,17 @@ export function AudioPlayer({
     <div className={className}>
       <Text className="text-sm text-gray-400 mb-3">Audio Recitation</Text>
       
-      {/* Play Mode Selector */}
+      {/* At ayah level, always play ayah only - no mode selector needed */}
       {ayahNo && (
-        <div className="mb-3 flex gap-2">
-          <button
-            onClick={() => handleModeChange('ayah')}
-            className={`px-3 py-1.5 rounded text-sm border transition-colors ${
-              playMode === 'ayah'
-                ? 'bg-white text-black border-white'
-                : 'bg-gray-900 text-white border-gray-700 hover:border-gray-600'
-            }`}
-          >
-            Ayah Only
-          </button>
-          <button
-            onClick={() => handleModeChange('surah')}
-            className={`px-3 py-1.5 rounded text-sm border transition-colors ${
-              playMode === 'surah'
-                ? 'bg-white text-black border-white'
-                : 'bg-gray-900 text-white border-gray-700 hover:border-gray-600'
-            }`}
-          >
-            Whole Surah
-          </button>
+        <div className="mb-3">
+          <Text className="text-xs text-gray-500">Plays this ayah only</Text>
+        </div>
+      )}
+      
+      {/* At surah level (no ayahNo), show info that it plays whole surah */}
+      {!ayahNo && (
+        <div className="mb-3">
+          <Text className="text-xs text-gray-500">Plays entire surah</Text>
         </div>
       )}
 
