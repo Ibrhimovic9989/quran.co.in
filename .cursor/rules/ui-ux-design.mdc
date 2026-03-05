@@ -1,0 +1,662 @@
+---
+globs: *.tsx,*.jsx,*.ts,*.js,*.css,*.scss
+description: UI/UX design principles aligned with SOLID principles for Quran.co.in
+---
+
+# UI/UX Design Principles for Quran.co.in
+
+## Overview
+These principles map UI/UX design concepts to SOLID software engineering principles, ensuring our design system is maintainable, scalable, and user-centered.
+
+---
+
+## 1. Atomic Design (SRP & Modular Design)
+**Maps to: Single Responsibility Principle (SRP)**
+
+### Philosophy
+Break UI into its smallest, reusable components. Each component should have a single, well-defined visual and functional responsibility.
+
+### Hierarchy
+
+#### **Atoms** - Indivisible Components
+- **Location**: `components/ui/atoms/`
+- **Examples**: Buttons, Inputs, Labels, Icons, Typography
+- **Rules**:
+  - One visual element, one responsibility
+  - No business logic
+  - Highly reusable
+  - Props for customization (size, variant, state)
+
+**Example:**
+```typescript
+// ✅ GOOD: Single-purpose atom
+// components/ui/atoms/button.tsx
+export function Button({ 
+  variant = 'primary', 
+  size = 'md', 
+  children,
+  ...props 
+}: ButtonProps) {
+  // Only handles button rendering and styling
+}
+
+// ❌ BAD: Button with business logic
+export function Button({ onClick, ... }) {
+  const handleClick = async () => {
+    await fetch('/api/data'); // Business logic doesn't belong here
+  }
+}
+```
+
+#### **Molecules** - Small Component Groups
+- **Location**: `components/ui/molecules/`
+- **Examples**: Search Form, Navigation Item, Audio Player Controls, Translation Selector
+- **Rules**:
+  - Composed of 2-5 atoms
+  - Single functional purpose
+  - Can have simple state (form inputs, toggles)
+  - Reusable across different contexts
+
+**Example:**
+```typescript
+// ✅ GOOD: Molecule composed of atoms
+// components/ui/molecules/search-form.tsx
+export function SearchForm() {
+  return (
+    <form>
+      <Input placeholder="Search..." />
+      <Button type="submit">Search</Button>
+    </form>
+  );
+}
+```
+
+#### **Organisms** - Complex Components
+- **Location**: `components/ui/organisms/` or feature-specific folders
+- **Examples**: Header, Surah Display, Ayah Display, Navigation Bar
+- **Rules**:
+  - Composed of molecules and atoms
+  - Can have complex state and business logic
+  - Feature-specific but still reusable
+  - May connect to services/repositories
+
+**Example:**
+```typescript
+// ✅ GOOD: Organism with clear responsibility
+// components/quran/surah-display.tsx
+export function SurahDisplay({ surah }: SurahDisplayProps) {
+  // Composes: Heading (atom), AudioPlayer (molecule), AyahDisplay (organism)
+  // Single responsibility: Display a surah with all its features
+}
+```
+
+#### **Templates & Pages**
+- **Location**: `app/` directory (Next.js pages)
+- **Rules**:
+  - Templates: Layout structure without real data
+  - Pages: Templates filled with real data
+  - Minimal logic, mostly composition
+
+### Implementation Rules
+1. **Start with Atoms**: Build smallest components first
+2. **Compose Upward**: Molecules → Organisms → Templates → Pages
+3. **One Responsibility**: Each component does ONE thing well
+4. **Reusability First**: If you're copying code, create a component
+5. **File Structure**:
+   ```
+   components/
+     ├── ui/
+     │   ├── atoms/
+     │   │   ├── button.tsx
+     │   │   ├── input.tsx
+     │   │   └── typography.tsx
+     │   ├── molecules/
+     │   │   ├── search-form.tsx
+     │   │   └── audio-controls.tsx
+     │   └── organisms/
+     │       ├── header.tsx
+     │       └── navigation.tsx
+     └── quran/
+         ├── surah-display.tsx (organism)
+         └── ayah-display.tsx (organism)
+   ```
+
+---
+
+## 2. Design Systems (OCP & DRY)
+**Maps to: Open/Closed Principle (OCP) & DRY (Don't Repeat Yourself)**
+
+### Philosophy
+Create a single source of truth for design tokens, components, and patterns. Components are closed for modification but open for extension.
+
+### Design Tokens
+- **Location**: `lib/design-tokens/` or `tailwind.config.ts`
+- **Include**:
+  - Colors (primary, secondary, text, background)
+  - Typography (fonts, sizes, weights, line heights)
+  - Spacing (consistent spacing scale)
+  - Shadows, borders, radii
+  - Breakpoints (responsive design)
+
+**Example:**
+```typescript
+// ✅ GOOD: Centralized design tokens
+// tailwind.config.ts or lib/design-tokens.ts
+export const tokens = {
+  colors: {
+    primary: '#000000',
+    secondary: '#FFFFFF',
+    background: '#000000',
+    text: '#FFFFFF',
+    gray: {
+      400: '#9CA3AF',
+      500: '#6B7280',
+      700: '#374151',
+    }
+  },
+  spacing: {
+    xs: '0.25rem',
+    sm: '0.5rem',
+    md: '1rem',
+    lg: '1.5rem',
+    xl: '2rem',
+  },
+  typography: {
+    fontFamily: {
+      arabic: ['Amiri', 'serif'],
+      sans: ['Inter', 'sans-serif'],
+    }
+  }
+};
+```
+
+### Component Variants (OCP)
+- **Rules**:
+  - Core component is closed for modification
+  - New variants/extensions don't change core
+  - Use TypeScript discriminated unions for variants
+
+**Example:**
+```typescript
+// ✅ GOOD: Open for extension, closed for modification
+// components/ui/atoms/button.tsx
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+type ButtonSize = 'sm' | 'md' | 'lg';
+
+interface ButtonProps {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  // Core props never change
+}
+
+export function Button({ variant = 'primary', size = 'md', ...props }: ButtonProps) {
+  // Core implementation doesn't change
+  // New variants added via className mapping
+  const variantClasses = {
+    primary: 'bg-white text-black',
+    secondary: 'bg-gray-700 text-white',
+    ghost: 'bg-transparent border border-gray-700',
+    danger: 'bg-red-600 text-white',
+  };
+  
+  return <button className={cn(variantClasses[variant], ...)} {...props} />;
+}
+
+// ✅ Adding new variant doesn't break existing code
+// Just add to ButtonVariant type and variantClasses object
+```
+
+### DRY Principles
+1. **Reuse Components**: Never duplicate component code
+2. **Shared Styles**: Use Tailwind classes or CSS variables
+3. **Common Patterns**: Extract to shared components
+4. **Consistent Spacing**: Use design token spacing scale
+
+**Example:**
+```typescript
+// ❌ BAD: Repeated button code
+function Component1() {
+  return <button className="px-4 py-2 bg-white text-black">Click</button>;
+}
+function Component2() {
+  return <button className="px-4 py-2 bg-white text-black">Click</button>;
+}
+
+// ✅ GOOD: Reuse Button component
+function Component1() {
+  return <Button variant="primary">Click</Button>;
+}
+function Component2() {
+  return <Button variant="primary">Click</Button>;
+}
+```
+
+### Design System Structure
+```
+lib/
+  └── design-tokens/
+      ├── colors.ts
+      ├── typography.ts
+      ├── spacing.ts
+      └── index.ts
+
+components/
+  └── ui/
+      └── [atoms, molecules, organisms]
+```
+
+---
+
+## 3. The 5 Planes of UX (Dependency Inversion)
+**Maps to: Dependency Inversion Principle (DIP)**
+
+### Philosophy
+Design should flow from strategy (user needs) to surface (visual design), not the reverse. High-level design depends on abstract user needs, not low-level styling decisions.
+
+### The 5 Planes (Bottom to Top)
+
+#### **1. Strategy Plane** - User Needs & Business Goals
+- **Location**: Documentation, user research, product requirements
+- **Questions**:
+  - What do users need?
+  - What are business objectives?
+  - What problems are we solving?
+- **Implementation**: Define user personas, use cases, success metrics
+
+**Example:**
+```typescript
+// ✅ GOOD: Strategy drives implementation
+// User need: "I want to quickly find and listen to a specific ayah"
+// This drives the design, not the other way around
+
+// Strategy: Fast access to ayah audio
+// → Structure: Direct ayah navigation
+// → Skeleton: Search/quick access UI
+// → Surface: Prominent play button
+```
+
+#### **2. Scope Plane** - Features & Content
+- **Location**: Feature specifications, content requirements
+- **Questions**:
+  - What features are included?
+  - What content is needed?
+  - What's out of scope?
+- **Implementation**: Feature lists, content inventory, functional specs
+
+#### **3. Structure Plane** - Information Architecture
+- **Location**: Component hierarchy, navigation structure, data flow
+- **Questions**:
+  - How is information organized?
+  - How do users navigate?
+  - What's the component hierarchy?
+- **Implementation**: Component tree, routing structure, state management
+
+**Example:**
+```typescript
+// ✅ GOOD: Structure follows strategy
+// Strategy: Easy surah browsing
+// → Structure: 
+//    - Surah list page (/quran)
+//    - Surah detail page (/quran/[number])
+//    - Clear navigation hierarchy
+
+// ❌ BAD: Structure based on visual design
+// "Let's make it look cool" → Random component placement
+```
+
+#### **4. Skeleton Plane** - Interface Design
+- **Location**: Component layouts, wireframes, UI patterns
+- **Questions**:
+  - Where do components go?
+  - How are they arranged?
+  - What's the layout?
+- **Implementation**: Component composition, layout components, grid systems
+
+**Example:**
+```typescript
+// ✅ GOOD: Skeleton follows structure
+// Structure: Surah display needs header, content, navigation
+// → Skeleton:
+export function SurahPage() {
+  return (
+    <Layout>
+      <SurahHeader /> {/* Header organism */}
+      <SurahContent /> {/* Content organism */}
+      <Navigation /> {/* Navigation organism */}
+    </Layout>
+  );
+}
+```
+
+#### **5. Surface Plane** - Visual Design
+- **Location**: Styling, colors, typography, animations
+- **Questions**:
+  - What does it look like?
+  - What colors/fonts?
+  - What's the visual style?
+- **Implementation**: CSS/Tailwind, design tokens, animations
+
+**Example:**
+```typescript
+// ✅ GOOD: Surface follows all previous planes
+// Strategy → Scope → Structure → Skeleton → Surface
+// Black background, white text (design token)
+// Arabic font for Quranic text (typography token)
+// Consistent spacing (spacing token)
+
+// ❌ BAD: Surface drives everything
+// "I want it purple" → Forces changes to structure/skeleton
+```
+
+### Implementation Rules
+1. **Start with Strategy**: Always begin with user needs
+2. **Work Upward**: Strategy → Scope → Structure → Skeleton → Surface
+3. **Validate Each Plane**: Don't skip planes
+4. **Document Decisions**: Why did we make this choice?
+5. **Refactor When Needed**: If surface doesn't work, check lower planes
+
+---
+
+## 4. Gestalt Principles (Interface Segregation)
+**Maps to: Interface Segregation Principle (ISP)**
+
+### Philosophy
+Group related visual elements together. Don't force unrelated elements into the same interface. The user's mental model should match the visual grouping.
+
+### Key Principles
+
+#### **1. Proximity**
+- Items close together are perceived as a group
+- Related functionality should be visually grouped
+- Use spacing to create visual relationships
+
+**Example:**
+```typescript
+// ✅ GOOD: Related items grouped together
+<div className="space-y-4"> {/* Proximity via spacing */}
+  <div className="flex gap-2"> {/* Audio controls grouped */}
+    <Button>Play</Button>
+    <Button>Pause</Button>
+  </div>
+  <div className="flex gap-2"> {/* Translation controls grouped */}
+    <Select>Language</Select>
+    <Button>Show More</Button>
+  </div>
+</div>
+
+// ❌ BAD: Unrelated items mixed together
+<div>
+  <Button>Play</Button>
+  <Select>Language</Select>
+  <Button>Pause</Button>
+  <Button>Show More</Button>
+</div>
+```
+
+#### **2. Common Region**
+- Items within the same container are perceived as related
+- Use cards, containers, or sections to group related content
+
+**Example:**
+```typescript
+// ✅ GOOD: Common region groups related content
+<Card> {/* Common region */}
+  <AyahNumber />
+  <ArabicText />
+  <Translation />
+  <AudioPlayer /> {/* All related to one ayah */}
+</Card>
+
+// ❌ BAD: No visual grouping
+<div>
+  <AyahNumber />
+  <ArabicText />
+  <Translation />
+  <AudioPlayer />
+</div>
+```
+
+#### **3. Similarity**
+- Similar-looking items are perceived as related
+- Use consistent styling for similar functionality
+- Design system ensures visual consistency
+
+**Example:**
+```typescript
+// ✅ GOOD: Similar buttons look similar
+<Button variant="primary">Play Surah</Button>
+<Button variant="primary">Play Ayah</Button>
+// Both use same variant = perceived as same type of action
+
+// ❌ BAD: Inconsistent styling
+<button className="bg-blue-500">Play Surah</button>
+<button className="bg-green-500 rounded-full">Play Ayah</button>
+// Different styles = perceived as different actions
+```
+
+#### **4. Continuity**
+- Users follow smooth, continuous paths
+- Related flows should be visually connected
+- Use visual lines or alignment to show relationships
+
+#### **5. Closure**
+- Users mentally complete incomplete shapes
+- Use this for progressive disclosure
+- Show partial content, let users complete the picture
+
+#### **6. Figure/Ground**
+- Users distinguish foreground from background
+- Clear visual hierarchy
+- Important content stands out
+
+**Example:**
+```typescript
+// ✅ GOOD: Clear figure/ground
+<div className="bg-black"> {/* Ground */}
+  <div className="bg-white text-black p-4"> {/* Figure - stands out */}
+    <Heading>Important Content</Heading>
+  </div>
+</div>
+```
+
+### Implementation Rules
+1. **Group Related Items**: Use proximity and common regions
+2. **Separate Unrelated Items**: Don't force unrelated elements together
+3. **Consistent Styling**: Similar things look similar
+4. **Clear Hierarchy**: Important content is visually prominent
+5. **Visual Flow**: Guide user's eye through the interface
+
+---
+
+## 5. Hook Model (Behavioral Design)
+**Maps to: User Engagement & Retention**
+
+### Philosophy
+Create engaging products that hook users through a four-step loop: Trigger → Action → Variable Reward → Investment.
+
+### The Hook Loop
+
+#### **1. Trigger**
+- **External**: Notifications, emails, UI prompts
+- **Internal**: User's emotional state, habits, needs
+- **Implementation**: Clear CTAs, notifications, reminders
+
+**Example:**
+```typescript
+// ✅ GOOD: Clear trigger
+<Button onClick={handlePlay}>
+  ▶️ Play Recitation {/* Visual trigger */}
+</Button>
+
+// Also: Internal trigger - user wants to hear Quran
+// → Design should make this easy and satisfying
+```
+
+#### **2. Action**
+- Simplest behavior in anticipation of reward
+- Should be easy, obvious, and satisfying
+- Reduce friction, increase motivation
+
+**Example:**
+```typescript
+// ✅ GOOD: Simple, obvious action
+// One click to play ayah audio
+<Button onClick={playAyah} disabled={!reciterSelected}>
+  Play {/* Simple, clear action */}
+</Button>
+
+// ❌ BAD: Complex action
+// User must: Select reciter → Select mode → Click play → Confirm
+```
+
+#### **3. Variable Reward**
+- Rewards that vary to maintain interest
+- Three types:
+  - **Rewards of the Tribe**: Social validation, community
+  - **Rewards of the Hunt**: Information, resources (different translations, tafsirs)
+  - **Rewards of the Self**: Personal achievement, progress
+
+**Example:**
+```typescript
+// ✅ GOOD: Variable rewards
+// - Different reciters (hunt for preferred voice)
+// - Multiple translations (hunt for understanding)
+// - Tafsir insights (hunt for deeper meaning)
+// - Reading progress (self achievement)
+
+function AyahDisplay({ ayah }) {
+  return (
+    <>
+      <TranslationSelector /> {/* Variable: Different translations */}
+      <ReciterSelector /> {/* Variable: Different voices */}
+      <TafsirToggle /> {/* Variable: Deeper insights */}
+    </>
+  );
+}
+```
+
+#### **4. Investment**
+- User puts something into the product
+- Increases likelihood of returning
+- Examples: Bookmarks, notes, reading history, preferences
+
+**Example:**
+```typescript
+// ✅ GOOD: User investment
+// - Bookmarks: User saves favorite ayahs
+// - Notes: User adds personal reflections
+// - Reading history: User's progress tracked
+// - Preferences: User customizes experience
+
+function AyahDisplay({ ayah }) {
+  const { bookmark, addBookmark } = useBookmarks();
+  
+  return (
+    <Button onClick={() => addBookmark(ayah.id)}>
+      {bookmark ? '⭐ Bookmarked' : '☆ Bookmark'}
+    </Button>
+  );
+}
+```
+
+### Implementation Rules
+1. **Clear Triggers**: Make actions obvious and easy
+2. **Reduce Friction**: Minimize steps to complete actions
+3. **Variable Rewards**: Provide different content/experiences
+4. **Enable Investment**: Let users save, customize, track progress
+5. **Complete the Loop**: Each interaction should lead to the next
+
+---
+
+## 6. User-Centered Design (Maintainability/Testability)
+**Maps to: Maintainability & Testability in Software**
+
+### Philosophy
+Design for the user, not assumptions. Test with real users. Make design decisions based on evidence, not opinions.
+
+### Principles
+1. **User Research First**: Understand users before designing
+2. **Test Assumptions**: Validate design decisions
+3. **Iterate Based on Feedback**: Continuous improvement
+4. **Accessibility**: Design for all users
+5. **Performance**: Fast, responsive interfaces
+
+### Implementation
+- User testing
+- Analytics and metrics
+- A/B testing
+- Accessibility standards (WCAG)
+- Performance optimization
+
+---
+
+## Component Creation Checklist
+
+When creating a new UI component, ask:
+
+1. **Atomic Design**: What level is this? (Atom/Molecule/Organism)
+2. **Design System**: Does it use design tokens? Is it reusable?
+3. **5 Planes**: Does it serve a user need? (Strategy → Surface)
+4. **Gestalt**: Are related items grouped? Is hierarchy clear?
+5. **Hook Model**: Is the action simple? Does it provide value?
+6. **User-Centered**: Is it accessible? Is it performant?
+
+---
+
+## File Structure for UI Components
+
+```
+components/
+  ├── ui/
+  │   ├── atoms/
+  │   │   ├── button.tsx
+  │   │   ├── input.tsx
+  │   │   ├── typography.tsx
+  │   │   └── icon.tsx
+  │   ├── molecules/
+  │   │   ├── search-form.tsx
+  │   │   ├── audio-controls.tsx
+  │   │   └── translation-selector.tsx
+  │   └── organisms/
+  │       ├── header.tsx
+  │       ├── navigation.tsx
+  │       └── surah-card.tsx
+  ├── quran/
+  │   ├── surah-display.tsx (organism)
+  │   ├── ayah-display.tsx (organism)
+  │   └── audio-player.tsx (molecule)
+  └── layout/
+      ├── navbar.tsx (organism)
+      └── footer.tsx (organism)
+
+lib/
+  └── design-tokens/
+      ├── colors.ts
+      ├── typography.ts
+      ├── spacing.ts
+      └── index.ts
+```
+
+---
+
+## Quick Reference
+
+| UI/UX Principle | SOLID Equivalent | Key Rule |
+|----------------|------------------|----------|
+| Atomic Design | SRP | One component, one responsibility |
+| Design Systems | OCP & DRY | Reuse, don't repeat; extend, don't modify |
+| 5 Planes of UX | DIP | Strategy drives design, not pixels |
+| Gestalt Principles | ISP | Group related, separate unrelated |
+| Hook Model | Engagement | Trigger → Action → Reward → Investment |
+| User-Centered | Maintainability | Design for users, test assumptions |
+
+---
+
+## Always Remember
+
+1. **Start Small**: Build atoms first, compose upward
+2. **Reuse Everything**: Use design system, don't duplicate
+3. **User First**: Strategy drives all design decisions
+4. **Group Wisely**: Related items together, unrelated apart
+5. **Engage Users**: Make actions easy, rewards variable, investment possible
+6. **Test & Iterate**: Validate with users, improve continuously
