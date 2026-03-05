@@ -37,18 +37,18 @@ export function PageLoader({ className }: PageLoaderProps) {
 
     // Wait for page to be interactive
     const handleLoad = () => {
-      // Small delay for smooth transition
+      // Show for at least 5 seconds for smooth, elegant experience
       setTimeout(() => {
         setIsLoading(false);
         // Mark as shown in localStorage
         if (typeof window !== 'undefined') {
           localStorage.setItem(SPLASH_STORAGE_KEY, 'true');
         }
-        // Fade out animation - longer for smoother transition
+        // Smooth fade out animation - 1 second for very smooth transition
         setTimeout(() => {
           setIsVisible(false);
-        }, 800);
-      }, 500);
+        }, 1000);
+      }, 5000);
     };
 
     if (document.readyState === 'complete') {
@@ -68,7 +68,7 @@ export function PageLoader({ className }: PageLoaderProps) {
       className={cn(
         'fixed inset-0 z-50 flex items-center justify-center',
         'bg-white',
-        'transition-opacity duration-1000 ease-in-out',
+        'transition-opacity duration-[1000ms] ease-in-out',
         isLoading ? 'opacity-100' : 'opacity-0 pointer-events-none',
         className
       )}
