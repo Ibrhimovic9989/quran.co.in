@@ -35,25 +35,37 @@ export function PageLoader({ className }: PageLoaderProps) {
       return;
     }
 
-    // Wait for page to be interactive
-    const handleLoad = () => {
-      // Show for at least 5 seconds for smooth, elegant experience
+    // Track when component mounted to ensure minimum display time
+    const mountTime = Date.now();
+    const MIN_DISPLAY_TIME = 6000; // 6 seconds minimum for users to read
+
+    // Function to start fade-out after minimum time
+    const startFadeOut = () => {
+      const elapsed = Date.now() - mountTime;
+      const remainingTime = Math.max(0, MIN_DISPLAY_TIME - elapsed);
+      
       setTimeout(() => {
         setIsLoading(false);
         // Mark as shown in localStorage
         if (typeof window !== 'undefined') {
           localStorage.setItem(SPLASH_STORAGE_KEY, 'true');
         }
-        // Smooth fade out animation - 1 second for very smooth transition
+        // Smooth fade out animation - 1.2 seconds for very smooth transition
         setTimeout(() => {
           setIsVisible(false);
-        }, 1000);
-      }, 5000);
+        }, 1200);
+      }, remainingTime);
     };
 
+    // Wait for page to be interactive, then ensure minimum display time
     if (document.readyState === 'complete') {
-      handleLoad();
+      // Page already loaded, but still ensure minimum time
+      startFadeOut();
     } else {
+      // Wait for page load, then ensure minimum time
+      const handleLoad = () => {
+        startFadeOut();
+      };
       window.addEventListener('load', handleLoad);
       return () => window.removeEventListener('load', handleLoad);
     }
@@ -68,7 +80,7 @@ export function PageLoader({ className }: PageLoaderProps) {
       className={cn(
         'fixed inset-0 z-50 flex items-center justify-center',
         'bg-white',
-        'transition-opacity duration-[1000ms] ease-in-out',
+        'transition-opacity duration-[1200ms] ease-in-out',
         isLoading ? 'opacity-100' : 'opacity-0 pointer-events-none',
         className
       )}
