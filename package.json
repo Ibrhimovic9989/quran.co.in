@@ -11,7 +11,8 @@
     "db:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "db:studio": "dotenv -e .env.local -- prisma studio",
     "db:index": "dotenv -e .env.local -- psql $DATABASE_URL -f prisma/migrations/add_indexes.sql",
-    "sync:quran": "dotenv -e .env.local -- tsx scripts/sync-quran.ts"
+    "sync:quran": "dotenv -e .env.local -- tsx scripts/sync-quran.ts",
+    "update:translations": "dotenv -e .env.local -- tsx scripts/update-translations.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.0",

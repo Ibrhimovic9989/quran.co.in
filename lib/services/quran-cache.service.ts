@@ -76,10 +76,10 @@ export class QuranCacheService {
           english: dbAyahs.map(a => a.translationText || ''),
           arabic1: dbAyahs.map(a => a.arabicText),
           arabic2: dbAyahs.map(a => a.transliteration || a.arabicText),
-          bengali: dbAyahs.map(a => (a.metadata as any)?.bengali).filter(Boolean),
-          urdu: dbAyahs.map(a => (a.metadata as any)?.urdu).filter(Boolean),
-          turkish: dbAyahs.map(a => (a.metadata as any)?.turkish).filter(Boolean),
-          uzbek: dbAyahs.map(a => (a.metadata as any)?.uzbek).filter(Boolean),
+          bengali: dbAyahs.map(a => (a.metadata as any)?.bengali || null).filter(v => v !== null),
+          urdu: dbAyahs.map(a => (a.metadata as any)?.urdu || null).filter(v => v !== null),
+          turkish: dbAyahs.map(a => (a.metadata as any)?.turkish || null).filter(v => v !== null),
+          uzbek: dbAyahs.map(a => (a.metadata as any)?.uzbek || null).filter(v => v !== null),
         };
       }
     }
@@ -152,6 +152,22 @@ export class QuranCacheService {
       await Promise.all(
         batch.map((_, batchIndex) => {
           const ayahIndex = i + batchIndex;
+          // Build metadata with all translations
+          const metadata: Record<string, any> = {};
+          
+          if (surah.bengali?.[ayahIndex]) {
+            metadata.bengali = surah.bengali[ayahIndex];
+          }
+          if (surah.urdu?.[ayahIndex]) {
+            metadata.urdu = surah.urdu[ayahIndex];
+          }
+          if (surah.turkish?.[ayahIndex]) {
+            metadata.turkish = surah.turkish[ayahIndex];
+          }
+          if (surah.uzbek?.[ayahIndex]) {
+            metadata.uzbek = surah.uzbek[ayahIndex];
+          }
+          
           return this.repository.upsertAyah({
             surahId: dbSurah.id,
             surahNumber: surah.surahNo,
@@ -160,12 +176,7 @@ export class QuranCacheService {
             arabicText: surah.arabic1[ayahIndex],
             translationText: surah.english[ayahIndex],
             transliteration: surah.arabic2[ayahIndex],
-            metadata: {
-              bengali: surah.bengali?.[ayahIndex],
-              urdu: surah.urdu?.[ayahIndex],
-              turkish: surah.turkish?.[ayahIndex],
-              uzbek: surah.uzbek?.[ayahIndex],
-            } as any,
+            metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
           });
         })
       );

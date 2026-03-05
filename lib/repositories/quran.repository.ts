@@ -171,6 +171,7 @@ export class QuranRepository {
 
   /**
    * Upsert ayah
+   * Merges metadata to preserve existing translations/tafsir
    */
   async upsertAyah(data: {
     surahId: string;
@@ -183,6 +184,25 @@ export class QuranRepository {
     audioUrl?: string;
     metadata?: Prisma.JsonValue;
   }): Promise<any> {
+    // First, try to find existing ayah to merge metadata
+    const existing = await prisma.ayah.findUnique({
+      where: {
+        surahNumber_number_apiProvider: {
+          surahNumber: data.surahNumber,
+          number: data.number,
+          apiProvider: data.apiProvider,
+        },
+      },
+    });
+
+    // Merge metadata: existing + new (new values override existing)
+    const mergedMetadata = existing?.metadata && data.metadata
+      ? {
+          ...(existing.metadata as object),
+          ...(data.metadata as object),
+        }
+      : (data.metadata || existing?.metadata);
+
     return prisma.ayah.upsert({
       where: {
         surahNumber_number_apiProvider: {
@@ -196,7 +216,7 @@ export class QuranRepository {
         translationText: data.translationText,
         transliteration: data.transliteration,
         audioUrl: data.audioUrl,
-        metadata: data.metadata as any,
+        metadata: mergedMetadata as any,
       },
       create: {
         surahId: data.surahId,

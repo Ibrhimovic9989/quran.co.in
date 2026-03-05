@@ -128,10 +128,14 @@ export class QuranService {
         arabicText: surah.arabic1[i],
         translationText: surah.english[i],
         transliteration: surah.arabic2[i],
-        metadata: {
-          bengali: surah.bengali?.[i],
-          urdu: surah.urdu?.[i],
-        } as any,
+        metadata: (() => {
+          const meta: Record<string, any> = {};
+          if (surah.bengali?.[i]) meta.bengali = surah.bengali[i];
+          if (surah.urdu?.[i]) meta.urdu = surah.urdu[i];
+          if (surah.turkish?.[i]) meta.turkish = surah.turkish[i];
+          if (surah.uzbek?.[i]) meta.uzbek = surah.uzbek[i];
+          return Object.keys(meta).length > 0 ? meta : undefined;
+        })(),
       });
     }
 
