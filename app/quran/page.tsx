@@ -6,7 +6,7 @@ import { QuranCacheService } from '@/lib/services/quran-cache.service';
 
 // Force dynamic rendering - don't try to fetch at build time
 export const dynamic = 'force-dynamic';
-export const revalidate = 60; // Cache for 60 seconds
+export const revalidate = 3600; // Cache for 1 hour (surahs don't change)
 
 export default async function QuranPage() {
   try {

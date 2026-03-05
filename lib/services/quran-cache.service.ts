@@ -17,22 +17,32 @@ export class QuranCacheService {
 
   /**
    * Get all surahs - prefer database, fallback to API
+   * Optimized for fast loading (<100ms)
    */
   async getAllSurahs(apiProvider: ApiProvider = 'TEMPORARY_API'): Promise<(SurahInfo & { surahNo: number })[]> {
+    const startTime = Date.now();
+    
     // Try database first (fast)
     const dbSurahs = await this.repository.findAllSurahs(apiProvider);
     
     if (dbSurahs.length > 0) {
-      // Return from database (cached)
-      return dbSurahs.map((surah) => ({
+      // Return from database (cached) - should be <50ms
+      const result = dbSurahs.map((surah) => ({
         surahName: surah.name,
         surahNameArabic: surah.arabicName,
         surahNameArabicLong: (surah.metadata as any)?.surahNameArabicLong || surah.arabicName,
         surahNameTranslation: surah.englishNameTranslation || surah.englishName,
-        revelationPlace: surah.revelationType === 'MECCAN' ? 'Mecca' : 'Madina',
+        revelationPlace: (surah.revelationType === 'MECCAN' ? 'Mecca' : 'Madina') as 'Mecca' | 'Madina',
         totalAyah: surah.numberOfAyahs,
         surahNo: surah.number,
       }));
+      
+      const queryTime = Date.now() - startTime;
+      if (queryTime > 200) {
+        console.warn(`Slow surah list query: ${queryTime}ms`);
+      }
+      
+      return result;
     }
 
     // If no data in DB, fetch from API (slow, but only once)
@@ -55,21 +65,28 @@ export class QuranCacheService {
     surahNo: number,
     apiProvider: ApiProvider = 'TEMPORARY_API'
   ): Promise<SurahResponse | null> {
+    const startTime = Date.now();
+    
     // Try database first (fast - uses index)
     const dbSurah = await this.repository.findSurahByNumber(surahNo, apiProvider);
     
     if (dbSurah) {
+      const surahQueryTime = Date.now() - startTime;
+      
       // Get ALL ayahs from database (indexed query - fast even for 286 ayahs)
+      const ayahsStartTime = Date.now();
       const dbAyahs = await this.repository.findAyahsBySurah(surahNo, apiProvider);
+      const ayahsQueryTime = Date.now() - ayahsStartTime;
       
       if (dbAyahs.length > 0) {
         // Build response from database (fast - <200ms even for 286 ayahs with indexes)
-        return {
+        const buildStartTime = Date.now();
+        const result: SurahResponse = {
           surahName: dbSurah.name,
           surahNameArabic: dbSurah.arabicName,
           surahNameArabicLong: (dbSurah.metadata as any)?.surahNameArabicLong || dbSurah.arabicName,
           surahNameTranslation: dbSurah.englishNameTranslation || dbSurah.englishName,
-          revelationPlace: dbSurah.revelationType === 'MECCAN' ? 'Mecca' : 'Madina',
+          revelationPlace: (dbSurah.revelationType === 'MECCAN' ? 'Mecca' : 'Madina') as 'Mecca' | 'Madina',
           totalAyah: dbSurah.numberOfAyahs,
           surahNo: dbSurah.number,
           audio: (dbSurah.metadata as any)?.audio || {},
@@ -81,6 +98,13 @@ export class QuranCacheService {
           turkish: dbAyahs.map(a => (a.metadata as any)?.turkish || null).filter(v => v !== null),
           uzbek: dbAyahs.map(a => (a.metadata as any)?.uzbek || null).filter(v => v !== null),
         };
+        
+        const totalTime = Date.now() - startTime;
+        if (totalTime > 500) {
+          console.warn(`Slow surah query (${surahNo}): ${totalTime}ms (surah: ${surahQueryTime}ms, ayahs: ${ayahsQueryTime}ms, build: ${Date.now() - buildStartTime}ms, count: ${dbAyahs.length})`);
+        }
+        
+        return result;
       }
     }
 

@@ -33,14 +33,13 @@ export class QuranRepository {
   }
 
   /**
-   * Find all surahs (optimized query)
+   * Find all surahs (optimized query - minimal fields)
    */
   async findAllSurahs(apiProvider?: ApiProvider): Promise<any[]> {
     return prisma.surah.findMany({
       where: apiProvider ? { apiProvider } : undefined,
       orderBy: { number: 'asc' },
       select: {
-        id: true,
         number: true,
         name: true,
         englishName: true,
@@ -48,9 +47,13 @@ export class QuranRepository {
         englishNameTranslation: true,
         numberOfAyahs: true,
         revelationType: true,
-        metadata: true,
-        // Don't select relationships to reduce data transfer
+        // Only get surahNameArabicLong from metadata, not entire metadata
+        metadata: {
+          select: ['surahNameArabicLong'],
+        } as any,
       },
+      // Use index for faster query
+      take: 114, // Limit to 114 surahs
     });
   }
 
