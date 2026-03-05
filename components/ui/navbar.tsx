@@ -14,8 +14,9 @@ import {
   LayoutDashboard,
   User,
   LogIn,
+  LogOut,
 } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { cn } from "@/lib/utils/cn";
 
 const MOBILE_LABEL_WIDTH = 72;
@@ -45,7 +46,13 @@ export function Navbar({ className }: NavbarProps) {
 
   // Filter nav items based on authentication status
   const filteredNavItems = navItems.filter((item) => {
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'navbar.tsx:47',message:'Filtering nav item',data:{label:item.label,href:item.href,requiresAuth:item.requiresAuth,authStatus:status,hasSession:!!session},timestamp:Date.now(),runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+    // #endregion
     if (item.requiresAuth === true) {
+      // #region agent log
+      fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'navbar.tsx:50',message:'Checking auth requirement',data:{label:item.label,status:status,willShow:status==="authenticated"},timestamp:Date.now(),runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+      // #endregion
       return status === "authenticated";
     }
     if (item.label === "Sign In") {
@@ -106,7 +113,12 @@ export function Navbar({ className }: NavbarProps) {
                 <Link
                   key={item.label}
                   href={item.href}
-                  onClick={() => handleNavClick(idx)}
+                  onClick={() => {
+                    // #region agent log
+                    fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'navbar.tsx:106',message:'Nav item clicked',data:{label:item.label,href:item.href,index:idx},timestamp:Date.now(),runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+                    // #endregion
+                    handleNavClick(idx);
+                  }}
                   aria-label={item.label}
                   className="flex-shrink-0"
                 >
@@ -157,6 +169,46 @@ export function Navbar({ className }: NavbarProps) {
                 </Link>
               );
             })}
+            
+            {/* Sign Out Button - Only for authenticated users */}
+            {status === "authenticated" && (
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                onClick={() => {
+                  // #region agent log
+                  fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'navbar.tsx:170',message:'Sign out clicked',data:{},timestamp:Date.now(),runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+                  // #endregion
+                  signOut({ callbackUrl: '/' });
+                }}
+                aria-label="Sign Out"
+                className={cn(
+                  "flex items-center gap-0 md:gap-0 px-2.5 md:px-4 py-1.5 md:py-2 rounded-full transition-all duration-300 ease-in-out relative h-9 md:h-10 min-w-[36px] md:min-w-[44px] min-h-[36px] md:min-h-[40px] max-h-[36px] md:max-h-[44px] cursor-pointer",
+                  "bg-transparent text-gray-600 hover:bg-red-50 hover:text-red-600",
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white rounded-full",
+                )}
+              >
+                <LogOut
+                  size={18}
+                  strokeWidth={2}
+                  aria-hidden
+                  className="transition-all duration-300 ease-in-out md:w-5 md:h-5"
+                />
+                {/* Label - Only shown on desktop when active */}
+                <motion.div
+                  initial={false}
+                  animate={{
+                    width: "0px",
+                    opacity: 0,
+                  }}
+                  className={cn("overflow-hidden items-center max-w-[72px] hidden md:flex")}
+                >
+                  <span className="font-medium text-xs whitespace-nowrap select-none">
+                    Sign Out
+                  </span>
+                </motion.div>
+              </motion.button>
+            )}
           </div>
         </div>
       </div>

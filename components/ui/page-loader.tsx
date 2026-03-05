@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { cn } from '@/lib/utils/cn';
 
 interface PageLoaderProps {
@@ -16,6 +17,7 @@ const SPLASH_STORAGE_KEY = 'quran-app-splash-shown';
 
 export function PageLoader({ className }: PageLoaderProps) {
   const pathname = usePathname();
+  const { status } = useSession();
   const [isLoading, setIsLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(true);
 
@@ -28,8 +30,15 @@ export function PageLoader({ className }: PageLoaderProps) {
       ? localStorage.getItem(SPLASH_STORAGE_KEY) === 'true'
       : false;
 
-    // Don't show if not homepage or already seen
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'page-loader.tsx:23',message:'Page loader check',data:{isHomepage,hasSeenSplash,pathname,authStatus:status},timestamp:Date.now(),runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
+
+    // Don't show if not homepage or already seen (works for both authenticated and unauthenticated)
     if (!isHomepage || hasSeenSplash) {
+      // #region agent log
+      fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'page-loader.tsx:33',message:'Hiding splash screen',data:{reason:!isHomepage?'not-homepage':'already-seen'},timestamp:Date.now(),runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+      // #endregion
       setIsVisible(false);
       setIsLoading(false);
       return;
@@ -70,7 +79,7 @@ export function PageLoader({ className }: PageLoaderProps) {
       window.addEventListener('load', handleLoad);
       return () => window.removeEventListener('load', handleLoad);
     }
-  }, [pathname]);
+  }, [pathname, status]);
 
   if (!isVisible) {
     return null;

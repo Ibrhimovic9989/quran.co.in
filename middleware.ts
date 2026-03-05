@@ -22,6 +22,10 @@ export async function middleware(request: NextRequest) {
 
   // Protect profile routes
   if (request.nextUrl.pathname.startsWith('/profile')) {
+    // #region agent log
+    const logData = {pathname:request.nextUrl.pathname,hasToken:!!token,tokenEmail:token?.email};
+    // Note: Can't use fetch in middleware, will log via file write
+    // #endregion
     if (!token) {
       const signInUrl = new URL('/sign-in', request.url);
       signInUrl.searchParams.set('callbackUrl', request.url);
