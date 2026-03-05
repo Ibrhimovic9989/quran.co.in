@@ -11,6 +11,11 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Quran.co.in - Your Gateway to the Holy Quran',
   description: 'A modern, beautiful application for reading and studying the Holy Quran',
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
 };
 
 export const viewport: Viewport = {

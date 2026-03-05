@@ -39,6 +39,12 @@ export function AudioPlayer({
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const [ayahAudioData, setAyahAudioData] = useState<AudioReciters | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  // Storage key for saving playback position (only for surah-level playback)
+  const getStorageKey = (reciterId: string) => {
+    if (ayahNo) return null; // Don't save position for ayah-level playback
+    return `audio-position-${surahNo}-${reciterId}`;
+  };
 
   const reciters = Object.entries(audioData).map(([id, data]) => ({
     id,
@@ -77,12 +83,44 @@ export function AudioPlayer({
   useEffect(() => {
     const audio = audioRef.current;
     if (audio) {
-      audio.addEventListener('ended', () => setIsPlaying(false));
+      // Save position periodically while playing (only for surah-level)
+      const savePosition = () => {
+        if (!ayahNo && selectedReciter) {
+          const storageKey = getStorageKey(selectedReciter);
+          if (storageKey && audio.currentTime > 0) {
+            localStorage.setItem(storageKey, audio.currentTime.toString());
+          }
+        }
+      };
+      
+      // Save position every 2 seconds while playing
+      const interval = setInterval(() => {
+        if (isPlaying && audio) {
+          savePosition();
+        }
+      }, 2000);
+      
+      audio.addEventListener('ended', () => {
+        setIsPlaying(false);
+        // Clear saved position when audio ends
+        if (!ayahNo && selectedReciter) {
+          const storageKey = getStorageKey(selectedReciter);
+          if (storageKey) {
+            localStorage.removeItem(storageKey);
+          }
+        }
+      });
+      
+      // Save position on pause
+      audio.addEventListener('pause', savePosition);
+      
       return () => {
+        clearInterval(interval);
         audio.removeEventListener('ended', () => setIsPlaying(false));
+        audio.removeEventListener('pause', savePosition);
       };
     }
-  }, []);
+  }, [isPlaying, selectedReciter, ayahNo, surahNo]);
 
   const getCurrentAudioData = (): AudioReciters => {
     // At ayah level, always use ayah audio if available
@@ -122,7 +160,7 @@ export function AudioPlayer({
 
     // Check if we're already playing the same reciter
     if (audioRef.current && isPlaying && selectedReciter === reciterToUse) {
-      // Pause if playing the same reciter
+      // Pause if playing the same reciter (position is saved automatically via event listener)
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
@@ -160,10 +198,40 @@ export function AudioPlayer({
     
     const audio = new Audio(audioUrl);
     
+    // Restore saved position if available (only for surah-level playback)
+    if (!ayahNo) {
+      const storageKey = getStorageKey(reciterId);
+      if (storageKey) {
+        const savedPosition = localStorage.getItem(storageKey);
+        if (savedPosition) {
+          const position = parseFloat(savedPosition);
+          audio.currentTime = position;
+        }
+      }
+    }
+    
     audioRef.current = audio;
     if (!isSurahLevel) {
       setLocalReciter(reciterId);
     }
+    
+    // Wait for audio to be ready before playing
+    audio.addEventListener('loadedmetadata', () => {
+      // Restore position after metadata is loaded
+      if (!ayahNo) {
+        const storageKey = getStorageKey(reciterId);
+        if (storageKey) {
+          const savedPosition = localStorage.getItem(storageKey);
+          if (savedPosition) {
+            const position = parseFloat(savedPosition);
+            if (position < audio.duration) {
+              audio.currentTime = position;
+            }
+          }
+        }
+      }
+    });
+    
     audio.play().catch((err) => {
       console.error('Error playing audio:', err);
       setIsPlaying(false);

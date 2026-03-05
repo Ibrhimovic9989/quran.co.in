@@ -11,6 +11,7 @@ import { QuranSearch } from './quran-search';
 import { SurahList } from './surah-list';
 import { JuzView } from './juz-view';
 import { RevelationOrderView } from './revelation-order-view';
+import { ContinueReading } from './continue-reading';
 import type { SurahInfo } from '@/types/quran-api';
 
 interface QuranPageClientProps {
@@ -55,6 +56,9 @@ export function QuranPageClient({ surahs }: QuranPageClientProps) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/30 to-white">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 md:py-8">
+        {/* Continue Reading */}
+        <ContinueReading />
+
         {/* Tab Navigation */}
         <QuranTabs activeView={activeView} onViewChange={handleViewChange} />
 

@@ -4,30 +4,47 @@
 
 'use client';
 
+import { Suspense } from 'react';
 import { QuranGraphic } from '@/components/ui/quran-graphic';
 import { Heading, Text } from '@/components/ui/typography';
 import { Card } from '@/components/ui/card';
 import { ShimmerButton } from '@/components/ui/atoms';
 import { signIn, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function SignInPage() {
+function SignInContent() {
   const [isLoading, setIsLoading] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Get callbackUrl from URL or default to /quran
+  const callbackUrl = searchParams.get('callbackUrl') || '/quran';
+
+  // #region agent log
+  useEffect(() => {
+    fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'sign-in/page.tsx:18',message:'Sign-in page loaded',data:{callbackUrl,hasCallbackUrl:!!searchParams.get('callbackUrl')},timestamp:Date.now(),runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+  }, [callbackUrl, searchParams]);
+  // #endregion
 
   // Redirect if already authenticated
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
-      router.push('/quran');
+      // #region agent log
+      fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'sign-in/page.tsx:25',message:'Redirecting authenticated user',data:{callbackUrl},timestamp:Date.now(),runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+      // #endregion
+      router.push(callbackUrl);
     }
-  }, [session, status, router]);
+  }, [session, status, router, callbackUrl]);
 
   const handleSignIn = () => {
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'sign-in/page.tsx:33',message:'Sign in button clicked',data:{callbackUrl},timestamp:Date.now(),runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
     setIsLoading(true);
     signIn('google', {
-      callbackUrl: '/quran',
+      callbackUrl: callbackUrl,
     });
   };
 
@@ -127,5 +144,20 @@ export default function SignInPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-white px-4">
+        <div className="text-center">
+          <div className="w-6 h-6 md:w-8 md:h-8 border-3 md:border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin mx-auto mb-3 md:mb-4"></div>
+          <p className="text-gray-600 text-sm md:text-base">Loading...</p>
+        </div>
+      </div>
+    }>
+      <SignInContent />
+    </Suspense>
   );
 }

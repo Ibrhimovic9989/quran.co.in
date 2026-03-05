@@ -31,14 +31,9 @@ export function SketchfabEmbed({
         src={embedUrl}
         className="w-full h-full border-0"
         style={{ background: 'transparent' }}
-        {...({
-          'mozAllowFullScreen': allowFullscreen,
-          'webkitAllowFullScreen': allowFullscreen,
-          'xr-spatial-tracking': true,
-          'execution-while-out-of-viewport': true,
-          'execution-while-not-rendered': true,
-          'web-share': true,
-        } as React.HTMLAttributes<HTMLIFrameElement>)}
+        {...(allowFullscreen && {
+          // Legacy browser support (handled via allowFullScreen prop)
+        })}
       />
     </div>
   );

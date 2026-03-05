@@ -1,5 +1,6 @@
 import type { Config } from 'tailwindcss';
-import { tokens } from './lib/design-tokens';
+// Use require for CommonJS compatibility in Tailwind config
+const { tokens } = require('./lib/design-tokens/index.ts');
 
 const config: Config = {
   content: [

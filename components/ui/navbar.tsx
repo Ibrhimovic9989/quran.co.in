@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { cn } from "@/lib/utils/cn";
+import { Logo } from "@/components/ui/logo";
 
 const MOBILE_LABEL_WIDTH = 72;
 
@@ -95,12 +96,11 @@ export function Navbar({ className }: NavbarProps) {
         <div className="flex items-center justify-between gap-2 md:gap-4">
           {/* Logo/Brand - Mobile optimized */}
           <div className="flex items-center flex-shrink-0">
-            <Link
-              href="/"
-              className="text-black text-base md:text-xl font-semibold hover:text-gray-700 transition-colors duration-300 ease-in-out whitespace-nowrap"
-            >
-              Quran.co.in
-            </Link>
+            <Logo 
+              variant="full" 
+              className="h-7 md:h-9 w-auto"
+              showText={true}
+            />
           </div>
 
           {/* Navigation Items - Mobile optimized */}
@@ -113,11 +113,12 @@ export function Navbar({ className }: NavbarProps) {
                 <Link
                   key={item.label}
                   href={item.href}
-                  onClick={() => {
+                  onClick={(e) => {
                     // #region agent log
-                    fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'navbar.tsx:106',message:'Nav item clicked',data:{label:item.label,href:item.href,index:idx},timestamp:Date.now(),runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+                    fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'navbar.tsx:106',message:'Nav item clicked',data:{label:item.label,href:item.href,index:idx,authStatus:status,willNavigate:true},timestamp:Date.now(),runId:'run1',hypothesisId:'B'})}).catch(()=>{});
                     // #endregion
                     handleNavClick(idx);
+                    // Don't prevent default - let Link handle navigation
                   }}
                   aria-label={item.label}
                   className="flex-shrink-0"

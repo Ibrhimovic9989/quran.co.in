@@ -3,13 +3,15 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { Card } from '@/components/ui/card';
 import { Text } from '@/components/ui/typography';
 import { Select } from '@/components/ui/atoms';
 import { cn } from '@/lib/utils/cn';
 import { AudioPlayer } from './audio-player';
 import { TafsirDisplay } from './tafsir-display';
+import { BookmarkButton } from './bookmark-button';
 import type { AyahResponse, TafsirResponse } from '@/types/quran-api';
 
 type TranslationLanguage = 'english' | 'bengali' | 'urdu' | 'turkish' | 'uzbek';
@@ -39,9 +41,31 @@ export function AyahDisplay({
   selectedReciter,
   onReciterChange,
 }: AyahDisplayProps) {
+  const { data: session, status } = useSession();
   const [showTafsir, setShowTafsir] = useState(false);
   const [tafsir, setTafsir] = useState<TafsirResponse | undefined>(initialTafsir);
   const [selectedTranslation, setSelectedTranslation] = useState<TranslationLanguage>('english');
+
+  // Track reading history when ayah is viewed
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user) {
+      // Debounce: only track after component has been visible for 2 seconds
+      const timer = setTimeout(() => {
+        fetch('/api/reading-history', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            surahNumber: ayah.surahNo,
+            ayahNumber: ayah.ayahNo,
+          }),
+        }).catch((error) => {
+          console.error('Error tracking reading history:', error);
+        });
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [status, session, ayah.surahNo, ayah.ayahNo]);
 
   const availableTranslations: TranslationLanguage[] = [];
   if (ayah.english) availableTranslations.push('english');
@@ -131,6 +155,14 @@ export function AyahDisplay({
             onReciterChange={onReciterChange}
           />
         )}
+
+        {/* Bookmark Button */}
+        <div className="mt-2 md:mt-4">
+          <BookmarkButton
+            surahNumber={ayah.surahNo}
+            ayahNumber={ayah.ayahNo}
+          />
+        </div>
 
         {/* Tafsir Toggle - Mobile optimized */}
         <button

@@ -5,6 +5,7 @@
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Container } from '@/components/ui/container';
 import { Heading, Text } from '@/components/ui/typography';
 import { Spinner } from '@/components/ui/atoms';
@@ -33,6 +34,9 @@ interface LoadedAyahs {
 }
 
 export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
+  const searchParams = useSearchParams();
+  const targetAyah = searchParams.get('ayah');
+  
   // NETFLIX-STYLE: Start with initial ayahs from server (first 20)
   const [loadedAyahs, setLoadedAyahs] = useState<LoadedAyahs>({
     english: surah.english || [],
@@ -48,6 +52,7 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedReciter, setSelectedReciter] = useState<string | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const hasScrolledRef = useRef(false);
 
   // Get available reciters from surah audio
   const availableReciters = surah.audio
@@ -137,6 +142,44 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
     };
   }, [hasMore, isLoading, loadMoreAyahs]);
 
+  // Scroll to target ayah when page loads or ayah becomes visible
+  useEffect(() => {
+    if (!targetAyah || hasScrolledRef.current) return;
+    
+    const ayahNumber = parseInt(targetAyah, 10);
+    if (isNaN(ayahNumber) || ayahNumber < 1 || ayahNumber > surah.totalAyah) return;
+
+    // If ayah is not yet visible, expand visible ayahs to include it
+    if (ayahNumber > visibleAyahs) {
+      // If we have the data loaded, just expand visible ayahs
+      if (ayahNumber <= loadedAyahs.english.length) {
+        setVisibleAyahs(ayahNumber);
+        return;
+      }
+      // Otherwise, we need to load more data first
+      // This will trigger the effect again once data is loaded
+      if (hasMore && !isLoading) {
+        loadMoreAyahs();
+      }
+      return;
+    }
+
+    // Scroll to the ayah - use a small delay to ensure DOM is ready
+    const scrollTimer = setTimeout(() => {
+      const element = document.getElementById(`ayah-${surah.surahNo}-${ayahNumber}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        hasScrolledRef.current = true;
+        // Clean up URL parameter after scrolling
+        const url = new URL(window.location.href);
+        url.searchParams.delete('ayah');
+        window.history.replaceState({}, '', url.toString());
+      }
+    }, 300);
+
+    return () => clearTimeout(scrollTimer);
+  }, [targetAyah, visibleAyahs, surah.surahNo, surah.totalAyah, hasMore, isLoading, loadMoreAyahs, loadedAyahs.english.length]);
+
   return (
     <Container>
       <div className="py-6 md:py-20">
@@ -194,25 +237,26 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
             const tafsir = tafsirs?.get(tafsirKey);
 
             return (
-              <AyahDisplay
-                key={ayahNo}
-                ayah={{
-                  ...surah,
-                  ayahNo,
-                  english: translation,
-                  arabic1: loadedAyahs.arabic1[index] || '',
-                  arabic2: loadedAyahs.arabic2[index] || '',
-                  audio: surah.audio,
-                  bengali: loadedAyahs.bengali[index],
-                  urdu: loadedAyahs.urdu[index],
-                  turkish: loadedAyahs.turkish[index],
-                  uzbek: loadedAyahs.uzbek[index],
-                }}
-                tafsir={tafsir}
-                showNumber={true}
-                selectedReciter={selectedReciter}
-                onReciterChange={setSelectedReciter}
-              />
+              <div key={ayahNo} id={`ayah-${surah.surahNo}-${ayahNo}`}>
+                <AyahDisplay
+                  ayah={{
+                    ...surah,
+                    ayahNo,
+                    english: translation,
+                    arabic1: loadedAyahs.arabic1[index] || '',
+                    arabic2: loadedAyahs.arabic2[index] || '',
+                    audio: surah.audio,
+                    bengali: loadedAyahs.bengali[index],
+                    urdu: loadedAyahs.urdu[index],
+                    turkish: loadedAyahs.turkish[index],
+                    uzbek: loadedAyahs.uzbek[index],
+                  }}
+                  tafsir={tafsir}
+                  showNumber={true}
+                  selectedReciter={selectedReciter}
+                  onReciterChange={setSelectedReciter}
+                />
+              </div>
             );
           })}
         </div>
