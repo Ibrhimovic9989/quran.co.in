@@ -37,12 +37,13 @@ export function PageLoader({ className }: PageLoaderProps) {
 
     // Track when component mounted to ensure minimum display time
     const mountTime = Date.now();
-    const MIN_DISPLAY_TIME = 6000; // 6 seconds minimum for users to read
+    const DISPLAY_TIME = 3000; // 3 seconds display before fade starts
+    const FADE_OUT_TIME = 1500; // 1.5 seconds fade = 4.5 seconds total
 
-    // Function to start fade-out after minimum time
+    // Function to start fade-out after display time
     const startFadeOut = () => {
       const elapsed = Date.now() - mountTime;
-      const remainingTime = Math.max(0, MIN_DISPLAY_TIME - elapsed);
+      const remainingTime = Math.max(0, DISPLAY_TIME - elapsed);
       
       setTimeout(() => {
         setIsLoading(false);
@@ -50,10 +51,10 @@ export function PageLoader({ className }: PageLoaderProps) {
         if (typeof window !== 'undefined') {
           localStorage.setItem(SPLASH_STORAGE_KEY, 'true');
         }
-        // Smooth fade out animation - 1.2 seconds for very smooth transition
+        // Smooth fade out animation
         setTimeout(() => {
           setIsVisible(false);
-        }, 1200);
+        }, FADE_OUT_TIME);
       }, remainingTime);
     };
 
@@ -80,7 +81,7 @@ export function PageLoader({ className }: PageLoaderProps) {
       className={cn(
         'fixed inset-0 z-50 flex items-center justify-center',
         'bg-white',
-        'transition-opacity duration-[1200ms] ease-in-out',
+        'transition-opacity duration-[1500ms] ease-in-out',
         isLoading ? 'opacity-100' : 'opacity-0 pointer-events-none',
         className
       )}

@@ -20,14 +20,14 @@ export default function SignInPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
-      router.push('/dashboard');
+      router.push('/quran');
     }
   }, [session, status, router]);
 
   const handleSignIn = () => {
     setIsLoading(true);
     signIn('google', {
-      callbackUrl: '/dashboard',
+      callbackUrl: '/quran',
     });
   };
 

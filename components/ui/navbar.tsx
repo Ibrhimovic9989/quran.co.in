@@ -30,8 +30,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: "Home", icon: Home, href: "/" },
   { label: "Quran", icon: BookOpen, href: "/quran" },
-  { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard", requiresAuth: true },
-  { label: "Profile", icon: User, href: "/dashboard", requiresAuth: true },
+  { label: "Profile", icon: User, href: "/profile", requiresAuth: true },
   { label: "Sign In", icon: LogIn, href: "/sign-in", requiresAuth: false },
 ];
 
@@ -81,6 +80,7 @@ export function Navbar({ className }: NavbarProps) {
         "flex items-center justify-center px-3 md:px-4 py-2 md:py-3",
         "sticky top-0 z-50 w-full",
         "shadow-sm shadow-gray-100/50",
+        "rounded-b-2xl md:rounded-b-3xl",
         className,
       )}
     >

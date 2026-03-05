@@ -14,14 +14,14 @@ export async function middleware(request: NextRequest) {
   // Redirect authenticated users away from sign-in page
   if (request.nextUrl.pathname.startsWith('/sign-in')) {
     if (token) {
-      // If authenticated, redirect to dashboard
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      // If authenticated, redirect to quran page
+      return NextResponse.redirect(new URL('/quran', request.url));
     }
     return NextResponse.next();
   }
 
-  // Protect dashboard routes
-  if (request.nextUrl.pathname.startsWith('/dashboard')) {
+  // Protect profile routes
+  if (request.nextUrl.pathname.startsWith('/profile')) {
     if (!token) {
       const signInUrl = new URL('/sign-in', request.url);
       signInUrl.searchParams.set('callbackUrl', request.url);
@@ -44,7 +44,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/dashboard/:path*',
+    '/profile/:path*',
     '/api/protected/:path*',
     '/sign-in',
   ],

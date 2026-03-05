@@ -13,7 +13,7 @@ interface SignInButtonProps {
 export function SignInButton({ className, children }: SignInButtonProps) {
   const handleSignIn = () => {
     signIn('google', {
-      callbackUrl: '/dashboard',
+      callbackUrl: '/quran',
     });
   };
 
