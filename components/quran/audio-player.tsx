@@ -82,30 +82,38 @@ export function AudioPlayer({
   const handlePlay = () => {
     const currentAudio = getCurrentAudioData();
     
-    if (!selectedReciter) {
-      // Auto-select first reciter if none selected
+    // Determine which reciter to use
+    let reciterToUse = selectedReciter;
+    
+    // If no reciter selected, try to use the first available one
+    if (!reciterToUse) {
       const firstReciterId = Object.keys(currentAudio)[0];
       if (firstReciterId) {
+        reciterToUse = firstReciterId;
+        // If surah level, notify parent to set the reciter
         if (isSurahLevel && onReciterChange) {
           onReciterChange(firstReciterId);
-        } else {
+        } else if (!isSurahLevel) {
+          // Only set local reciter if not surah level
           setLocalReciter(firstReciterId);
         }
-        playAudio(firstReciterId, currentAudio);
+      } else {
+        // No reciters available
+        return;
       }
-      return;
     }
 
-    const reciter = currentAudio[selectedReciter];
+    const reciter = currentAudio[reciterToUse];
     if (!reciter) return;
 
-    if (audioRef.current && isPlaying) {
-      // Pause if playing
+    // Check if we're already playing the same reciter
+    if (audioRef.current && isPlaying && selectedReciter === reciterToUse) {
+      // Pause if playing the same reciter
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
-      // Play audio
-      playAudio(selectedReciter, currentAudio);
+      // Play audio with selected reciter
+      playAudio(reciterToUse, currentAudio);
     }
   };
 
@@ -224,7 +232,7 @@ export function AudioPlayer({
       {/* Play/Pause Button */}
       <button
         onClick={handlePlay}
-        disabled={!selectedReciter || isLoadingAudio}
+        disabled={isLoadingAudio}
         className={`w-full px-4 py-2 rounded text-sm border transition-colors ${
           isPlaying
             ? 'bg-white text-black border-white'
