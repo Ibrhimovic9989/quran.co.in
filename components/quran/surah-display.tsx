@@ -153,13 +153,30 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
             <span>{surah.revelationPlace}</span>
           </div>
 
-          {/* Surah Audio Player */}
+          {/* Surah-Level Reciter Selection and Play Button */}
           {surah.audio && Object.keys(surah.audio).length > 0 && (
-            <AudioPlayer
-              audioData={surah.audio}
-              surahNo={surah.surahNo}
-              className="mb-6"
-            />
+            <div className="mb-6">
+              <Text className="text-sm text-gray-400 mb-2">Audio Recitation</Text>
+              <select
+                value={selectedReciter || ''}
+                onChange={(e) => setSelectedReciter(e.target.value || null)}
+                className="w-full max-w-md px-3 py-2 bg-gray-900 text-white border border-gray-700 rounded focus:outline-none focus:border-white mb-3"
+              >
+                <option value="">Select Reciter</option>
+                {availableReciters.map((reciter) => (
+                  <option key={reciter.id} value={reciter.id}>
+                    {reciter.reciter}
+                  </option>
+                ))}
+              </select>
+              <AudioPlayer
+                audioData={surah.audio}
+                surahNo={surah.surahNo}
+                selectedReciter={selectedReciter}
+                onReciterChange={setSelectedReciter}
+                className=""
+              />
+            </div>
           )}
         </div>
 

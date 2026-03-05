@@ -31,6 +31,7 @@ export function AudioPlayer({
   const [localReciter, setLocalReciter] = useState<string | null>(null);
   const selectedReciter = isSurahLevel ? propSelectedReciter : localReciter;
   
+  // Default to 'ayah' mode if ayahNo is provided, otherwise 'surah' mode
   const [playMode, setPlayMode] = useState<PlayMode>(ayahNo ? 'ayah' : 'surah');
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
@@ -127,12 +128,24 @@ export function AudioPlayer({
       audioRef.current = null;
     }
 
-    const audioUrl = reciter.originalUrl || reciter.url;
-    const audio = new Audio(audioUrl);
+    // Determine which audio URL to use based on play mode
+    let audioUrl: string;
     
-    // If playing ayah-only, calculate start/end times (if possible)
-    // For now, we'll just play the full audio and let the user control
-    // In future, we can add time-based seeking for ayah-only mode
+    if (playMode === 'ayah' && ayahNo && ayahAudioData) {
+      // Use ayah-specific audio if available and mode is 'ayah'
+      const ayahReciter = ayahAudioData[reciterId];
+      if (ayahReciter) {
+        audioUrl = ayahReciter.originalUrl || ayahReciter.url;
+      } else {
+        // Fallback to surah audio if ayah audio not available
+        audioUrl = reciter.originalUrl || reciter.url;
+      }
+    } else {
+      // Use surah audio (whole surah) - either surah level or ayah level with 'surah' mode
+      audioUrl = reciter.originalUrl || reciter.url;
+    }
+    
+    const audio = new Audio(audioUrl);
     
     audioRef.current = audio;
     if (!isSurahLevel) {
