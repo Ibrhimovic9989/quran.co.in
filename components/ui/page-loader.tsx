@@ -21,11 +21,11 @@ export function PageLoader({ className }: PageLoaderProps) {
       // Small delay for smooth transition
       setTimeout(() => {
         setIsLoading(false);
-        // Fade out animation
+        // Fade out animation - longer for smoother transition
         setTimeout(() => {
           setIsVisible(false);
-        }, 500);
-      }, 300);
+        }, 800);
+      }, 500);
     };
 
     if (document.readyState === 'complete') {
@@ -44,8 +44,8 @@ export function PageLoader({ className }: PageLoaderProps) {
     <div
       className={cn(
         'fixed inset-0 z-50 flex items-center justify-center',
-        'bg-gradient-to-br from-white via-gray-50/30 to-white',
-        'transition-opacity duration-700 ease-in-out',
+        'bg-white',
+        'transition-opacity duration-1000 ease-in-out',
         isLoading ? 'opacity-100' : 'opacity-0 pointer-events-none',
         className
       )}
@@ -140,9 +140,8 @@ export function PageLoader({ className }: PageLoaderProps) {
         </div>
       </div>
 
-      {/* Subtle gradient overlays for depth */}
-      <div className="absolute inset-0 bg-gradient-to-t from-white/60 via-transparent to-transparent pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/40 pointer-events-none" />
+      {/* Subtle gradient overlay for depth - very minimal */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-50/20 pointer-events-none" />
     </div>
   );
 }
