@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Container } from '@/components/ui/container';
 import { Heading, Text } from '@/components/ui/typography';
 import { AyahDisplay } from './ayah-display';
@@ -43,6 +43,7 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
   
   const [visibleAyahs, setVisibleAyahs] = useState(INITIAL_AYAHS);
   const [isLoading, setIsLoading] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   // Memoize visible ayahs for performance
   const visibleAyahsList = useMemo(() => {
@@ -53,7 +54,7 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
   const totalAyahs = surah.totalAyah;
 
   // NETFLIX-STYLE: Load more ayahs on-demand from API
-  const loadMoreAyahs = async () => {
+  const loadMoreAyahs = useCallback(async () => {
     if (isLoading || !hasMore) return;
     
     setIsLoading(true);
@@ -96,7 +97,33 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isLoading, hasMore, surah.surahNo, loadedAyahs.english.length, totalAyahs]);
+
+  // NETFLIX-STYLE: Infinite scroll - auto-load when near bottom
+  useEffect(() => {
+    if (!hasMore || isLoading) return;
+
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoading && hasMore) {
+          loadMoreAyahs();
+        }
+      },
+      { 
+        threshold: 0.1, // Trigger when 10% visible
+        rootMargin: '200px' // Start loading 200px before reaching the end
+      }
+    );
+
+    observer.observe(sentinel);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [hasMore, isLoading, loadMoreAyahs]);
 
   return (
     <Container>
@@ -155,20 +182,15 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
           })}
         </div>
 
-        {/* Load More Ayahs */}
+        {/* Infinite Scroll Sentinel - triggers load when visible */}
         {hasMore && (
-          <div className="mt-8 text-center">
-            <button
-              onClick={loadMoreAyahs}
-              disabled={isLoading}
-              className="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? (
-                'Loading...'
-              ) : (
-                `Load More Ayahs (${totalAyahs - loadedAyahs.english.length} remaining)`
-              )}
-            </button>
+          <div ref={sentinelRef} className="mt-8 py-4">
+            {isLoading && (
+              <div className="flex items-center justify-center gap-2 text-gray-400">
+                <div className="w-5 h-5 border-2 border-gray-600 border-t-white rounded-full animate-spin"></div>
+                <Text className="text-sm">Loading more ayahs...</Text>
+              </div>
+            )}
           </div>
         )}
 
