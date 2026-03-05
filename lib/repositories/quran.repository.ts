@@ -47,10 +47,7 @@ export class QuranRepository {
         englishNameTranslation: true,
         numberOfAyahs: true,
         revelationType: true,
-        // Only get surahNameArabicLong from metadata, not entire metadata
-        metadata: {
-          select: ['surahNameArabicLong'],
-        } as any,
+        metadata: true,
       },
       // Use index for faster query
       take: 114, // Limit to 114 surahs
@@ -148,10 +145,12 @@ export class QuranRepository {
 
   /**
    * Find ayahs by surah number (optimized query)
+   * NETFLIX-STYLE: Only fetch what's needed initially
    */
   async findAyahsBySurah(
     surahNumber: number,
-    apiProvider: ApiProvider = 'TEMPORARY_API'
+    apiProvider: ApiProvider = 'TEMPORARY_API',
+    limit?: number // Only fetch first N ayahs for fast initial load
   ): Promise<any[]> {
     return prisma.ayah.findMany({
       where: {
@@ -159,15 +158,29 @@ export class QuranRepository {
         apiProvider,
       },
       orderBy: { number: 'asc' },
+      take: limit, // Limit results for fast initial load
       select: {
-        id: true,
         number: true,
-        surahNumber: true,
         arabicText: true,
         translationText: true,
         transliteration: true,
         metadata: true,
-        // Don't select relationships to reduce data transfer
+      },
+      // Uses index: idx_ayah_surah_number_provider
+    });
+  }
+
+  /**
+   * Get total count of ayahs for a surah (fast count query)
+   */
+  async countAyahsBySurah(
+    surahNumber: number,
+    apiProvider: ApiProvider = 'TEMPORARY_API'
+  ): Promise<number> {
+    return prisma.ayah.count({
+      where: {
+        surahNumber,
+        apiProvider,
       },
     });
   }
@@ -230,7 +243,7 @@ export class QuranRepository {
         translationText: data.translationText,
         transliteration: data.transliteration,
         audioUrl: data.audioUrl,
-        metadata: data.metadata as any,
+        metadata: mergedMetadata as any,
       },
     });
   }

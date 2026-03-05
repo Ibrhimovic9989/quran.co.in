@@ -58,12 +58,14 @@ export class QuranCacheService {
   }
 
   /**
-   * Get surah with ALL ayahs - optimized for database queries
-   * Uses indexes for fast retrieval even for large surahs (286 ayahs)
+   * Get surah with ayahs - NETFLIX-STYLE optimization
+   * Only fetches first 20 ayahs initially for instant load (<200ms)
+   * Remaining ayahs loaded on-demand via API route
    */
   async getSurah(
     surahNo: number,
-    apiProvider: ApiProvider = 'TEMPORARY_API'
+    apiProvider: ApiProvider = 'TEMPORARY_API',
+    initialAyahLimit: number = 20 // Only fetch first 20 ayahs for instant load
   ): Promise<SurahResponse | null> {
     const startTime = Date.now();
     
@@ -73,13 +75,13 @@ export class QuranCacheService {
     if (dbSurah) {
       const surahQueryTime = Date.now() - startTime;
       
-      // Get ALL ayahs from database (indexed query - fast even for 286 ayahs)
+      // NETFLIX-STYLE: Only fetch first N ayahs for instant load
       const ayahsStartTime = Date.now();
-      const dbAyahs = await this.repository.findAyahsBySurah(surahNo, apiProvider);
+      const dbAyahs = await this.repository.findAyahsBySurah(surahNo, apiProvider, initialAyahLimit);
       const ayahsQueryTime = Date.now() - ayahsStartTime;
       
       if (dbAyahs.length > 0) {
-        // Build response from database (fast - <200ms even for 286 ayahs with indexes)
+        // Build response from database (fast - <200ms for first 20 ayahs)
         const buildStartTime = Date.now();
         const result: SurahResponse = {
           surahName: dbSurah.name,
@@ -100,7 +102,7 @@ export class QuranCacheService {
         };
         
         const totalTime = Date.now() - startTime;
-        if (totalTime > 500) {
+        if (totalTime > 200) {
           console.warn(`Slow surah query (${surahNo}): ${totalTime}ms (surah: ${surahQueryTime}ms, ayahs: ${ayahsQueryTime}ms, build: ${Date.now() - buildStartTime}ms, count: ${dbAyahs.length})`);
         }
         
