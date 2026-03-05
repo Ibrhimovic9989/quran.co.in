@@ -28,12 +28,14 @@ export default async function SurahPage({
 
     if (!surah) {
       return (
-        <div className="min-h-screen bg-black text-white p-8">
-          <h1 className="text-2xl mb-4">Surah Not Found</h1>
-          <p className="text-gray-400">
-            Unable to load surah {surahNo}. Please try again later.
-          </p>
-        </div>
+        <main className="min-h-screen bg-white text-black p-8">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Surah Not Found</h1>
+            <p className="text-gray-600 text-lg">
+              Unable to load surah {surahNo}. Please try again later.
+            </p>
+          </div>
+        </main>
       );
     }
 
@@ -41,22 +43,24 @@ export default async function SurahPage({
     const tafsirs = new Map<string, TafsirResponse>();
 
     return (
-      <div className="min-h-screen bg-black">
+      <main className="min-h-screen bg-gradient-to-b from-white via-gray-50/30 to-white">
         <SurahDisplay surah={surah} tafsirs={tafsirs} />
-      </div>
+      </main>
     );
   } catch (error) {
     console.error('Error loading surah:', error);
-    return (
-      <div className="min-h-screen bg-black text-white p-8">
-        <h1 className="text-2xl mb-4">Error Loading Surah</h1>
-        <p className="text-gray-400">
-          {error instanceof Error ? error.message : 'Failed to load surah'}
-        </p>
-        <p className="text-sm text-gray-500 mt-4">
-          Please refresh the page or try again later.
-        </p>
-      </div>
-    );
+      return (
+        <main className="min-h-screen bg-white text-black p-8">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Error Loading Surah</h1>
+            <p className="text-gray-600 text-lg">
+              {error instanceof Error ? error.message : 'Failed to load surah'}
+            </p>
+            <p className="text-sm text-gray-500 mt-4">
+              Please refresh the page or try again later.
+            </p>
+          </div>
+        </main>
+      );
   }
 }

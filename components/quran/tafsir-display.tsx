@@ -1,11 +1,14 @@
 // Tafsir Display Component
 // Displays tafsir (commentary) for an ayah with author selector
+// Improved typography, Arabic text handling, and content formatting
 
 'use client';
 
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Heading, Text } from '@/components/ui/typography';
+import { Select } from '@/components/ui/atoms';
+import { TafsirContent } from './tafsir-content';
 import type { TafsirResponse } from '@/types/quran-api';
 
 interface TafsirDisplayProps {
@@ -24,49 +27,49 @@ export function TafsirDisplay({ tafsir, className }: TafsirDisplayProps) {
 
   return (
     <div className={className}>
-      <Heading level={3} className="mb-4">
-        Tafsir (Commentary)
-      </Heading>
+      {/* Header Section - Gestalt: Grouped together (Proximity) */}
+      <div className="mb-6">
+        <Heading level={3} className="mb-4">
+          Tafsir (Commentary)
+        </Heading>
 
-      {/* Author Selector */}
-      {tafsir.tafsirs.length > 1 && (
-        <div className="mb-4">
-          <select
-            value={selectedAuthor || ''}
-            onChange={(e) => setSelectedAuthor(e.target.value)}
-            className="w-full px-3 py-2 bg-gray-900 text-white border border-gray-700 rounded focus:outline-none focus:border-white"
-          >
-            {tafsir.tafsirs.map((tafsirItem, index) => (
-              <option key={index} value={tafsirItem.author}>
-                {tafsirItem.author}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+        {/* Author Selector - Using Select atom */}
+        {tafsir.tafsirs.length > 1 && (
+          <div className="mb-4">
+            <Select
+              value={selectedAuthor || ''}
+              onChange={(e) => setSelectedAuthor(e.target.value)}
+              options={tafsir.tafsirs.map((tafsirItem) => ({
+                value: tafsirItem.author,
+                label: tafsirItem.author,
+              }))}
+              className="max-w-md"
+            />
+          </div>
+        )}
+      </div>
 
-      {/* Selected Tafsir */}
-      <Card>
-        <div className="mb-2">
-          <Heading level={4} className="mb-1">
+      {/* Selected Tafsir Content */}
+      <Card className="overflow-hidden">
+        {/* Author Header Section */}
+        <div className="mb-6 pb-4 border-b border-gray-800">
+          <Heading level={4} className="mb-2 text-white">
             {selectedTafsir.author}
           </Heading>
           {selectedTafsir.groupVerse && (
-            <Text className="text-sm text-gray-400 italic">
+            <Text className="text-sm text-gray-400 italic leading-relaxed">
               {selectedTafsir.groupVerse}
             </Text>
           )}
         </div>
-        <div
-          className="prose prose-invert max-w-none text-gray-300"
-          dangerouslySetInnerHTML={{
-            __html: selectedTafsir.content
-              .replace(/\n/g, '<br />')
-              .replace(/## (.*)/g, '<h2 class="text-white text-xl font-semibold mt-4 mb-2">$1</h2>')
-              .replace(/### (.*)/g, '<h3 class="text-white text-lg font-semibold mt-3 mb-1">$1</h3>')
-              .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>'),
-          }}
-        />
+
+        {/* Tafsir Content - Improved formatting */}
+        <div className="prose prose-invert max-w-none">
+          <TafsirContent 
+            content={selectedTafsir.content}
+            className="text-base leading-relaxed"
+          />
+        </div>
       </Card>
     </div>
   );

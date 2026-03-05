@@ -7,25 +7,47 @@ import { useState, useEffect, useMemo } from 'react';
 import { SurahCard } from './surah-card';
 import { Container } from '@/components/ui/container';
 import { Heading, Text } from '@/components/ui/typography';
+import { Button, Spinner } from '@/components/ui/atoms';
+import { LoadingMessage } from '@/components/ui/loading-message';
 import type { SurahInfo } from '@/types/quran-api';
 
 interface SurahListProps {
   surahs: (SurahInfo & { surahNo: number })[];
+  searchQuery?: string;
 }
 
 const ITEMS_PER_PAGE = 30;
 const INITIAL_LOAD = 30;
 
-export function SurahList({ surahs }: SurahListProps) {
+export function SurahList({ surahs, searchQuery = '' }: SurahListProps) {
   const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Filter surahs based on search query
+  const filteredSurahs = useMemo(() => {
+    if (!searchQuery.trim()) return surahs;
+    
+    const query = searchQuery.toLowerCase().trim();
+    return surahs.filter((surah) => {
+      // Search by surah number
+      if (surah.surahNo.toString().includes(query)) return true;
+      
+      // Search by surah name (English)
+      if (surah.surahNameTranslation?.toLowerCase().includes(query)) return true;
+      
+      // Search by surah name (Arabic) - basic check
+      if (surah.surahNameArabic?.includes(query)) return true;
+      
+      return false;
+    });
+  }, [surahs, searchQuery]);
+
   // Memoize visible surahs for performance
   const visibleSurahs = useMemo(() => {
-    return surahs.slice(0, visibleCount);
-  }, [surahs, visibleCount]);
+    return filteredSurahs.slice(0, visibleCount);
+  }, [filteredSurahs, visibleCount]);
 
-  const hasMore = visibleCount < surahs.length;
+  const hasMore = visibleCount < filteredSurahs.length;
 
   // Load more items
   const loadMore = () => {
@@ -34,10 +56,15 @@ export function SurahList({ surahs }: SurahListProps) {
     setIsLoading(true);
     // Simulate smooth loading
     setTimeout(() => {
-      setVisibleCount((prev) => Math.min(prev + ITEMS_PER_PAGE, surahs.length));
+      setVisibleCount((prev) => Math.min(prev + ITEMS_PER_PAGE, filteredSurahs.length));
       setIsLoading(false);
     }, 100);
   };
+
+  // Reset visible count when search changes
+  useEffect(() => {
+    setVisibleCount(INITIAL_LOAD);
+  }, [searchQuery]);
 
   // Intersection Observer for infinite scroll
   useEffect(() => {
@@ -64,43 +91,72 @@ export function SurahList({ surahs }: SurahListProps) {
 
   return (
     <Container>
-      <div className="py-8">
-        <Heading level={1} className="mb-8">
-          The Holy Quran
-        </Heading>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="py-6 md:py-20">
+        {/* Enhanced Header Section - Mobile optimized */}
+        <div className="mb-6 md:mb-16 text-center">
+          <Heading 
+            level={1} 
+            className="mb-3 md:mb-6 text-2xl md:text-6xl font-bold text-gray-900 leading-tight"
+          >
+            The Holy{' '}
+            <span className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent whitespace-nowrap">
+              Quran
+            </span>
+          </Heading>
+          <Text className="text-gray-700 text-sm md:text-2xl font-medium max-w-2xl mx-auto">
+            {searchQuery 
+              ? `${filteredSurahs.length} of ${surahs.length} Chapters`
+              : `${surahs.length} Chapters • Complete Collection`
+            }
+          </Text>
+          <div className="mt-3 md:mt-6 flex items-center justify-center gap-1.5 md:gap-2 text-xs md:text-sm text-gray-600">
+            <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-900 rounded-full"></div>
+            <span>Authentic • Complete • Free Access</span>
+          </div>
+        </div>
+
+        {/* Surahs Grid - Mobile optimized */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
           {visibleSurahs.map((surah) => (
             <SurahCard key={surah.surahNo} surah={surah} />
           ))}
         </div>
         
         {/* Load More Sentinel */}
+        {/* Gestalt: Loading indicator grouped (Proximity) */}
         {hasMore && (
-          <div id="load-more-sentinel" className="h-10 my-4">
+          <div id="load-more-sentinel" className="my-4 md:my-8">
             {isLoading && (
-              <div className="text-center">
-                <Text className="text-gray-400">Loading more surahs...</Text>
+              <div className="flex flex-col items-center justify-center gap-3 md:gap-4 py-4 md:py-8">
+                <Spinner size="md" />
+                <LoadingMessage showIcon={false} className="max-w-xl" />
               </div>
             )}
           </div>
         )}
 
-        {/* Load More Button (fallback) */}
+        {/* Load More Button (fallback) - Using Button atom */}
         {hasMore && !isLoading && (
-          <div className="text-center mt-6">
-            <button
+          <div className="text-center mt-4 md:mt-6">
+            <Button
               onClick={loadMore}
-              className="px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              variant="secondary"
+              className="text-xs md:text-sm px-4 py-2 md:px-6 md:py-3"
             >
-              Load More ({surahs.length - visibleCount} remaining)
-            </button>
+              Load More ({filteredSurahs.length - visibleCount} remaining)
+            </Button>
           </div>
         )}
 
         {!hasMore && (
-          <div className="text-center mt-6">
-            <Text className="text-gray-400">
-              All {surahs.length} surahs loaded
+          <div className="text-center mt-4 md:mt-6">
+            <Text className="text-gray-600 text-xs md:text-base">
+              {searchQuery 
+                ? filteredSurahs.length === 0 
+                  ? 'No surahs found matching your search'
+                  : `All ${filteredSurahs.length} matching surahs loaded`
+                : `All ${surahs.length} surahs loaded`
+              }
             </Text>
           </div>
         )}

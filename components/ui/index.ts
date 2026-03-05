@@ -1,6 +1,22 @@
 // Barrel export for UI components
-// Export all reusable UI components from here
+// Follows Atomic Design structure
 
-export * from './container';
-export * from './card';
-export * from './typography';
+// Atoms
+export * from './atoms';
+
+// Molecules
+export * from './molecules';
+
+// Organisms (legacy - keeping for backward compatibility)
+export { Card } from './card';
+export { Container } from './container';
+export { Heading, Text } from './typography';
+
+// Special Components
+export { ShaderAnimation } from './shader-animation';
+export { SplashScreen } from './splash-screen';
+export { SplineScene } from './spline-scene';
+export { SketchfabEmbed } from './sketchfab-embed';
+export { Spotlight } from './spotlight';
+export { HeroSection } from './hero-section';
+export { Quran3D } from './quran-3d';

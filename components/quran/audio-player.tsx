@@ -5,6 +5,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Text } from '@/components/ui/typography';
+import { Select } from '@/components/ui/atoms';
+import { PlayButton } from '@/components/ui/molecules';
 import type { AudioReciters } from '@/types/quran-api';
 
 interface AudioPlayerProps {
@@ -48,14 +50,23 @@ export function AudioPlayer({
     if (ayahNo && !ayahAudioData) {
       setIsLoadingAudio(true);
       fetch(`/api/quran/audio/${surahNo}/${ayahNo}`)
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`Failed to fetch audio: ${res.status} ${res.statusText}`);
+          }
+          return res.json();
+        })
         .then((data) => {
-          if (data.audio) {
+          if (data.audio && Object.keys(data.audio).length > 0) {
             setAyahAudioData(data.audio);
+          } else {
+            // Audio not available for this ayah, will fallback to surah audio
+            console.warn('Ayah audio not available, using surah audio');
           }
         })
         .catch((err) => {
           console.error('Error fetching ayah audio:', err);
+          // Don't set ayahAudioData, will fallback to surah audio
         })
         .finally(() => {
           setIsLoadingAudio(false);
@@ -218,40 +229,27 @@ export function AudioPlayer({
       {/* Reciter Dropdown - Only show if not surah level (surah level handles it) */}
       {!isSurahLevel && (
         <div className="mb-3">
-          <select
+          <Select
             value={selectedReciter || ''}
             onChange={(e) => handleReciterChange(e.target.value)}
-            className="w-full px-3 py-2 bg-gray-900 text-white border border-gray-700 rounded focus:outline-none focus:border-white"
+            options={availableReciters.map((reciter) => ({
+              value: reciter.id,
+              label: reciter.reciter,
+            }))}
+            placeholder="Select Reciter"
             disabled={isLoadingAudio}
-          >
-            <option value="">Select Reciter</option>
-            {availableReciters.map((reciter) => (
-              <option key={reciter.id} value={reciter.id}>
-                {reciter.reciter}
-              </option>
-            ))}
-          </select>
+          />
         </div>
       )}
 
-      {/* Play/Pause Button */}
-      <button
-        onClick={handlePlay}
-        disabled={isLoadingAudio}
-        className={`w-full px-4 py-2 rounded text-sm border transition-colors ${
-          isPlaying
-            ? 'bg-white text-black border-white'
-            : 'bg-gray-900 text-white border-gray-700 hover:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed'
-        }`}
-      >
-        {isLoadingAudio ? (
-          'Loading...'
-        ) : isPlaying ? (
-          '⏸️ Pause'
-        ) : (
-          '▶️ Play'
-        )}
-      </button>
+      {/* Play/Pause Button - Using PlayButton molecule */}
+      <div className="w-full">
+        <PlayButton
+          isPlaying={isPlaying}
+          isLoading={isLoadingAudio}
+          onClick={handlePlay}
+        />
+      </div>
     </div>
   );
 }

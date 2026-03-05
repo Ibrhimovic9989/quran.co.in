@@ -7,6 +7,9 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Container } from '@/components/ui/container';
 import { Heading, Text } from '@/components/ui/typography';
+import { Spinner } from '@/components/ui/atoms';
+import { LoadingMessage } from '@/components/ui/loading-message';
+import { ReciterSelector } from '@/components/ui/molecules';
 import { AyahDisplay } from './ayah-display';
 import { AudioPlayer } from './audio-player';
 import type { SurahResponse, TafsirResponse } from '@/types/quran-api';
@@ -136,51 +139,55 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
 
   return (
     <Container>
-      <div className="py-8">
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-gray-400 text-sm font-mono">
+      <div className="py-6 md:py-20">
+        {/* Enhanced Header Section - Mobile optimized */}
+        <div className="mb-6 md:mb-12 text-center md:text-left">
+          <div className="flex items-center justify-center md:justify-start gap-2 md:gap-3 mb-3 md:mb-6">
+            <span className="text-gray-800 text-xs md:text-base font-bold bg-white/80 backdrop-blur-sm px-2 md:px-3 py-1 md:py-1.5 rounded-md shadow-sm">
               {surah.surahNo}
             </span>
-            <Heading level={1}>{surah.surahNameTranslation}</Heading>
+            <Heading 
+              level={1} 
+              className="text-2xl md:text-6xl font-bold text-gray-900 leading-tight"
+            >
+              {surah.surahNameTranslation}
+            </Heading>
           </div>
-          <Text className="text-3xl text-right mb-4 font-arabic">
+          <Text className="text-xl md:text-5xl lg:text-6xl text-center md:text-right mb-3 md:mb-6 font-arabic text-gray-900 font-semibold leading-tight md:leading-relaxed">
             {surah.surahNameArabicLong}
           </Text>
-          <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
+          <div className="flex items-center justify-center md:justify-start gap-2 md:gap-4 text-xs md:text-lg text-gray-700 mb-3 md:mb-6 font-medium">
             <span>{surah.totalAyah} Ayahs</span>
-            <span>•</span>
+            <span className="text-gray-400">•</span>
             <span>{surah.revelationPlace}</span>
           </div>
+          <div className="flex items-center justify-center md:justify-start gap-1.5 md:gap-2 text-xs md:text-sm text-gray-600 mb-4 md:mb-8">
+            <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-900 rounded-full"></div>
+            <span>Authentic • Complete • Free Access</span>
+          </div>
 
-          {/* Surah-Level Reciter Selection and Play Button */}
+          {/* Surah-Level Reciter Selection and Play Button - Mobile optimized */}
+          {/* Gestalt: Grouped together (Proximity & Common Region) */}
           {surah.audio && Object.keys(surah.audio).length > 0 && (
-            <div className="mb-6">
-              <Text className="text-sm text-gray-400 mb-2">Audio Recitation</Text>
-              <select
-                value={selectedReciter || ''}
-                onChange={(e) => setSelectedReciter(e.target.value || null)}
-                className="w-full max-w-md px-3 py-2 bg-gray-900 text-white border border-gray-700 rounded focus:outline-none focus:border-white mb-3"
-              >
-                <option value="">Select Reciter</option>
-                {availableReciters.map((reciter) => (
-                  <option key={reciter.id} value={reciter.id}>
-                    {reciter.reciter}
-                  </option>
-                ))}
-              </select>
+            <div className="mb-6 md:mb-10 space-y-3 md:space-y-4 bg-gradient-to-br from-gray-50 to-gray-100/50 p-3 md:p-6 rounded-lg border border-gray-200 shadow-sm">
+              <Text className="text-sm md:text-lg text-gray-900 font-semibold">Audio Recitation</Text>
+              <ReciterSelector
+                audioData={surah.audio}
+                selectedReciter={selectedReciter}
+                onReciterChange={setSelectedReciter}
+                className="max-w-md"
+              />
               <AudioPlayer
                 audioData={surah.audio}
                 surahNo={surah.surahNo}
                 selectedReciter={selectedReciter}
                 onReciterChange={setSelectedReciter}
-                className=""
               />
             </div>
           )}
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-8">
           {visibleAyahsList.map((translation, index) => {
             const ayahNo = index + 1;
             const tafsirKey = `${surah.surahNo}_${ayahNo}`;
@@ -210,21 +217,22 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
           })}
         </div>
 
-        {/* Infinite Scroll Sentinel - triggers load when visible */}
+        {/* Infinite Scroll Sentinel - triggers load when visible - Mobile optimized */}
+        {/* Gestalt: Loading indicator grouped (Proximity) */}
         {hasMore && (
-          <div ref={sentinelRef} className="mt-8 py-4">
+          <div ref={sentinelRef} className="mt-6 md:mt-12 py-4 md:py-8">
             {isLoading && (
-              <div className="flex items-center justify-center gap-2 text-gray-400">
-                <div className="w-5 h-5 border-2 border-gray-600 border-t-white rounded-full animate-spin"></div>
-                <Text className="text-sm">Loading more ayahs...</Text>
+              <div className="flex flex-col items-center justify-center gap-3 md:gap-4">
+                <Spinner size="md" />
+                <LoadingMessage showIcon={false} className="max-w-xl" />
               </div>
             )}
           </div>
         )}
 
         {!hasMore && totalAyahs > INITIAL_AYAHS && (
-          <div className="mt-8 text-center">
-            <Text className="text-gray-400">
+          <div className="mt-4 md:mt-8 text-center">
+            <Text className="text-gray-600 text-xs md:text-base">
               All {totalAyahs} ayahs loaded
             </Text>
           </div>

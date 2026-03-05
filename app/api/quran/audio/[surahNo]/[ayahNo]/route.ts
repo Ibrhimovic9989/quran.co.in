@@ -31,20 +31,37 @@ export async function GET(
     }
 
     const quranService = new QuranService();
-    const audioData = await quranService.getVerseAudio(surahNumber, ayahNumber);
-
-    return NextResponse.json(
-      { audio: audioData },
-      {
-        headers: {
-          'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
-        },
+    
+    try {
+      const audioData = await quranService.getVerseAudio(surahNumber, ayahNumber);
+      
+      if (!audioData || Object.keys(audioData).length === 0) {
+        return NextResponse.json(
+          { error: 'Audio not available for this ayah', audio: null },
+          { status: 404 }
+        );
       }
-    );
+
+      return NextResponse.json(
+        { audio: audioData },
+        {
+          headers: {
+            'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
+          },
+        }
+      );
+    } catch (apiError) {
+      // If API fails, return null audio (component will fallback to surah audio)
+      console.warn(`Audio API error for surah ${surahNumber} ayah ${ayahNumber}:`, apiError);
+      return NextResponse.json(
+        { error: 'Audio not available', audio: null },
+        { status: 404 }
+      );
+    }
   } catch (error) {
-    console.error('Error fetching ayah audio:', error);
+    console.error('Error in audio route:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch ayah audio' },
+      { error: 'Failed to fetch ayah audio', audio: null },
       { status: 500 }
     );
   }

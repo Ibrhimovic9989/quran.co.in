@@ -1,8 +1,8 @@
 // Navbar Component
 // Main navigation bar (wrapper for client component)
 
-import { NavbarClient } from './navbar-client';
+import { Navbar as NavbarComponent } from '@/components/ui/navbar';
 
 export function Navbar() {
-  return <NavbarClient />;
+  return <NavbarComponent />;
 }

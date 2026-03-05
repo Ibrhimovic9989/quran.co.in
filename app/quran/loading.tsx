@@ -1,20 +1,16 @@
 // Loading state for /quran page
 // Shows while surah list is being fetched
 
+import { Spinner } from '@/components/ui/atoms';
+import { LoadingMessage } from '@/components/ui/loading-message';
+
 export default function QuranLoading() {
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/30 to-white">
       <div className="container mx-auto px-4 py-16">
-        <div className="flex flex-col items-center justify-center min-h-[60vh]">
-          {/* Loading spinner */}
-          <div className="relative w-16 h-16 mb-8">
-            <div className="absolute inset-0 border-4 border-gray-800 rounded-full"></div>
-            <div className="absolute inset-0 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-          </div>
-          
-          {/* Loading text */}
-          <h2 className="text-xl font-semibold mb-2">Loading Quran</h2>
-          <p className="text-gray-400 text-sm">Fetching surahs...</p>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8">
+          <Spinner size="lg" />
+          <LoadingMessage />
         </div>
       </div>
     </div>

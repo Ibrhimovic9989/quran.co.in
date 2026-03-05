@@ -3,6 +3,7 @@
 
 import { Card } from '@/components/ui/card';
 import { Heading, Text } from '@/components/ui/typography';
+import { Button } from '@/components/ui/atoms';
 import { useState } from 'react';
 
 interface TranslationsDisplayProps {
@@ -42,20 +43,18 @@ export function TranslationsDisplay({
         Translations
       </Heading>
       
-      {/* Language Selector */}
+      {/* Language Selector - Using Button atoms */}
+      {/* Gestalt: Related buttons grouped together (Proximity) */}
       <div className="flex flex-wrap gap-2 mb-4">
         {availableLangs.map((lang) => (
-          <button
+          <Button
             key={lang}
             onClick={() => setSelectedLang(lang)}
-            className={`px-3 py-1.5 rounded text-sm border transition-colors ${
-              selectedLang === lang
-                ? 'bg-white text-black border-white'
-                : 'bg-gray-900 text-white border-gray-700 hover:border-gray-600'
-            }`}
+            variant={selectedLang === lang ? 'primary' : 'secondary'}
+            size="sm"
           >
             {languageNames[lang] || lang}
-          </button>
+          </Button>
         ))}
       </div>
 
