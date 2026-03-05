@@ -26,6 +26,8 @@ interface AyahDisplayProps {
   tafsir?: TafsirResponse;
   showNumber?: boolean;
   className?: string;
+  selectedReciter?: string | null; // Reciter selected at surah level
+  onReciterChange?: (reciterId: string) => void; // Callback when reciter changes
 }
 
 export function AyahDisplay({
@@ -33,6 +35,8 @@ export function AyahDisplay({
   tafsir: initialTafsir,
   showNumber = true,
   className,
+  selectedReciter,
+  onReciterChange,
 }: AyahDisplayProps) {
   const [showTafsir, setShowTafsir] = useState(false);
   const [showTranslations, setShowTranslations] = useState(false);
@@ -108,6 +112,8 @@ export function AyahDisplay({
             surahNo={ayah.surahNo}
             ayahNo={ayah.ayahNo}
             className="mt-4"
+            selectedReciter={selectedReciter}
+            onReciterChange={onReciterChange}
           />
         )}
 

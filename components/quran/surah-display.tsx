@@ -43,7 +43,16 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
   
   const [visibleAyahs, setVisibleAyahs] = useState(INITIAL_AYAHS);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedReciter, setSelectedReciter] = useState<string | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
+
+  // Get available reciters from surah audio
+  const availableReciters = surah.audio
+    ? Object.entries(surah.audio).map(([id, data]) => ({
+        id,
+        ...data,
+      }))
+    : [];
 
   // Memoize visible ayahs for performance
   const visibleAyahsList = useMemo(() => {
@@ -177,6 +186,8 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
                 }}
                 tafsir={tafsir}
                 showNumber={true}
+                selectedReciter={selectedReciter}
+                onReciterChange={setSelectedReciter}
               />
             );
           })}

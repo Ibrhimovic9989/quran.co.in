@@ -12,6 +12,8 @@ interface AudioPlayerProps {
   surahNo: number;
   ayahNo?: number;
   className?: string;
+  selectedReciter?: string | null; // Reciter selected at surah level
+  onReciterChange?: (reciterId: string) => void; // Callback when reciter changes
 }
 
 type PlayMode = 'ayah' | 'surah';
@@ -21,8 +23,14 @@ export function AudioPlayer({
   surahNo,
   ayahNo,
   className,
+  selectedReciter: propSelectedReciter,
+  onReciterChange,
 }: AudioPlayerProps) {
-  const [selectedReciter, setSelectedReciter] = useState<string | null>(null);
+  // Use prop reciter if provided (surah level), otherwise manage locally
+  const isSurahLevel = propSelectedReciter !== undefined;
+  const [localReciter, setLocalReciter] = useState<string | null>(null);
+  const selectedReciter = isSurahLevel ? propSelectedReciter : localReciter;
+  
   const [playMode, setPlayMode] = useState<PlayMode>(ayahNo ? 'ayah' : 'surah');
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
@@ -78,7 +86,11 @@ export function AudioPlayer({
       // Auto-select first reciter if none selected
       const firstReciterId = Object.keys(currentAudio)[0];
       if (firstReciterId) {
-        setSelectedReciter(firstReciterId);
+        if (isSurahLevel && onReciterChange) {
+          onReciterChange(firstReciterId);
+        } else {
+          setLocalReciter(firstReciterId);
+        }
         playAudio(firstReciterId, currentAudio);
       }
       return;
@@ -115,7 +127,9 @@ export function AudioPlayer({
     // In future, we can add time-based seeking for ayah-only mode
     
     audioRef.current = audio;
-    setSelectedReciter(reciterId);
+    if (!isSurahLevel) {
+      setLocalReciter(reciterId);
+    }
     audio.play().catch((err) => {
       console.error('Error playing audio:', err);
       setIsPlaying(false);
@@ -124,7 +138,13 @@ export function AudioPlayer({
   };
 
   const handleReciterChange = (reciterId: string) => {
-    setSelectedReciter(reciterId);
+    if (isSurahLevel && onReciterChange) {
+      // Surah level - notify parent
+      onReciterChange(reciterId);
+    } else {
+      // Local level (shouldn't happen for ayahs, but keep for backward compat)
+      setLocalReciter(reciterId);
+    }
     if (isPlaying) {
       // If already playing, switch to new reciter
       const currentAudio = getCurrentAudioData();
@@ -138,7 +158,12 @@ export function AudioPlayer({
       setIsPlaying(false);
     }
     setPlayMode(mode);
-    setSelectedReciter(null); // Reset reciter selection
+    // Reset reciter selection (only if not surah level)
+    if (!isSurahLevel) {
+      setLocalReciter(null);
+    } else if (onReciterChange) {
+      onReciterChange('');
+    }
   };
 
   const currentAudioData = getCurrentAudioData();
@@ -177,22 +202,24 @@ export function AudioPlayer({
         </div>
       )}
 
-      {/* Reciter Dropdown */}
-      <div className="mb-3">
-        <select
-          value={selectedReciter || ''}
-          onChange={(e) => handleReciterChange(e.target.value)}
-          className="w-full px-3 py-2 bg-gray-900 text-white border border-gray-700 rounded focus:outline-none focus:border-white"
-          disabled={isLoadingAudio}
-        >
-          <option value="">Select Reciter</option>
-          {availableReciters.map((reciter) => (
-            <option key={reciter.id} value={reciter.id}>
-              {reciter.reciter}
-            </option>
-          ))}
-        </select>
-      </div>
+      {/* Reciter Dropdown - Only show if not surah level (surah level handles it) */}
+      {!isSurahLevel && (
+        <div className="mb-3">
+          <select
+            value={selectedReciter || ''}
+            onChange={(e) => handleReciterChange(e.target.value)}
+            className="w-full px-3 py-2 bg-gray-900 text-white border border-gray-700 rounded focus:outline-none focus:border-white"
+            disabled={isLoadingAudio}
+          >
+            <option value="">Select Reciter</option>
+            {availableReciters.map((reciter) => (
+              <option key={reciter.id} value={reciter.id}>
+                {reciter.reciter}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {/* Play/Pause Button */}
       <button
