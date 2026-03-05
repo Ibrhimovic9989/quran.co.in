@@ -27,20 +27,20 @@ export function HeroSection({}: HeroSectionProps) {
       
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 w-full">
         <div className="flex flex-col md:flex-row items-center gap-0 md:gap-8 lg:gap-12">
-          {/* Left content - Text & CTAs - Mobile First - Perfectly Balanced */}
-          <div className="flex-1 w-full md:w-auto py-1 md:py-12 relative z-10 flex flex-col justify-center">
-            {/* Badge/Trust Indicator - Mobile optimized - Balanced */}
-            <div className="inline-flex items-center gap-1 mb-1.5 md:mb-3 px-2 py-0.5 bg-gray-100 rounded-full w-fit text-[10px] md:text-xs">
+          {/* Left content - Text & CTAs - Mobile First - Repositioned */}
+          <div className="flex-1 w-full md:w-auto py-0 md:py-12 relative z-10 flex flex-col justify-center">
+            {/* Badge/Trust Indicator - Mobile optimized - Pulled up */}
+            <div className="inline-flex items-center gap-1 mb-1 md:mb-3 px-2 py-0.5 bg-gray-100 rounded-full w-fit text-[10px] md:text-xs">
               <BookOpen className="w-2.5 h-2.5 text-gray-700" />
               <span className="font-medium text-gray-700">
                 114 Surahs • Free
               </span>
             </div>
 
-            {/* Main Headline - Mobile optimized - Balanced */}
+            {/* Main Headline - Mobile optimized - Larger and pulled up */}
             <Heading 
               level={1} 
-              className="text-xl sm:text-2xl md:text-6xl lg:text-6xl xl:text-7xl font-bold text-gray-900 mb-1.5 md:mb-4 leading-[1.1] tracking-tight"
+              className="text-2xl sm:text-3xl md:text-6xl lg:text-6xl xl:text-7xl font-bold text-gray-900 mb-2 md:mb-4 leading-[1.1] tracking-tight -mt-1 md:mt-0"
             >
               Your Gateway to the{' '}
               <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent whitespace-nowrap">
@@ -48,13 +48,13 @@ export function HeroSection({}: HeroSectionProps) {
               </span>
             </Heading>
 
-            {/* Subheadline - Mobile optimized - Balanced */}
-            <Text className="text-[10px] md:text-lg lg:text-xl text-gray-700 max-w-2xl mb-1.5 md:mb-3 leading-tight md:leading-relaxed">
+            {/* Subheadline - Mobile optimized - Larger */}
+            <Text className="text-xs sm:text-sm md:text-lg lg:text-xl text-gray-700 max-w-2xl mb-2 md:mb-3 leading-tight md:leading-relaxed">
               Read, listen, and study the divine words with beautiful translations, authentic recitations, and comprehensive tafsir.
             </Text>
             
-            {/* Verse - Mobile optimized - Balanced */}
-            <Text className="text-[9px] md:text-base text-gray-600 max-w-2xl mb-2 md:mb-6 leading-tight md:leading-relaxed">
+            {/* Verse - Mobile optimized - Larger */}
+            <Text className="text-[11px] sm:text-xs md:text-base text-gray-600 max-w-2xl mb-2.5 md:mb-6 leading-tight md:leading-relaxed">
               Allah says: <span className="italic">"And We have certainly made the Quran easy for remembrance, so is there any who will remember?"</span>
             </Text>
 
@@ -75,7 +75,7 @@ export function HeroSection({}: HeroSectionProps) {
             </div>
 
             {/* 3D Quran Scene - Mobile only, between text and buttons - Balanced */}
-            <div className="flex-1 w-full relative min-h-[90px] flex items-center justify-center mb-2 md:hidden">
+            <div className="flex-1 w-full relative min-h-[90px] flex items-center justify-center mb-3 md:hidden">
               <div className="relative w-full h-full max-w-[90px] scale-65">
                 <Quran3D className="w-full h-full" autoRotate={true} />
                 {/* Decorative elements - smaller on mobile */}
@@ -84,8 +84,8 @@ export function HeroSection({}: HeroSectionProps) {
               </div>
             </div>
 
-            {/* CTA Buttons - Mobile optimized - Balanced */}
-            <div className="flex flex-col gap-1.5 md:flex-row md:gap-3 mb-1.5 md:mb-4">
+            {/* CTA Buttons - Mobile optimized - Pushed down */}
+            <div className="flex flex-col gap-1.5 md:flex-row md:gap-3 mb-1.5 md:mb-4 mt-1 md:mt-0">
               {/* Primary CTA - Explore */}
               <Link href="/quran" className="group">
                 <ShimmerButton
