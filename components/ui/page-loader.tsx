@@ -5,22 +5,45 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils/cn';
 
 interface PageLoaderProps {
   className?: string;
 }
 
+const SPLASH_STORAGE_KEY = 'quran-app-splash-shown';
+
 export function PageLoader({ className }: PageLoaderProps) {
+  const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
+    // Only show on homepage
+    const isHomepage = pathname === '/';
+    
+    // Check if user has seen splash before
+    const hasSeenSplash = typeof window !== 'undefined' 
+      ? localStorage.getItem(SPLASH_STORAGE_KEY) === 'true'
+      : false;
+
+    // Don't show if not homepage or already seen
+    if (!isHomepage || hasSeenSplash) {
+      setIsVisible(false);
+      setIsLoading(false);
+      return;
+    }
+
     // Wait for page to be interactive
     const handleLoad = () => {
       // Small delay for smooth transition
       setTimeout(() => {
         setIsLoading(false);
+        // Mark as shown in localStorage
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(SPLASH_STORAGE_KEY, 'true');
+        }
         // Fade out animation - longer for smoother transition
         setTimeout(() => {
           setIsVisible(false);
@@ -34,7 +57,7 @@ export function PageLoader({ className }: PageLoaderProps) {
       window.addEventListener('load', handleLoad);
       return () => window.removeEventListener('load', handleLoad);
     }
-  }, []);
+  }, [pathname]);
 
   if (!isVisible) {
     return null;
