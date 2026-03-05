@@ -11,6 +11,16 @@ import { TranslationsDisplay } from './translations-display';
 import { TafsirDisplay } from './tafsir-display';
 import type { AyahResponse, TafsirResponse } from '@/types/quran-api';
 
+type TranslationLanguage = 'english' | 'bengali' | 'urdu' | 'turkish' | 'uzbek';
+
+const languageNames: Record<TranslationLanguage, string> = {
+  english: 'English',
+  bengali: 'Bengali',
+  urdu: 'Urdu',
+  turkish: 'Turkish',
+  uzbek: 'Uzbek',
+};
+
 interface AyahDisplayProps {
   ayah: AyahResponse;
   tafsir?: TafsirResponse;
@@ -27,9 +37,31 @@ export function AyahDisplay({
   const [showTafsir, setShowTafsir] = useState(false);
   const [showTranslations, setShowTranslations] = useState(false);
   const [tafsir, setTafsir] = useState<TafsirResponse | undefined>(initialTafsir);
+  const [selectedTranslation, setSelectedTranslation] = useState<TranslationLanguage>('english');
 
-  const hasMultipleTranslations =
-    ayah.bengali || ayah.urdu || ayah.turkish || ayah.uzbek;
+  const availableTranslations: TranslationLanguage[] = [];
+  if (ayah.english) availableTranslations.push('english');
+  if (ayah.bengali) availableTranslations.push('bengali');
+  if (ayah.urdu) availableTranslations.push('urdu');
+  if (ayah.turkish) availableTranslations.push('turkish');
+  if (ayah.uzbek) availableTranslations.push('uzbek');
+
+  const hasMultipleTranslations = availableTranslations.length > 1;
+
+  const getCurrentTranslation = (): string => {
+    switch (selectedTranslation) {
+      case 'bengali':
+        return ayah.bengali || '';
+      case 'urdu':
+        return ayah.urdu || '';
+      case 'turkish':
+        return ayah.turkish || '';
+      case 'uzbek':
+        return ayah.uzbek || '';
+      default:
+        return ayah.english || '';
+    }
+  };
 
   return (
     <Card className={className}>
@@ -47,9 +79,26 @@ export function AyahDisplay({
           {ayah.arabic1}
         </Text>
         
-        {/* English Translation */}
+        {/* Translation Selector */}
+        {hasMultipleTranslations && (
+          <div className="mb-2">
+            <select
+              value={selectedTranslation}
+              onChange={(e) => setSelectedTranslation(e.target.value as TranslationLanguage)}
+              className="px-3 py-1.5 bg-gray-900 text-white border border-gray-700 rounded text-sm focus:outline-none focus:border-white"
+            >
+              {availableTranslations.map((lang) => (
+                <option key={lang} value={lang}>
+                  {languageNames[lang]}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Selected Translation */}
         <Text className="text-gray-300 leading-relaxed">
-          {ayah.english}
+          {getCurrentTranslation()}
         </Text>
 
         {/* Audio Player */}
