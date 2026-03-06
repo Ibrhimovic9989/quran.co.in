@@ -5,14 +5,18 @@
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Container } from '@/components/ui/container';
 import { Heading, Text } from '@/components/ui/typography';
-import { Spinner } from '@/components/ui/atoms';
+import { Spinner, Button } from '@/components/ui/atoms';
 import { LoadingMessage } from '@/components/ui/loading-message';
 import { ReciterSelector } from '@/components/ui/molecules';
 import { AyahDisplay } from './ayah-display';
 import { AudioPlayer } from './audio-player';
+import { getRevelationOrder, getSurahsByRevelationOrder } from '@/lib/data/revelation-order';
+import { BookmarksProvider } from './bookmarks-provider';
 import type { SurahResponse, TafsirResponse } from '@/types/quran-api';
 
 interface SurahDisplayProps {
@@ -35,7 +39,25 @@ interface LoadedAyahs {
 
 export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const targetAyah = searchParams.get('ayah');
+  
+  // Calculate next/previous surah numbers
+  const nextSurahNo = surah.surahNo < 114 ? surah.surahNo + 1 : null;
+  const prevSurahNo = surah.surahNo > 1 ? surah.surahNo - 1 : null;
+  
+  // Calculate next/previous surah by revelation order
+  const revelationOrder = getRevelationOrder(surah.surahNo);
+  const revelationOrderList = getSurahsByRevelationOrder();
+  const currentRevelationIndex = revelationOrder 
+    ? revelationOrderList.findIndex(e => e.revelationOrder === revelationOrder)
+    : -1;
+  const nextRevelationSurah = currentRevelationIndex >= 0 && currentRevelationIndex < revelationOrderList.length - 1
+    ? revelationOrderList[currentRevelationIndex + 1].surahNumber
+    : null;
+  const prevRevelationSurah = currentRevelationIndex > 0
+    ? revelationOrderList[currentRevelationIndex - 1].surahNumber
+    : null;
   
   // NETFLIX-STYLE: Start with initial ayahs from server (first 20)
   const [loadedAyahs, setLoadedAyahs] = useState<LoadedAyahs>({
@@ -181,8 +203,9 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
   }, [targetAyah, visibleAyahs, surah.surahNo, surah.totalAyah, hasMore, isLoading, loadMoreAyahs, loadedAyahs.english.length]);
 
   return (
-    <Container>
-      <div className="py-6 md:py-20">
+    <BookmarksProvider>
+      <Container>
+        <div className="py-6 md:py-20">
         {/* Enhanced Header Section - Mobile optimized */}
         <div className="mb-6 md:mb-12 text-center md:text-left">
           <div className="flex items-center justify-center md:justify-start gap-2 md:gap-3 mb-3 md:mb-6">
@@ -281,7 +304,77 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
             </Text>
           </div>
         )}
-      </div>
-    </Container>
+
+        {/* Navigation Buttons - Mobile optimized */}
+        <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-gray-200">
+          <div className="flex flex-col md:flex-row gap-3 md:gap-4 justify-between items-stretch md:items-center">
+            {/* Previous/Next by Surah Number */}
+            <div className="flex gap-2 md:gap-3 flex-1">
+              {prevSurahNo ? (
+                <Link href={`/quran/${prevSurahNo}`} className="flex-1">
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    className="w-full flex items-center justify-center gap-2"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    <span className="text-xs md:text-sm">Previous Surah ({prevSurahNo})</span>
+                  </Button>
+                </Link>
+              ) : (
+                <div className="flex-1" />
+              )}
+              {nextSurahNo ? (
+                <Link href={`/quran/${nextSurahNo}`} className="flex-1">
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    className="w-full flex items-center justify-center gap-2"
+                  >
+                    <span className="text-xs md:text-sm">Next Surah ({nextSurahNo})</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </Link>
+              ) : (
+                <div className="flex-1" />
+              )}
+            </div>
+
+            {/* Previous/Next by Revelation Order */}
+            <div className="flex gap-2 md:gap-3 flex-1">
+              {prevRevelationSurah ? (
+                <Link href={`/quran/${prevRevelationSurah}`} className="flex-1">
+                  <Button
+                    variant="ghost"
+                    size="md"
+                    className="w-full flex items-center justify-center gap-2"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    <span className="text-xs md:text-sm">Prev (Revelation)</span>
+                  </Button>
+                </Link>
+              ) : (
+                <div className="flex-1" />
+              )}
+              {nextRevelationSurah ? (
+                <Link href={`/quran/${nextRevelationSurah}`} className="flex-1">
+                  <Button
+                    variant="ghost"
+                    size="md"
+                    className="w-full flex items-center justify-center gap-2"
+                  >
+                    <span className="text-xs md:text-sm">Next (Revelation)</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </Link>
+              ) : (
+                <div className="flex-1" />
+              )}
+            </div>
+          </div>
+        </div>
+        </div>
+      </Container>
+    </BookmarksProvider>
   );
 }

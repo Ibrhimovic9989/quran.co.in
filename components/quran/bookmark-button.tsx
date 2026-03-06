@@ -3,11 +3,12 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Bookmark, BookmarkCheck } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
+import { useBookmarks } from './bookmarks-provider';
 
 interface BookmarkButtonProps {
   surahNumber: number;
@@ -18,35 +19,9 @@ interface BookmarkButtonProps {
 export function BookmarkButton({ surahNumber, ayahNumber, className }: BookmarkButtonProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isChecking, setIsChecking] = useState(true);
+  const { isLoading: isLoadingBookmarks, isBookmarked, toggle, refresh } = useBookmarks();
 
-  // Check if bookmark exists on mount
-  useEffect(() => {
-    if (status === 'authenticated' && session?.user) {
-      checkBookmark();
-    } else {
-      setIsChecking(false);
-    }
-  }, [status, session, surahNumber, ayahNumber]);
-
-  const checkBookmark = async () => {
-    try {
-      const response = await fetch(`/api/bookmarks`);
-      if (response.ok) {
-        const data = await response.json();
-        const exists = data.bookmarks?.some(
-          (b: any) => b.surahNumber === surahNumber && b.ayahNumber === (ayahNumber || null)
-        );
-        setIsBookmarked(exists);
-      }
-    } catch (error) {
-      console.error('Error checking bookmark:', error);
-    } finally {
-      setIsChecking(false);
-    }
-  };
+  const bookmarked = useMemo(() => isBookmarked(surahNumber, ayahNumber), [ayahNumber, isBookmarked, surahNumber]);
 
   const handleBookmark = async () => {
     // If not authenticated, redirect to sign-in with callback
@@ -56,32 +31,10 @@ export function BookmarkButton({ surahNumber, ayahNumber, className }: BookmarkB
       return;
     }
 
-    setIsLoading(true);
     try {
-      if (isBookmarked) {
-        // Delete bookmark
-        const response = await fetch(
-          `/api/bookmarks/${surahNumber}${ayahNumber ? `/${ayahNumber}` : ''}`,
-          { method: 'DELETE' }
-        );
-        if (response.ok) {
-          setIsBookmarked(false);
-        }
-      } else {
-        // Create bookmark
-        const response = await fetch('/api/bookmarks', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ surahNumber, ayahNumber }),
-        });
-        if (response.ok) {
-          setIsBookmarked(true);
-        }
-      }
+      toggle({ surahNumber, ayahNumber });
     } catch (error) {
       console.error('Error toggling bookmark:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -99,59 +52,46 @@ export function BookmarkButton({ surahNumber, ayahNumber, className }: BookmarkB
         
         // Only bookmark if it matches current ayah/surah
         if (bookmarkSurah === surahNumber && bookmarkAyah === (ayahNumber || undefined)) {
-          // Save bookmark directly without calling handleBookmark to avoid recursion
           const saveBookmark = async () => {
-            setIsLoading(true);
             try {
-              const response = await fetch('/api/bookmarks', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ surahNumber, ayahNumber }),
-              });
-              if (response.ok) {
-                setIsBookmarked(true);
-                // Clean up URL
-                const newUrl = window.location.pathname;
-                window.history.replaceState({}, '', newUrl);
-              }
+              toggle({ surahNumber, ayahNumber });
+              // Ensure list is fresh for Continue Reading card etc.
+              await refresh();
+              // Clean up URL
+              const newUrl = window.location.pathname;
+              window.history.replaceState({}, '', newUrl);
             } catch (error) {
               console.error('Error saving bookmark:', error);
-            } finally {
-              setIsLoading(false);
             }
           };
-          saveBookmark();
+          saveBookmark().catch(() => {});
         }
       }
     }
-  }, [status, session, surahNumber, ayahNumber]);
-
-  if (isChecking) {
-    return null; // Don't show while checking
-  }
+  }, [status, session, surahNumber, ayahNumber, toggle, refresh]);
 
   return (
     <button
       onClick={handleBookmark}
-      disabled={isLoading}
+      disabled={isLoadingBookmarks}
       className={cn(
         'flex items-center gap-2 px-3 py-1.5 rounded-md',
         'transition-colors duration-200',
-        isBookmarked
+        bookmarked
           ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
           : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
         'disabled:opacity-50 disabled:cursor-not-allowed',
         className
       )}
-      aria-label={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
+      aria-label={bookmarked ? 'Remove bookmark' : 'Add bookmark'}
     >
-      {isBookmarked ? (
+      {bookmarked ? (
         <BookmarkCheck className="w-4 h-4" />
       ) : (
         <Bookmark className="w-4 h-4" />
       )}
       <span className="text-xs font-medium">
-        {isBookmarked ? 'Bookmarked' : 'Bookmark'}
+        {bookmarked ? 'Bookmarked' : 'Bookmark'}
       </span>
     </button>
   );

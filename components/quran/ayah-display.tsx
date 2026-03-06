@@ -3,7 +3,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { Card } from '@/components/ui/card';
 import { Text } from '@/components/ui/typography';
@@ -45,26 +45,57 @@ export function AyahDisplay({
   const [showTafsir, setShowTafsir] = useState(false);
   const [tafsir, setTafsir] = useState<TafsirResponse | undefined>(initialTafsir);
   const [selectedTranslation, setSelectedTranslation] = useState<TranslationLanguage>('english');
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const hasTrackedRef = useRef(false);
 
-  // Track reading history when ayah is viewed
+  // Track reading history when ayah is actually in view for a short time
   useEffect(() => {
-    if (status === 'authenticated' && session?.user) {
-      // Debounce: only track after component has been visible for 2 seconds
-      const timer = setTimeout(() => {
-        fetch('/api/reading-history', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            surahNumber: ayah.surahNo,
-            ayahNumber: ayah.ayahNo,
-          }),
-        }).catch((error) => {
-          console.error('Error tracking reading history:', error);
-        });
-      }, 2000);
+    if (hasTrackedRef.current) return;
+    if (status !== 'authenticated' || !session?.user) return;
 
-      return () => clearTimeout(timer);
-    }
+    const element = rootRef.current;
+    if (!element || typeof window === 'undefined') return;
+
+    let timer: number | null = null;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting && !hasTrackedRef.current) {
+          // Only track if user has kept this ayah in view for ~1.5s
+          timer = window.setTimeout(() => {
+            if (hasTrackedRef.current) return;
+            hasTrackedRef.current = true;
+            fetch('/api/reading-history', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                surahNumber: ayah.surahNo,
+                ayahNumber: ayah.ayahNo,
+              }),
+            }).catch((error) => {
+              console.error('Error tracking reading history:', error);
+            });
+            observer.disconnect();
+          }, 1500);
+        } else if (timer !== null) {
+          window.clearTimeout(timer);
+          timer = null;
+        }
+      },
+      {
+        threshold: 0.5,
+      }
+    );
+
+    observer.observe(element);
+
+    return () => {
+      if (timer !== null) {
+        window.clearTimeout(timer);
+      }
+      observer.disconnect();
+    };
   }, [status, session, ayah.surahNo, ayah.ayahNo]);
 
   const availableTranslations: TranslationLanguage[] = [];
@@ -101,15 +132,16 @@ export function AyahDisplay({
   const gradient = gradients[ayah.ayahNo % gradients.length];
 
   return (
-    <Card 
-      className={cn(
-        "relative overflow-hidden border border-gray-200 hover:border-gray-300",
-        "transition-all duration-300 ease-in-out hover:shadow-lg md:hover:shadow-xl hover:-translate-y-0.5 md:hover:-translate-y-1",
-        `bg-gradient-to-br ${gradient}`,
-        "group/card",
-        className
-      )}
-    >
+    <div ref={rootRef}>
+      <Card 
+        className={cn(
+          "relative overflow-hidden border border-gray-200 hover:border-gray-300",
+          "transition-all duration-300 ease-in-out hover:shadow-lg md:hover:shadow-xl hover:-translate-y-0.5 md:hover:-translate-y-1",
+          `bg-gradient-to-br ${gradient}`,
+          "group/card",
+          className
+        )}
+      >
       {showNumber && (
         <div className="mb-3 md:mb-5 flex items-center gap-2">
           <span className="text-gray-800 text-xs md:text-base font-bold bg-white/80 backdrop-blur-sm px-2 md:px-3 py-1 md:py-1.5 rounded-md shadow-sm">
@@ -194,8 +226,9 @@ export function AyahDisplay({
         )}
       </div>
 
-      {/* Hover Effect Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 ease-in-out pointer-events-none" />
-    </Card>
+        {/* Hover Effect Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 ease-in-out pointer-events-none" />
+      </Card>
+    </div>
   );
 }

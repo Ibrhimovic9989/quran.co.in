@@ -4,3 +4,5 @@
 export * from './user.repository';
 export * from './quran.repository';
 export * from './api-config.repository';
+export * from './bookmark.repository';
+export * from './reading-history.repository';

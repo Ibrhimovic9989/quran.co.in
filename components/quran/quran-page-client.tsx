@@ -12,6 +12,7 @@ import { SurahList } from './surah-list';
 import { JuzView } from './juz-view';
 import { RevelationOrderView } from './revelation-order-view';
 import { ContinueReading } from './continue-reading';
+import { BookmarksProvider } from './bookmarks-provider';
 import type { SurahInfo } from '@/types/quran-api';
 
 interface QuranPageClientProps {
@@ -54,26 +55,28 @@ export function QuranPageClient({ surahs }: QuranPageClientProps) {
   }, [searchParams]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/30 to-white">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 md:py-8">
-        {/* Continue Reading */}
-        <ContinueReading />
+    <BookmarksProvider>
+      <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/30 to-white">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 md:py-8">
+          {/* Continue Reading */}
+          <ContinueReading />
 
-        {/* Tab Navigation */}
-        <QuranTabs activeView={activeView} onViewChange={handleViewChange} />
+          {/* Tab Navigation */}
+          <QuranTabs activeView={activeView} onViewChange={handleViewChange} />
 
-        {/* Search Bar */}
-        <QuranSearch 
-          searchQuery={searchQuery} 
-          onSearchChange={setSearchQuery}
-          activeView={activeView}
-        />
+          {/* Search Bar */}
+          <QuranSearch 
+            searchQuery={searchQuery} 
+            onSearchChange={setSearchQuery}
+            activeView={activeView}
+          />
 
-        {/* View Content */}
-        {activeView === 'surah' && <SurahList surahs={surahs} searchQuery={searchQuery} />}
-        {activeView === 'juz' && <JuzView surahs={surahs} searchQuery={searchQuery} />}
-        {activeView === 'revelation' && <RevelationOrderView surahs={surahs} searchQuery={searchQuery} />}
+          {/* View Content */}
+          {activeView === 'surah' && <SurahList surahs={surahs} searchQuery={searchQuery} />}
+          {activeView === 'juz' && <JuzView surahs={surahs} searchQuery={searchQuery} />}
+          {activeView === 'revelation' && <RevelationOrderView surahs={surahs} searchQuery={searchQuery} />}
+        </div>
       </div>
-    </div>
+    </BookmarksProvider>
   );
 }

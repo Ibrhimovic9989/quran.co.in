@@ -2,19 +2,21 @@
 // Displays a complete Juz with all its ayahs
 // Follows Atomic Design - Organism component
 
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft, BookOpen } from 'lucide-react';
-import { Container } from '@/components/ui/container';
-import { Heading, Text } from '@/components/ui/typography';
-import { Button, Spinner } from '@/components/ui/atoms';
-import { LoadingMessage } from '@/components/ui/loading-message';
-import { ReciterSelector } from '@/components/ui/molecules';
-import { AyahDisplay } from './ayah-display';
-import { cn } from '@/lib/utils/cn';
-import type { AyahResponse } from '@/types/quran-api';
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft, BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
+import { Container } from "@/components/ui/container";
+import { Heading, Text } from "@/components/ui/typography";
+import { Button, Spinner } from "@/components/ui/atoms";
+import { LoadingMessage } from "@/components/ui/loading-message";
+import { ReciterSelector } from "@/components/ui/molecules";
+import { AyahDisplay } from "./ayah-display";
+import { BookmarksProvider } from "./bookmarks-provider";
+import { cn } from "@/lib/utils/cn";
+import type { AyahResponse } from "@/types/quran-api";
 
 interface JuzPageClientProps {
   juzNumber: number;
@@ -25,51 +27,112 @@ interface JuzAyah extends AyahResponse {
   juzNumber: number;
 }
 
+const PAGE_SIZE = 20;
+
 export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
   const router = useRouter();
   const [ayahs, setAyahs] = useState<JuzAyah[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedReciter, setSelectedReciter] = useState<string | null>(null);
   const [surahRanges, setSurahRanges] = useState<any[]>([]);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [totalAyahs, setTotalAyahs] = useState<number | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
-  // Fetch Juz data
-  const fetchJuzData = useCallback(async () => {
-    if (juzNumber < 1 || juzNumber > 30) return;
+  // Fetch a page of Juz data
+  const fetchJuzPage = useCallback(
+    async (pageOffset: number) => {
+      if (juzNumber < 1 || juzNumber > 30) return;
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch(`/api/quran/juz/${juzNumber}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch Juz data');
+      const isFirstPage = pageOffset === 0;
+      if (isFirstPage) {
+        setIsInitialLoading(true);
+        setError(null);
+      } else {
+        setIsLoadingMore(true);
       }
 
-      const data = await response.json();
-      setAyahs(data.ayahs || []);
-      setSurahRanges(data.surahRanges || []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load Juz');
-      console.error('Error fetching Juz:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [juzNumber]);
+      try {
+        const response = await fetch(
+          `/api/quran/juz/${juzNumber}?offset=${pageOffset}&limit=${PAGE_SIZE}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch Juz data");
+        }
+
+        const data = await response.json();
+        const pageAyahs = (data.ayahs || []) as JuzAyah[];
+
+        setTotalAyahs(typeof data.totalAyahs === "number" ? data.totalAyahs : null);
+        setSurahRanges(data.surahRanges || []);
+
+        if (isFirstPage) {
+          setAyahs(pageAyahs);
+        } else {
+          setAyahs((prev) => [...prev, ...pageAyahs]);
+        }
+
+        const newOffset = pageOffset + pageAyahs.length;
+        setOffset(newOffset);
+        setHasMore(pageAyahs.length === PAGE_SIZE && (data.totalAyahs == null || newOffset < data.totalAyahs));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load Juz");
+        console.error("Error fetching Juz:", err);
+      } finally {
+        if (isFirstPage) {
+          setIsInitialLoading(false);
+        } else {
+          setIsLoadingMore(false);
+        }
+      }
+    },
+    [juzNumber]
+  );
 
   useEffect(() => {
-    fetchJuzData();
-  }, [fetchJuzData]);
+    fetchJuzPage(0);
+  }, [fetchJuzPage]);
 
-  // Group ayahs by surah
-  const ayahsBySurah = ayahs.reduce((acc, ayah) => {
-    const surahNo = ayah.surahNumber;
-    if (!acc[surahNo]) {
-      acc[surahNo] = [];
-    }
-    acc[surahNo].push(ayah);
-    return acc;
-  }, {} as Record<number, JuzAyah[]>);
+  // Group ayahs by surah (derived for rendering)
+  const ayahsBySurah = useMemo(() => {
+    return ayahs.reduce((acc, ayah) => {
+      const surahNo = ayah.surahNumber;
+      if (!acc[surahNo]) {
+        acc[surahNo] = [];
+      }
+      acc[surahNo].push(ayah);
+      return acc;
+    }, {} as Record<number, JuzAyah[]>);
+  }, [ayahs]);
+
+  // Infinite scroll sentinel
+  useEffect(() => {
+    if (!hasMore || isInitialLoading || isLoadingMore) return;
+
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoadingMore && hasMore) {
+          fetchJuzPage(offset);
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "200px",
+      }
+    );
+
+    observer.observe(sentinel);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [fetchJuzPage, hasMore, isInitialLoading, isLoadingMore, offset]);
 
   // Get available reciters from first ayah (they should be the same across all)
   const availableReciters = ayahs.length > 0 && ayahs[0].audio
@@ -80,8 +143,9 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
     : [];
 
   return (
-    <Container>
-      <div className="py-6 md:py-12">
+    <BookmarksProvider>
+      <Container>
+        <div className="py-6 md:py-12">
         {/* Header - Mobile optimized */}
         <div className="mb-6 md:mb-8">
           <Button
@@ -121,23 +185,27 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
         </div>
 
         {/* Content - Mobile optimized */}
-        {isLoading && (
+        {isInitialLoading && (
           <div className="flex flex-col items-center justify-center py-8 md:py-16 gap-3 md:gap-4">
             <Spinner size="lg" />
             <LoadingMessage />
           </div>
         )}
 
-        {error && (
+        {error && !isInitialLoading && (
           <div className="text-center py-8 md:py-16">
             <Text className="text-red-600 mb-3 md:mb-4 text-sm md:text-base">{error}</Text>
-            <Button onClick={fetchJuzData} variant="primary" className="text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2">
+            <Button
+              onClick={() => fetchJuzPage(0)}
+              variant="primary"
+              className="text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2"
+            >
               Retry
             </Button>
           </div>
         )}
 
-        {!isLoading && !error && ayahs.length > 0 && (
+        {!isInitialLoading && !error && ayahs.length > 0 && (
           <div className="space-y-4 md:space-y-8">
             {Object.entries(ayahsBySurah)
               .sort(([a], [b]) => parseInt(a) - parseInt(b))
@@ -188,12 +256,61 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
           </div>
         )}
 
-        {!isLoading && !error && ayahs.length === 0 && (
+        {!isInitialLoading && !error && ayahs.length === 0 && (
           <div className="text-center py-8 md:py-16">
             <Text className="text-gray-600 text-sm md:text-base">No ayahs found for this Juz.</Text>
           </div>
         )}
-      </div>
-    </Container>
+
+        {/* Infinite scroll sentinel */}
+        {hasMore && !isInitialLoading && !error && (
+          <div ref={sentinelRef} className="mt-6 md:mt-10 py-4 flex justify-center">
+            {isLoadingMore && (
+              <div className="flex flex-col items-center justify-center gap-3 md:gap-4">
+                <Spinner size="md" />
+                <LoadingMessage showIcon={false} className="max-w-xl" />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Navigation Buttons - Mobile optimized */}
+        {!isInitialLoading && !error && (
+          <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-gray-200">
+            <div className="flex gap-3 md:gap-4 justify-between items-center">
+              {juzNumber > 1 ? (
+                <Link href={`/quran/juz/${juzNumber - 1}`} className="flex-1">
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    className="w-full flex items-center justify-center gap-2"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    <span className="text-xs md:text-sm">Previous Juz ({juzNumber - 1})</span>
+                  </Button>
+                </Link>
+              ) : (
+                <div className="flex-1" />
+              )}
+              {juzNumber < 30 ? (
+                <Link href={`/quran/juz/${juzNumber + 1}`} className="flex-1">
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    className="w-full flex items-center justify-center gap-2"
+                  >
+                    <span className="text-xs md:text-sm">Next Juz ({juzNumber + 1})</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </Link>
+              ) : (
+                <div className="flex-1" />
+              )}
+            </div>
+          </div>
+        )}
+        </div>
+      </Container>
+    </BookmarksProvider>
   );
 }

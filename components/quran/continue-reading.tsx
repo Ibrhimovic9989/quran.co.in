@@ -3,63 +3,33 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useMemo } from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { Heading, Text } from '@/components/ui/typography';
 import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
+import { useBookmarks } from './bookmarks-provider';
 
 interface ContinueReadingProps {
   className?: string;
 }
 
-interface Bookmark {
-  surahNumber: number;
-  ayahNumber?: number;
-  surah: {
-    arabicName: string;
-    englishName: string;
-    englishNameTranslation?: string;
-  };
-}
-
 export function ContinueReading({ className }: ContinueReadingProps) {
-  const { data: session, status } = useSession();
-  const [bookmark, setBookmark] = useState<Bookmark | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { isLoading, latestBookmark } = useBookmarks();
 
-  useEffect(() => {
-    if (status === 'authenticated' && session?.user) {
-      fetchBookmark();
-    } else {
-      setIsLoading(false);
-    }
-  }, [status, session]);
-
-  const fetchBookmark = async () => {
-    try {
-      const response = await fetch('/api/bookmarks');
-      if (response.ok) {
-        const data = await response.json();
-        // Get the most recent bookmark (first one since they're ordered by createdAt desc)
-        if (data.bookmarks && data.bookmarks.length > 0) {
-          const latestBookmark = data.bookmarks[0];
-          setBookmark({
-            surahNumber: latestBookmark.surahNumber,
-            ayahNumber: latestBookmark.ayahNumber,
-            surah: latestBookmark.surah,
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching bookmark:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const bookmark = useMemo(() => {
+    if (!latestBookmark?.surah) return null;
+    return {
+      surahNumber: latestBookmark.surahNumber,
+      ayahNumber: latestBookmark.ayahNumber ?? undefined,
+      surah: {
+        arabicName: latestBookmark.surah.arabicName,
+        englishName: latestBookmark.surah.englishName,
+        englishNameTranslation: latestBookmark.surah.englishNameTranslation ?? undefined,
+      },
+    };
+  }, [latestBookmark]);
 
   if (isLoading || !bookmark) {
     return null;
