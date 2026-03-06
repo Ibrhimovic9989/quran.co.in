@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils/cn';
 import { AudioPlayer } from './audio-player';
 import { TafsirDisplay } from './tafsir-display';
 import { BookmarkButton } from './bookmark-button';
+import { AyahShareButton } from './ayah-share-button';
 import type { AyahResponse, TafsirResponse } from '@/types/quran-api';
 
 type TranslationLanguage = 'english' | 'bengali' | 'urdu' | 'turkish' | 'uzbek';
@@ -188,11 +189,18 @@ export function AyahDisplay({
           />
         )}
 
-        {/* Bookmark Button */}
-        <div className="mt-2 md:mt-4">
+        {/* Bookmark + Share Actions */}
+        <div className="mt-2 md:mt-4 flex flex-wrap gap-2">
           <BookmarkButton
             surahNumber={ayah.surahNo}
             ayahNumber={ayah.ayahNo}
+          />
+          <AyahShareButton
+            surahNumber={ayah.surahNo}
+            ayahNumber={ayah.ayahNo}
+            surahName={ayah.surahNameTranslation}
+            arabicText={ayah.arabic1}
+            translationText={getCurrentTranslation()}
           />
         </div>
 
