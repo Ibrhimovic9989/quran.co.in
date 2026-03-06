@@ -100,6 +100,10 @@ export function AyahShareButton({
     window.open(url, '_blank', 'noopener,noreferrer,width=700,height=700');
   };
 
+  const closeDialog = () => {
+    setIsOpen(false);
+  };
+
   const copyToClipboard = async (value: string, message: string) => {
     try {
       await navigator.clipboard.writeText(value);
@@ -170,6 +174,11 @@ export function AyahShareButton({
     },
   ];
 
+  const handleShareOptionClick = async (onClick: () => void) => {
+    onClick();
+    closeDialog();
+  };
+
   return (
     <>
       <Button
@@ -185,31 +194,31 @@ export function AyahShareButton({
 
       {isOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+          className="fixed inset-0 z-50 overflow-y-auto bg-black/50 px-3 py-4 md:flex md:items-center md:justify-center md:px-4"
           role="dialog"
           aria-modal="true"
           aria-label={`Share ${shareTitle}`}
-          onClick={() => setIsOpen(false)}
+          onClick={closeDialog}
         >
           <div
-            className="relative w-full max-w-3xl rounded-[2rem] bg-white p-6 shadow-2xl md:p-10"
+            className="relative mx-auto w-full max-w-3xl rounded-[1.5rem] bg-white p-4 shadow-2xl md:rounded-[2rem] md:p-10 max-h-[calc(100vh-2rem)] overflow-y-auto"
             onClick={(event) => event.stopPropagation()}
           >
             <button
               type="button"
               aria-label="Close share dialog"
-              className="absolute right-4 top-4 rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
-              onClick={() => setIsOpen(false)}
+              className="absolute right-3 top-3 z-10 rounded-full bg-white/90 p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 md:right-4 md:top-4"
+              onClick={closeDialog}
             >
-              <X className="w-7 h-7" />
+              <X className="w-6 h-6 md:w-7 md:h-7" />
             </button>
 
             <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-3xl font-bold text-gray-900 md:text-5xl">Share this Ayah</h2>
-              <p className="mt-4 text-base text-gray-600 md:text-xl">
+              <h2 className="pr-10 text-2xl font-bold text-gray-900 md:pr-0 md:text-5xl">Share this Ayah</h2>
+              <p className="mt-3 text-sm text-gray-600 md:mt-4 md:text-xl">
                 {shareTitle}
               </p>
-              <p className="mt-4 font-arabic text-2xl leading-loose text-gray-900 md:text-4xl">
+              <p className="mt-4 font-arabic text-xl leading-loose text-gray-900 md:text-4xl">
                 {truncateText(arabicText, 140)}
               </p>
               <p className="mt-3 text-sm leading-relaxed text-gray-700 md:text-lg">
@@ -217,21 +226,21 @@ export function AyahShareButton({
               </p>
             </div>
 
-            <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:mt-10 md:grid-cols-7">
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:mt-10 md:grid-cols-4 lg:grid-cols-7">
               {shareOptions.map((option) => {
                 const Icon = option.icon;
                 return (
                   <button
                     key={option.id}
                     type="button"
-                    onClick={option.onClick}
+                    onClick={() => handleShareOptionClick(option.onClick)}
                     className={cn(
-                      'flex flex-col items-center gap-3 rounded-2xl p-3 text-center transition-colors',
+                      'flex min-h-[112px] flex-col items-center justify-center gap-3 rounded-2xl p-3 text-center transition-colors',
                       'hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2'
                     )}
                   >
-                    <span className="flex h-14 w-14 items-center justify-center rounded-full bg-black text-white">
-                      <Icon className="h-7 w-7" />
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-black text-white md:h-14 md:w-14">
+                      <Icon className="h-6 w-6 md:h-7 md:w-7" />
                     </span>
                     <span className="text-sm font-medium text-gray-800">{option.label}</span>
                   </button>
@@ -239,8 +248,14 @@ export function AyahShareButton({
               })}
             </div>
 
-            <div className="mt-6 rounded-2xl bg-gray-50 px-4 py-3 text-center text-sm text-gray-600">
+            <div className="mt-5 rounded-2xl bg-gray-50 px-4 py-3 text-center text-sm text-gray-600 md:mt-6">
               {copyMessage ?? 'Deep link shares open this exact ayah in the app.'}
+            </div>
+
+            <div className="mt-4 flex justify-center md:hidden">
+              <Button type="button" variant="ghost" size="sm" onClick={closeDialog}>
+                Close
+              </Button>
             </div>
           </div>
         </div>
