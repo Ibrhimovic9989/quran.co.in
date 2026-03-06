@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Code2, Facebook, Link2, MessageCircle, Share2, X, XIcon } from 'lucide-react';
+import { Code2, Copy, Facebook, Link2, MessageCircle, Send, Share2, X, XIcon } from 'lucide-react';
 import { Button } from '@/components/ui/atoms';
 import { cn } from '@/lib/utils/cn';
 
@@ -134,6 +134,17 @@ export function AyahShareButton({
       onClick: () => openShareWindow(`https://wa.me/?text=${encodeURIComponent(shareText)}`),
     },
     {
+      id: 'telegram',
+      label: 'Telegram',
+      icon: Send,
+      onClick: () =>
+        openShareWindow(
+          `https://t.me/share/url?url=${encodeURIComponent(deepLink)}&text=${encodeURIComponent(
+            `${shareTitle}\n${truncateText(translationText || arabicText, 180)}`
+          )}`
+        ),
+    },
+    {
       id: 'copy-link',
       label: 'Copy link',
       icon: Link2,
@@ -150,27 +161,11 @@ export function AyahShareButton({
       },
     },
     {
-      id: 'share-sheet',
-      label: 'More',
-      icon: Share2,
-      onClick: async () => {
-        if (!navigator.share) {
-          await copyToClipboard(deepLink, 'Ayah link copied');
-          return;
-        }
-
-        try {
-          await navigator.share({
-            title: shareTitle,
-            text: truncateText(translationText || arabicText, 120),
-            url: deepLink,
-          });
-        } catch (error) {
-          // Ignore user-cancelled share sheet, log only real issues.
-          if (error instanceof Error && error.name !== 'AbortError') {
-            console.error('Error sharing ayah:', error);
-          }
-        }
+      id: 'copy-text',
+      label: 'Copy text',
+      icon: Copy,
+      onClick: () => {
+        copyToClipboard(shareText, 'Ayah text copied');
       },
     },
   ];
@@ -222,7 +217,7 @@ export function AyahShareButton({
               </p>
             </div>
 
-            <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:mt-10 md:grid-cols-6">
+            <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:mt-10 md:grid-cols-7">
               {shareOptions.map((option) => {
                 const Icon = option.icon;
                 return (
