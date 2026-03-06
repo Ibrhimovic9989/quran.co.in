@@ -14,9 +14,10 @@ interface BookmarkButtonProps {
   surahNumber: number;
   ayahNumber?: number;
   className?: string;
+  iconOnly?: boolean;
 }
 
-export function BookmarkButton({ surahNumber, ayahNumber, className }: BookmarkButtonProps) {
+export function BookmarkButton({ surahNumber, ayahNumber, className, iconOnly = false }: BookmarkButtonProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { isLoading: isLoadingBookmarks, isBookmarked, toggle, refresh } = useBookmarks();
@@ -75,24 +76,27 @@ export function BookmarkButton({ surahNumber, ayahNumber, className }: BookmarkB
       onClick={handleBookmark}
       disabled={isLoadingBookmarks}
       className={cn(
-        'flex items-center gap-2 px-3 py-1.5 rounded-md',
-        'transition-colors duration-200',
+        'flex items-center justify-center gap-2 rounded-md transition-colors duration-200',
         bookmarked
-          ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-          : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+          ? 'bg-amber-50 text-amber-700 hover:bg-amber-100'
+          : 'bg-stone-100 text-stone-600 hover:bg-stone-200',
+        iconOnly ? 'h-9 w-9 rounded-full p-0' : 'px-3 py-1.5',
         'disabled:opacity-50 disabled:cursor-not-allowed',
         className
       )}
       aria-label={bookmarked ? 'Remove bookmark' : 'Add bookmark'}
+      title={bookmarked ? 'Bookmarked' : 'Bookmark'}
     >
       {bookmarked ? (
         <BookmarkCheck className="w-4 h-4" />
       ) : (
         <Bookmark className="w-4 h-4" />
       )}
-      <span className="text-xs font-medium">
-        {bookmarked ? 'Bookmarked' : 'Bookmark'}
-      </span>
+      {!iconOnly && (
+        <span className="text-xs font-medium">
+          {bookmarked ? 'Bookmarked' : 'Bookmark'}
+        </span>
+      )}
     </button>
   );
 }

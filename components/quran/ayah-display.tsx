@@ -5,6 +5,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Text } from '@/components/ui/typography';
 import { Select } from '@/components/ui/atoms';
@@ -32,6 +33,8 @@ interface AyahDisplayProps {
   className?: string;
   selectedReciter?: string | null; // Reciter selected at surah level
   onReciterChange?: (reciterId: string) => void; // Callback when reciter changes
+  isActive?: boolean;
+  enableSharedPlayback?: boolean;
 }
 
 export function AyahDisplay({
@@ -41,6 +44,8 @@ export function AyahDisplay({
   className,
   selectedReciter,
   onReciterChange,
+  isActive = false,
+  enableSharedPlayback = false,
 }: AyahDisplayProps) {
   const { data: session, status } = useSession();
   const [showTafsir, setShowTafsir] = useState(false);
@@ -99,6 +104,18 @@ export function AyahDisplay({
     };
   }, [status, session, ayah.surahNo, ayah.ayahNo]);
 
+  useEffect(() => {
+    if (!isActive) return;
+    const element = rootRef.current;
+    if (!element) return;
+
+    const timer = window.setTimeout(() => {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 120);
+
+    return () => window.clearTimeout(timer);
+  }, [isActive]);
+
   const availableTranslations: TranslationLanguage[] = [];
   if (ayah.english) availableTranslations.push('english');
   if (ayah.bengali) availableTranslations.push('bengali');
@@ -107,6 +124,8 @@ export function AyahDisplay({
   if (ayah.uzbek) availableTranslations.push('uzbek');
 
   const hasMultipleTranslations = availableTranslations.length > 1;
+  const hasAudio = Boolean(ayah.audio && Object.keys(ayah.audio).length > 0);
+  const showInlineAudioControl = hasAudio && selectedReciter !== undefined;
 
   const getCurrentTranslation = (): string => {
     switch (selectedTranslation) {
@@ -123,119 +142,125 @@ export function AyahDisplay({
     }
   };
 
-  // Determine gradient based on ayah number for visual variety
-  const gradients = [
-    'from-blue-50 to-blue-100/30',
-    'from-emerald-50 to-emerald-100/30',
-    'from-purple-50 to-purple-100/30',
-    'from-amber-50 to-amber-100/30',
-  ];
-  const gradient = gradients[ayah.ayahNo % gradients.length];
-
   return (
     <div ref={rootRef}>
       <Card 
         className={cn(
-          "relative overflow-hidden border border-gray-200 hover:border-gray-300",
-          "transition-all duration-300 ease-in-out hover:shadow-lg md:hover:shadow-xl hover:-translate-y-0.5 md:hover:-translate-y-1",
-          `bg-gradient-to-br ${gradient}`,
-          "group/card",
+          'relative border border-stone-200/80 bg-white/95 shadow-sm backdrop-blur-sm',
+          'transition-colors duration-200',
+          isActive && 'border-emerald-300 bg-emerald-50/40 shadow-md ring-1 ring-emerald-200',
           className
         )}
       >
-      {showNumber && (
-        <div className="mb-3 md:mb-5 flex items-center gap-2">
-          <span className="text-gray-800 text-xs md:text-base font-bold bg-white/80 backdrop-blur-sm px-2 md:px-3 py-1 md:py-1.5 rounded-md shadow-sm">
-            {ayah.surahNameTranslation} {ayah.ayahNo}
-          </span>
-        </div>
-      )}
-      
-      <div className="space-y-3 md:space-y-5">
-        {/* Arabic Text - Mobile optimized */}
-        <Text className="text-xl md:text-4xl text-right leading-tight md:leading-loose font-arabic text-gray-900 font-semibold">
-          {ayah.arabic1}
-        </Text>
-        
-        {/* Translation Selector - Using Select atom - Mobile optimized */}
-        {hasMultipleTranslations && (
-          <div className="mb-2 md:mb-3">
-            <Select
-              value={selectedTranslation}
-              onChange={(e) => setSelectedTranslation(e.target.value as TranslationLanguage)}
-              options={availableTranslations.map((lang) => ({
-                value: lang,
-                label: languageNames[lang],
-              }))}
-              className="max-w-xs text-xs md:text-sm"
-            />
+        <div className="space-y-4 md:space-y-5">
+          <div className="flex items-start justify-between gap-3">
+            {showNumber ? (
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-stone-500">
+                  {ayah.surahNo}:{ayah.ayahNo}
+                </p>
+                <p className="truncate text-xs text-stone-400 md:text-sm">
+                  {ayah.surahNameTranslation}
+                </p>
+              </div>
+            ) : (
+              <div />
+            )}
+
+            <div className="flex items-center gap-2">
+              {showInlineAudioControl && (
+                <AudioPlayer
+                  audioData={ayah.audio!}
+                  surahNo={ayah.surahNo}
+                  ayahNo={ayah.ayahNo}
+                  selectedReciter={selectedReciter}
+                  onReciterChange={onReciterChange}
+                  enableSharedPlayback={enableSharedPlayback}
+                  minimal
+                />
+              )}
+              <BookmarkButton
+                surahNumber={ayah.surahNo}
+                ayahNumber={ayah.ayahNo}
+                iconOnly
+              />
+              <AyahShareButton
+                surahNumber={ayah.surahNo}
+                ayahNumber={ayah.ayahNo}
+                surahName={ayah.surahNameTranslation}
+                arabicText={ayah.arabic1}
+                translationText={getCurrentTranslation()}
+                iconOnly
+              />
+            </div>
           </div>
-        )}
 
-        {/* Selected Translation - Mobile optimized */}
-        <Text className="text-gray-900 leading-tight md:leading-relaxed text-sm md:text-lg font-medium">
-          {getCurrentTranslation()}
-        </Text>
+          <Text className="text-right font-arabic text-[2rem] font-semibold leading-[2.1] text-stone-900 md:text-[2.6rem] md:leading-[2.3]">
+          {ayah.arabic1}
+          </Text>
 
-        {/* Audio Player */}
-        {ayah.audio && Object.keys(ayah.audio).length > 0 && (
-          <AudioPlayer
-            audioData={ayah.audio}
-            surahNo={ayah.surahNo}
-            ayahNo={ayah.ayahNo}
-            className="mt-2 md:mt-4"
-            selectedReciter={selectedReciter}
-            onReciterChange={onReciterChange}
-          />
-        )}
+          <div className="space-y-3">
+            {hasMultipleTranslations && (
+              <div className="max-w-[10rem]">
+                <Select
+                  value={selectedTranslation}
+                  onChange={(e) => setSelectedTranslation(e.target.value as TranslationLanguage)}
+                  options={availableTranslations.map((lang) => ({
+                    value: lang,
+                    label: languageNames[lang],
+                  }))}
+                  className="h-9 rounded-full border-stone-200 bg-stone-50 px-3 py-1.5 text-sm text-stone-700 focus:border-stone-400"
+                />
+              </div>
+            )}
 
-        {/* Bookmark + Share Actions */}
-        <div className="mt-2 md:mt-4 flex flex-wrap gap-2">
-          <BookmarkButton
-            surahNumber={ayah.surahNo}
-            ayahNumber={ayah.ayahNo}
-          />
-          <AyahShareButton
-            surahNumber={ayah.surahNo}
-            ayahNumber={ayah.ayahNo}
-            surahName={ayah.surahNameTranslation}
-            arabicText={ayah.arabic1}
-            translationText={getCurrentTranslation()}
-          />
-        </div>
+            <Text className="text-base font-medium leading-8 text-stone-800 md:text-xl md:leading-9">
+              {getCurrentTranslation()}
+            </Text>
+          </div>
 
-        {/* Tafsir Toggle - Mobile optimized */}
-        <button
-          onClick={async () => {
-            if (!showTafsir && !tafsir) {
-              // Fetch tafsir on demand
-              try {
-                const response = await fetch(
-                  `/api/quran/tafsir/${ayah.surahNo}/${ayah.ayahNo}`
-                );
-                if (response.ok) {
-                  const data = await response.json();
-                  setTafsir(data.tafsir);
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-stone-100 pt-3">
+            {hasAudio && !showInlineAudioControl && (
+              <AudioPlayer
+                audioData={ayah.audio!}
+                surahNo={ayah.surahNo}
+                ayahNo={ayah.ayahNo}
+                className="flex-1"
+                selectedReciter={selectedReciter}
+                onReciterChange={onReciterChange}
+                enableSharedPlayback={enableSharedPlayback}
+                minimal
+              />
+            )}
+
+            <button
+              onClick={async () => {
+                if (!showTafsir && !tafsir) {
+                  try {
+                    const response = await fetch(
+                      `/api/quran/tafsir/${ayah.surahNo}/${ayah.ayahNo}`
+                    );
+                    if (response.ok) {
+                      const data = await response.json();
+                      setTafsir(data.tafsir);
+                    }
+                  } catch (error) {
+                    console.error('Error fetching tafsir:', error);
+                  }
                 }
-              } catch (error) {
-                console.error('Error fetching tafsir:', error);
-              }
-            }
-            setShowTafsir(!showTafsir);
-          }}
-          className="text-xs md:text-base text-gray-800 hover:text-black transition-colors duration-300 font-semibold py-1.5 md:py-2 px-2 md:px-3 rounded-md hover:bg-gray-50"
-        >
-          {showTafsir ? '▼' : '▶'} Tafsir (Commentary)
-        </button>
+                setShowTafsir(!showTafsir);
+              }}
+              className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-sm font-medium text-stone-500 transition-colors duration-200 hover:bg-stone-100 hover:text-stone-800"
+            >
+              {showTafsir ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+              <span>Tafsir</span>
+            </button>
+          </div>
 
-        {/* Tafsir Display */}
-        {showTafsir && tafsir && (
-          <TafsirDisplay tafsir={tafsir} className="mt-2 md:mt-4" />
-        )}
-      </div>
-
-        {/* Hover Effect Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 ease-in-out pointer-events-none" />
+          {showTafsir && tafsir && (
+            <TafsirDisplay tafsir={tafsir} className="mt-2 md:mt-4" />
+          )}
+        </div>
       </Card>
     </div>
   );

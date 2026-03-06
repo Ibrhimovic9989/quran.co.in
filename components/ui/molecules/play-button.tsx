@@ -3,6 +3,7 @@
 // Single responsibility: Play/pause audio with consistent UI
 // Follows Atomic Design & SRP
 
+import { Pause, Play } from 'lucide-react';
 import { Button } from '../atoms';
 
 interface PlayButtonProps {
@@ -24,8 +25,12 @@ export function PlayButton({
       onClick={onClick}
       isLoading={isLoading}
       className={className}
+      aria-label={isPlaying ? 'Pause audio' : 'Play audio'}
     >
-      {isPlaying ? '⏸️ Pause' : '▶️ Play'}
+      <span className="flex items-center gap-2">
+        {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+        <span>{isPlaying ? 'Pause' : 'Play'}</span>
+      </span>
     </Button>
   );
 }

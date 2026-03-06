@@ -5,18 +5,19 @@
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { Container } from '@/components/ui/container';
-import { Heading, Text } from '@/components/ui/typography';
+import { Text } from '@/components/ui/typography';
 import { Spinner, Button } from '@/components/ui/atoms';
 import { LoadingMessage } from '@/components/ui/loading-message';
-import { ReciterSelector } from '@/components/ui/molecules';
-import { AyahDisplay } from './ayah-display';
-import { AudioPlayer } from './audio-player';
 import { getRevelationOrder, getSurahsByRevelationOrder } from '@/lib/data/revelation-order';
 import { BookmarksProvider } from './bookmarks-provider';
+import { SurahHeader } from './surah-header';
+import { SurahNavigation } from './surah-navigation';
+import { SurahPlaybackProvider } from './surah-playback-provider';
+import { SurahReadingView } from './surah-reading-view';
+import { SurahVerseListView } from './surah-verse-list-view';
+import type { SurahDisplayMode } from './surah-view-mode-toggle';
 import type { SurahResponse, TafsirResponse } from '@/types/quran-api';
 
 interface SurahDisplayProps {
@@ -39,8 +40,10 @@ interface LoadedAyahs {
 
 export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const targetAyah = searchParams.get('ayah');
+  const [displayMode, setDisplayMode] = useState<SurahDisplayMode>(
+    searchParams.get('mode') === 'reading' ? 'reading' : 'verse'
+  );
   
   // Calculate next/previous surah numbers
   const nextSurahNo = surah.surahNo < 114 ? surah.surahNo + 1 : null;
@@ -70,27 +73,27 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
     uzbek: surah.uzbek || [],
   });
   
-  const [visibleAyahs, setVisibleAyahs] = useState(INITIAL_AYAHS);
+  const [visibleAyahs, setVisibleAyahs] = useState(Math.min(INITIAL_AYAHS, surah.totalAyah, surah.english.length));
   const [isLoading, setIsLoading] = useState(false);
   const [selectedReciter, setSelectedReciter] = useState<string | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const hasScrolledRef = useRef(false);
 
-  // Get available reciters from surah audio
-  const availableReciters = surah.audio
-    ? Object.entries(surah.audio).map(([id, data]) => ({
-        id,
-        ...data,
-      }))
-    : [];
-
-  // Memoize visible ayahs for performance
-  const visibleAyahsList = useMemo(() => {
-    return loadedAyahs.english.slice(0, visibleAyahs);
-  }, [loadedAyahs.english, visibleAyahs]);
-
   const hasMore = loadedAyahs.english.length < surah.totalAyah || visibleAyahs < surah.totalAyah;
   const totalAyahs = surah.totalAyah;
+
+  const surahBaseData = useMemo(
+    () => ({
+      surahName: surah.surahName,
+      surahNameArabic: surah.surahNameArabic,
+      surahNameArabicLong: surah.surahNameArabicLong,
+      surahNameTranslation: surah.surahNameTranslation,
+      revelationPlace: surah.revelationPlace,
+      totalAyah: surah.totalAyah,
+      audio: surah.audio,
+    }),
+    [surah]
+  );
 
   // NETFLIX-STYLE: Load more ayahs on-demand from API
   const loadMoreAyahs = useCallback(async () => {
@@ -202,87 +205,67 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
     return () => clearTimeout(scrollTimer);
   }, [targetAyah, visibleAyahs, surah.surahNo, surah.totalAyah, hasMore, isLoading, loadMoreAyahs, loadedAyahs.english.length]);
 
+  const handleModeChange = useCallback(
+    (mode: SurahDisplayMode) => {
+      setDisplayMode(mode);
+
+      if (typeof window === 'undefined') return;
+
+      const params = new URLSearchParams(window.location.search);
+      if (mode === 'reading') {
+        params.set('mode', 'reading');
+      } else {
+        params.delete('mode');
+      }
+
+      const query = params.toString();
+      const nextUrl = query ? `${window.location.pathname}?${query}` : window.location.pathname;
+      window.history.replaceState({}, '', nextUrl);
+    },
+    []
+  );
+
+  useEffect(() => {
+    const nextMode = searchParams.get('mode') === 'reading' ? 'reading' : 'verse';
+    setDisplayMode((currentMode) => (currentMode === nextMode ? currentMode : nextMode));
+  }, [searchParams]);
+
   return (
     <BookmarksProvider>
-      <Container>
-        <div className="py-6 md:py-20">
-        {/* Enhanced Header Section - Mobile optimized */}
-        <div className="mb-6 md:mb-12 text-center md:text-left">
-          <div className="flex items-center justify-center md:justify-start gap-2 md:gap-3 mb-3 md:mb-6">
-            <span className="text-gray-800 text-xs md:text-base font-bold bg-white/80 backdrop-blur-sm px-2 md:px-3 py-1 md:py-1.5 rounded-md shadow-sm">
-              {surah.surahNo}
-            </span>
-            <Heading 
-              level={1} 
-              className="text-2xl md:text-6xl font-bold text-gray-900 leading-tight"
-            >
-              {surah.surahNameTranslation}
-            </Heading>
-          </div>
-          <Text className="text-xl md:text-5xl lg:text-6xl text-center md:text-right mb-3 md:mb-6 font-arabic text-gray-900 font-semibold leading-tight md:leading-relaxed">
-            {surah.surahNameArabicLong}
-          </Text>
-          <div className="flex items-center justify-center md:justify-start gap-2 md:gap-4 text-xs md:text-lg text-gray-700 mb-3 md:mb-6 font-medium">
-            <span>{surah.totalAyah} Ayahs</span>
-            <span className="text-gray-400">•</span>
-            <span>{surah.revelationPlace}</span>
-          </div>
-          <div className="flex items-center justify-center md:justify-start gap-1.5 md:gap-2 text-xs md:text-sm text-gray-600 mb-4 md:mb-8">
-            <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-900 rounded-full"></div>
-            <span>Authentic • Complete • Free Access</span>
-          </div>
+      <SurahPlaybackProvider surahNo={surah.surahNo} totalAyahs={surah.totalAyah}>
+        <Container>
+          <div className="py-6 md:py-20">
+            <SurahHeader
+              surah={surah}
+              mode={displayMode}
+              onModeChange={handleModeChange}
+              selectedReciter={selectedReciter}
+              onReciterChange={setSelectedReciter}
+            />
 
-          {/* Surah-Level Reciter Selection and Play Button - Mobile optimized */}
-          {/* Gestalt: Grouped together (Proximity & Common Region) */}
-          {surah.audio && Object.keys(surah.audio).length > 0 && (
-            <div className="mb-6 md:mb-10 space-y-3 md:space-y-4 bg-gradient-to-br from-gray-50 to-gray-100/50 p-3 md:p-6 rounded-lg border border-gray-200 shadow-sm">
-              <Text className="text-sm md:text-lg text-gray-900 font-semibold">Audio Recitation</Text>
-              <ReciterSelector
+            {displayMode === 'reading' ? (
+              <SurahReadingView
+                surahNumber={surah.surahNo}
+                loadedAyahs={{
+                  english: loadedAyahs.english,
+                  arabic1: loadedAyahs.arabic1,
+                }}
+                visibleAyahs={visibleAyahs}
                 audioData={surah.audio}
                 selectedReciter={selectedReciter}
                 onReciterChange={setSelectedReciter}
-                className="max-w-md"
               />
-              <AudioPlayer
-                audioData={surah.audio}
-                surahNo={surah.surahNo}
+            ) : (
+              <SurahVerseListView
+                surahNumber={surah.surahNo}
+                surahBaseData={surahBaseData}
+                loadedAyahs={loadedAyahs}
+                visibleAyahs={visibleAyahs}
+                tafsirs={tafsirs}
                 selectedReciter={selectedReciter}
                 onReciterChange={setSelectedReciter}
               />
-            </div>
-          )}
-        </div>
-
-        <div className="space-y-4 md:space-y-8">
-          {visibleAyahsList.map((translation, index) => {
-            const ayahNo = index + 1;
-            const tafsirKey = `${surah.surahNo}_${ayahNo}`;
-            const tafsir = tafsirs?.get(tafsirKey);
-
-            return (
-              <div key={ayahNo} id={`ayah-${surah.surahNo}-${ayahNo}`}>
-                <AyahDisplay
-                  ayah={{
-                    ...surah,
-                    ayahNo,
-                    english: translation,
-                    arabic1: loadedAyahs.arabic1[index] || '',
-                    arabic2: loadedAyahs.arabic2[index] || '',
-                    audio: surah.audio,
-                    bengali: loadedAyahs.bengali[index],
-                    urdu: loadedAyahs.urdu[index],
-                    turkish: loadedAyahs.turkish[index],
-                    uzbek: loadedAyahs.uzbek[index],
-                  }}
-                  tafsir={tafsir}
-                  showNumber={true}
-                  selectedReciter={selectedReciter}
-                  onReciterChange={setSelectedReciter}
-                />
-              </div>
-            );
-          })}
-        </div>
+            )}
 
         {/* Infinite Scroll Sentinel - triggers load when visible - Mobile optimized */}
         {/* Gestalt: Loading indicator grouped (Proximity) */}
@@ -305,76 +288,15 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
           </div>
         )}
 
-        {/* Navigation Buttons - Mobile optimized */}
-        <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-gray-200">
-          <div className="flex flex-col md:flex-row gap-3 md:gap-4 justify-between items-stretch md:items-center">
-            {/* Previous/Next by Surah Number */}
-            <div className="flex gap-2 md:gap-3 flex-1">
-              {prevSurahNo ? (
-                <Link href={`/quran/${prevSurahNo}`} className="flex-1">
-                  <Button
-                    variant="secondary"
-                    size="md"
-                    className="w-full flex items-center justify-center gap-2"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    <span className="text-xs md:text-sm">Previous Surah ({prevSurahNo})</span>
-                  </Button>
-                </Link>
-              ) : (
-                <div className="flex-1" />
-              )}
-              {nextSurahNo ? (
-                <Link href={`/quran/${nextSurahNo}`} className="flex-1">
-                  <Button
-                    variant="secondary"
-                    size="md"
-                    className="w-full flex items-center justify-center gap-2"
-                  >
-                    <span className="text-xs md:text-sm">Next Surah ({nextSurahNo})</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
-                </Link>
-              ) : (
-                <div className="flex-1" />
-              )}
-            </div>
-
-            {/* Previous/Next by Revelation Order */}
-            <div className="flex gap-2 md:gap-3 flex-1">
-              {prevRevelationSurah ? (
-                <Link href={`/quran/${prevRevelationSurah}`} className="flex-1">
-                  <Button
-                    variant="ghost"
-                    size="md"
-                    className="w-full flex items-center justify-center gap-2"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    <span className="text-xs md:text-sm">Prev (Revelation)</span>
-                  </Button>
-                </Link>
-              ) : (
-                <div className="flex-1" />
-              )}
-              {nextRevelationSurah ? (
-                <Link href={`/quran/${nextRevelationSurah}`} className="flex-1">
-                  <Button
-                    variant="ghost"
-                    size="md"
-                    className="w-full flex items-center justify-center gap-2"
-                  >
-                    <span className="text-xs md:text-sm">Next (Revelation)</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
-                </Link>
-              ) : (
-                <div className="flex-1" />
-              )}
-            </div>
+            <SurahNavigation
+              prevSurahNo={prevSurahNo}
+              nextSurahNo={nextSurahNo}
+              prevRevelationSurah={prevRevelationSurah}
+              nextRevelationSurah={nextRevelationSurah}
+            />
           </div>
-        </div>
-        </div>
-      </Container>
+        </Container>
+      </SurahPlaybackProvider>
     </BookmarksProvider>
   );
 }

@@ -7,7 +7,13 @@ import { useState, useRef, useEffect } from 'react';
 import { Text } from '@/components/ui/typography';
 import { Select } from '@/components/ui/atoms';
 import { PlayButton } from '@/components/ui/molecules';
+import { cn } from '@/lib/utils/cn';
 import type { AudioReciters } from '@/types/quran-api';
+import { useOptionalSurahPlayback } from './surah-playback-provider';
+
+function isPlaybackAbortError(error: unknown) {
+  return error instanceof DOMException && error.name === 'AbortError';
+}
 
 interface AudioPlayerProps {
   audioData: AudioReciters;
@@ -16,6 +22,8 @@ interface AudioPlayerProps {
   className?: string;
   selectedReciter?: string | null; // Reciter selected at surah level
   onReciterChange?: (reciterId: string) => void; // Callback when reciter changes
+  enableSharedPlayback?: boolean;
+  minimal?: boolean;
 }
 
 type PlayMode = 'ayah' | 'surah';
@@ -27,7 +35,12 @@ export function AudioPlayer({
   className,
   selectedReciter: propSelectedReciter,
   onReciterChange,
+  enableSharedPlayback = false,
+  minimal = false,
 }: AudioPlayerProps) {
+  const sharedPlayback = useOptionalSurahPlayback();
+  const useSharedPlayback = Boolean(enableSharedPlayback && sharedPlayback);
+
   // Use prop reciter if provided (surah level), otherwise manage locally
   const isSurahLevel = propSelectedReciter !== undefined;
   const [localReciter, setLocalReciter] = useState<string | null>(null);
@@ -53,6 +66,7 @@ export function AudioPlayer({
 
   // Fetch ayah-specific audio when at ayah level (always fetch for ayah level)
   useEffect(() => {
+    if (useSharedPlayback) return;
     if (ayahNo && !ayahAudioData) {
       setIsLoadingAudio(true);
       fetch(`/api/quran/audio/${surahNo}/${ayahNo}`)
@@ -78,9 +92,10 @@ export function AudioPlayer({
           setIsLoadingAudio(false);
         });
     }
-  }, [ayahNo, surahNo, ayahAudioData]);
+  }, [ayahNo, surahNo, ayahAudioData, useSharedPlayback]);
 
   useEffect(() => {
+    if (useSharedPlayback) return;
     const audio = audioRef.current;
     if (audio) {
       // Save position periodically while playing (only for surah-level)
@@ -120,7 +135,7 @@ export function AudioPlayer({
         audio.removeEventListener('pause', savePosition);
       };
     }
-  }, [isPlaying, selectedReciter, ayahNo, surahNo]);
+  }, [isPlaying, selectedReciter, ayahNo, surahNo, useSharedPlayback]);
 
   const getCurrentAudioData = (): AudioReciters => {
     // At ayah level, always use ayah audio if available
@@ -132,6 +147,11 @@ export function AudioPlayer({
   };
 
   const handlePlay = () => {
+    if (useSharedPlayback && sharedPlayback) {
+      handleSharedPlay();
+      return;
+    }
+
     const currentAudio = getCurrentAudioData();
     
     // Determine which reciter to use
@@ -167,6 +187,35 @@ export function AudioPlayer({
       // Play audio with selected reciter
       playAudio(reciterToUse, currentAudio);
     }
+  };
+
+  const handleSharedPlay = () => {
+    if (!sharedPlayback) return;
+
+    let reciterToUse = selectedReciter;
+    if (!reciterToUse) {
+      const firstReciterId = Object.keys(audioData)[0];
+      if (!firstReciterId) return;
+      reciterToUse = firstReciterId;
+      if (isSurahLevel && onReciterChange) {
+        onReciterChange(firstReciterId);
+      } else if (!isSurahLevel) {
+        setLocalReciter(firstReciterId);
+      }
+    }
+
+    if (!reciterToUse) return;
+
+    if (ayahNo) {
+      sharedPlayback.toggleAyahPlayback(ayahNo, reciterToUse).catch((error) => {
+        console.error('Error toggling shared ayah playback:', error);
+      });
+      return;
+    }
+
+    sharedPlayback.toggleSurahPlayback(reciterToUse, sharedPlayback.activeAyahNumber ?? 1).catch((error) => {
+      console.error('Error toggling shared surah playback:', error);
+    });
   };
 
   const playAudio = (reciterId: string, audioDataToUse: AudioReciters) => {
@@ -233,6 +282,7 @@ export function AudioPlayer({
     });
     
     audio.play().catch((err) => {
+      if (isPlaybackAbortError(err)) return;
       console.error('Error playing audio:', err);
       setIsPlaying(false);
     });
@@ -275,47 +325,60 @@ export function AudioPlayer({
     id,
     ...data,
   }));
+  const sharedIsPlaying = useSharedPlayback && sharedPlayback
+    ? ayahNo
+      ? sharedPlayback.playbackScope === 'ayah' &&
+        sharedPlayback.activeAyahNumber === ayahNo &&
+        sharedPlayback.isPlaying
+      : sharedPlayback.playbackScope === 'surah' && sharedPlayback.isPlaying
+    : false;
 
   return (
-    <div className={className}>
-      <Text className="text-sm text-gray-400 mb-3">Audio Recitation</Text>
-      
-      {/* At ayah level, always play ayah only - no mode selector needed */}
-      {ayahNo && (
-        <div className="mb-3">
-          <Text className="text-xs text-gray-500">Plays this ayah only</Text>
-        </div>
-      )}
-      
-      {/* At surah level (no ayahNo), show info that it plays whole surah */}
-      {!ayahNo && (
-        <div className="mb-3">
-          <Text className="text-xs text-gray-500">Plays entire surah</Text>
-        </div>
+    <div className={cn(minimal ? 'space-y-0' : 'space-y-3', className)}>
+      {!minimal && (
+        <>
+          <Text className="mb-3 text-sm text-gray-400">Audio Recitation</Text>
+
+          {ayahNo ? (
+            <div className="mb-3">
+              <Text className="text-xs text-gray-500">Plays this ayah only</Text>
+            </div>
+          ) : (
+            <div className="mb-3">
+              <Text className="text-xs text-gray-500">Plays entire surah</Text>
+            </div>
+          )}
+        </>
       )}
 
-      {/* Reciter Dropdown - Only show if not surah level (surah level handles it) */}
-      {!isSurahLevel && (
-        <div className="mb-3">
-          <Select
-            value={selectedReciter || ''}
-            onChange={(e) => handleReciterChange(e.target.value)}
-            options={availableReciters.map((reciter) => ({
-              value: reciter.id,
-              label: reciter.reciter,
-            }))}
-            placeholder="Select Reciter"
-            disabled={isLoadingAudio}
-          />
-        </div>
-      )}
+      <div className={cn('flex flex-wrap items-center gap-2', minimal ? 'pt-1' : 'w-full')}>
+        {!isSurahLevel && (
+          <div className={cn(minimal ? 'min-w-[10rem] flex-1 sm:flex-none' : 'mb-3 w-full')}>
+            <Select
+              value={selectedReciter || ''}
+              onChange={(e) => handleReciterChange(e.target.value)}
+              options={availableReciters.map((reciter) => ({
+                value: reciter.id,
+                label: reciter.reciter,
+              }))}
+              placeholder="Select Reciter"
+              disabled={isLoadingAudio}
+              className={cn(
+                minimal &&
+                  'h-9 rounded-full border-stone-200 bg-stone-50 px-3 py-1.5 text-sm text-stone-700 focus:border-stone-400'
+              )}
+            />
+          </div>
+        )}
 
-      {/* Play/Pause Button - Using PlayButton molecule */}
-      <div className="w-full">
         <PlayButton
-          isPlaying={isPlaying}
+          isPlaying={useSharedPlayback ? sharedIsPlaying : isPlaying}
           isLoading={isLoadingAudio}
           onClick={handlePlay}
+          className={cn(
+            minimal &&
+              'rounded-full border-stone-200 bg-stone-900 px-3 py-1.5 text-sm text-white hover:bg-stone-800'
+          )}
         />
       </div>
     </div>

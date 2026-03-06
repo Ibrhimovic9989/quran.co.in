@@ -13,6 +13,8 @@ interface ReciterSelectorProps {
   onReciterChange: (reciterId: string) => void;
   label?: string;
   className?: string;
+  hideLabel?: boolean;
+  minimal?: boolean;
 }
 
 export function ReciterSelector({
@@ -21,6 +23,8 @@ export function ReciterSelector({
   onReciterChange,
   label = 'Select Reciter',
   className,
+  hideLabel = false,
+  minimal = false,
 }: ReciterSelectorProps) {
   const reciters = Object.entries(audioData).map(([id, data]) => ({
     value: id,
@@ -29,12 +33,17 @@ export function ReciterSelector({
 
   return (
     <div className={className}>
-      <Text className="text-sm text-gray-400 mb-2">{label}</Text>
+      {!hideLabel && <Text className="mb-2 text-sm text-gray-400">{label}</Text>}
       <Select
         value={selectedReciter || ''}
         onChange={(e) => onReciterChange(e.target.value)}
         options={reciters}
         placeholder="Select Reciter"
+        className={
+          minimal
+            ? 'h-9 rounded-full border-stone-200 bg-stone-50 px-3 py-1.5 text-sm text-stone-700 focus:border-stone-400'
+            : undefined
+        }
       />
     </div>
   );
