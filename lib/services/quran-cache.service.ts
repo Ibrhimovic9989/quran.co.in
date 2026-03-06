@@ -4,7 +4,8 @@
 import { QuranRepository } from '@/lib/repositories';
 import { QuranApiClient } from '@/lib/api/quran-api-client';
 import type { ApiProvider } from '@prisma/client';
-import type { SurahInfo, SurahResponse } from '@/types/quran-api';
+import type { SurahResponse } from '@/types/quran-api';
+import { getCachedSurahList, type SurahListItem } from '@/lib/services/quran-surah-list-cache';
 
 export class QuranCacheService {
   private repository: QuranRepository;
@@ -19,42 +20,16 @@ export class QuranCacheService {
    * Get all surahs - prefer database, fallback to API
    * Optimized for fast loading (<100ms)
    */
-  async getAllSurahs(apiProvider: ApiProvider = 'TEMPORARY_API'): Promise<(SurahInfo & { surahNo: number })[]> {
+  async getAllSurahs(apiProvider: ApiProvider = 'TEMPORARY_API'): Promise<SurahListItem[]> {
     const startTime = Date.now();
+    const result = await getCachedSurahList(apiProvider);
     
-    // Try database first (fast)
-    const dbSurahs = await this.repository.findAllSurahs(apiProvider);
-    
-    if (dbSurahs.length > 0) {
-      // Return from database (cached) - should be <50ms
-      const result = dbSurahs.map((surah) => ({
-        surahName: surah.name,
-        surahNameArabic: surah.arabicName,
-        surahNameArabicLong: (surah.metadata as any)?.surahNameArabicLong || surah.arabicName,
-        surahNameTranslation: surah.englishNameTranslation || surah.englishName,
-        revelationPlace: (surah.revelationType === 'MECCAN' ? 'Mecca' : 'Madina') as 'Mecca' | 'Madina',
-        totalAyah: surah.numberOfAyahs,
-        surahNo: surah.number,
-      }));
-      
-      const queryTime = Date.now() - startTime;
-      if (queryTime > 200) {
-        console.warn(`Slow surah list query: ${queryTime}ms`);
-      }
-      
-      return result;
+    const queryTime = Date.now() - startTime;
+    if (queryTime > 200) {
+      console.warn(`Slow surah list query: ${queryTime}ms`);
     }
 
-    // If no data in DB, fetch from API (slow, but only once)
-    const apiSurahs = await this.apiClient.getSurahs();
-    
-    // Store in database for future requests (async, don't wait)
-    this.syncSurahsToDatabase(apiSurahs, apiProvider).catch(console.error);
-    
-    return apiSurahs.map((surah, index) => ({
-      ...surah,
-      surahNo: index + 1,
-    }));
+    return result;
   }
 
   /**
@@ -121,31 +96,6 @@ export class QuranCacheService {
     } catch (error) {
       console.error(`Error fetching surah ${surahNo} from API:`, error);
       return null;
-    }
-  }
-
-  /**
-   * Sync surahs to database (async, non-blocking)
-   */
-  private async syncSurahsToDatabase(
-    surahs: SurahInfo[],
-    apiProvider: ApiProvider
-  ): Promise<void> {
-    for (let i = 0; i < surahs.length; i++) {
-      const surah = surahs[i];
-      await this.repository.upsertSurah({
-        number: i + 1,
-        name: surah.surahName,
-        englishName: surah.surahNameTranslation,
-        arabicName: surah.surahNameArabic,
-        englishNameTranslation: surah.surahNameTranslation,
-        numberOfAyahs: surah.totalAyah,
-        revelationType: surah.revelationPlace === 'Mecca' ? 'MECCAN' : 'MEDINAN',
-        apiProvider,
-        metadata: {
-          surahNameArabicLong: surah.surahNameArabicLong,
-        } as any,
-      });
     }
   }
 

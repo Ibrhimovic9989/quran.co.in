@@ -7,9 +7,8 @@ import { QuranCacheService } from '@/lib/services/quran-cache.service';
 import { Spinner } from '@/components/ui/atoms';
 import { LoadingMessage } from '@/components/ui/loading-message';
 
-// Force dynamic rendering - don't try to fetch at build time
-export const dynamic = 'force-dynamic';
-export const revalidate = 3600; // Cache for 1 hour (surahs don't change)
+// Cache the surah list page for an hour because its content is effectively static.
+export const revalidate = 3600;
 
 export default async function QuranPage() {
   try {

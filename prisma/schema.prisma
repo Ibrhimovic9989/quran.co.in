@@ -130,6 +130,7 @@ model Surah {
   readingHistory  ReadingHistory[]
 
   @@unique([number, apiProvider])
+  @@index([apiProvider, number])
   @@index([number])
   @@index([apiProvider])
   @@map("surahs")
