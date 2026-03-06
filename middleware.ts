@@ -6,32 +6,10 @@ import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
 export async function middleware(request: NextRequest) {
-  const token = await getToken({ 
+  const token = await getToken({
     req: request,
-    secret: process.env.NEXTAUTH_SECRET 
+    secret: process.env.NEXTAUTH_SECRET
   });
-
-  // Redirect authenticated users away from sign-in page
-  if (request.nextUrl.pathname.startsWith('/sign-in')) {
-    if (token) {
-      // If authenticated, redirect to quran page
-      return NextResponse.redirect(new URL('/quran', request.url));
-    }
-    return NextResponse.next();
-  }
-
-  // Protect profile routes
-  if (request.nextUrl.pathname.startsWith('/profile')) {
-    // #region agent log
-    const logData = {pathname:request.nextUrl.pathname,hasToken:!!token,tokenEmail:token?.email};
-    // Note: Can't use fetch in middleware, will log via file write
-    // #endregion
-    if (!token) {
-      const signInUrl = new URL('/sign-in', request.url);
-      signInUrl.searchParams.set('callbackUrl', request.url);
-      return NextResponse.redirect(signInUrl);
-    }
-  }
 
   // Protect API routes
   if (request.nextUrl.pathname.startsWith('/api/protected')) {
@@ -48,8 +26,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/profile/:path*',
     '/api/protected/:path*',
-    '/sign-in',
   ],
 };

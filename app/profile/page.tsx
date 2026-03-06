@@ -38,7 +38,7 @@ export default function ProfilePage() {
     // #endregion
     if (status === 'unauthenticated') {
       // Redirect to sign-in with callbackUrl to return to profile
-      router.push('/sign-in?callbackUrl=/profile');
+      router.replace('/sign-in?callbackUrl=/profile');
     }
   }, [status, router]);
 

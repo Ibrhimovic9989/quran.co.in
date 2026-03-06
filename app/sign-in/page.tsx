@@ -10,8 +10,27 @@ import { Heading, Text } from '@/components/ui/typography';
 import { Card } from '@/components/ui/card';
 import { ShimmerButton } from '@/components/ui/atoms';
 import { signIn, useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+
+function normalizeCallbackUrl(rawCallbackUrl: string | null) {
+  if (!rawCallbackUrl) return '/quran';
+
+  if (typeof window === 'undefined') {
+    return rawCallbackUrl.startsWith('/') ? rawCallbackUrl : '/quran';
+  }
+
+  try {
+    const resolvedUrl = new URL(rawCallbackUrl, window.location.origin);
+    if (resolvedUrl.origin !== window.location.origin) {
+      return '/quran';
+    }
+
+    return `${resolvedUrl.pathname}${resolvedUrl.search}${resolvedUrl.hash}` || '/quran';
+  } catch {
+    return rawCallbackUrl.startsWith('/') ? rawCallbackUrl : '/quran';
+  }
+}
 
 function SignInContent() {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +39,10 @@ function SignInContent() {
   const searchParams = useSearchParams();
 
   // Get callbackUrl from URL or default to /quran
-  const callbackUrl = searchParams.get('callbackUrl') || '/quran';
+  const callbackUrl = useMemo(
+    () => normalizeCallbackUrl(searchParams.get('callbackUrl')),
+    [searchParams]
+  );
 
   // #region agent log
   useEffect(() => {
@@ -34,7 +56,7 @@ function SignInContent() {
       // #region agent log
       fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'sign-in/page.tsx:25',message:'Redirecting authenticated user',data:{callbackUrl},timestamp:Date.now(),runId:'run1',hypothesisId:'A'})}).catch(()=>{});
       // #endregion
-      router.push(callbackUrl);
+      router.replace(callbackUrl);
     }
   }, [session, status, router, callbackUrl]);
 
