@@ -22,7 +22,7 @@ export function SurahNavigation({
       <div className="flex flex-col items-stretch justify-between gap-3 md:flex-row md:items-center md:gap-4">
         <div className="flex flex-1 gap-2 md:gap-3">
           {prevSurahNo ? (
-            <Link href={`/quran/${prevSurahNo}`} className="flex-1">
+            <Link href={`/quran/${prevSurahNo}`} scroll className="flex-1">
               <Button variant="secondary" size="md" className="w-full flex items-center justify-center gap-2">
                 <ChevronLeft className="h-4 w-4" />
                 <span className="text-xs md:text-sm">Previous Surah ({prevSurahNo})</span>
@@ -33,7 +33,7 @@ export function SurahNavigation({
           )}
 
           {nextSurahNo ? (
-            <Link href={`/quran/${nextSurahNo}`} className="flex-1">
+            <Link href={`/quran/${nextSurahNo}`} scroll className="flex-1">
               <Button variant="secondary" size="md" className="w-full flex items-center justify-center gap-2">
                 <span className="text-xs md:text-sm">Next Surah ({nextSurahNo})</span>
                 <ChevronRight className="h-4 w-4" />
@@ -46,7 +46,7 @@ export function SurahNavigation({
 
         <div className="flex flex-1 gap-2 md:gap-3">
           {prevRevelationSurah ? (
-            <Link href={`/quran/${prevRevelationSurah}`} className="flex-1">
+            <Link href={`/quran/${prevRevelationSurah}`} scroll className="flex-1">
               <Button variant="ghost" size="md" className="w-full flex items-center justify-center gap-2">
                 <ChevronLeft className="h-4 w-4" />
                 <span className="text-xs md:text-sm">Prev (Revelation)</span>
@@ -57,7 +57,7 @@ export function SurahNavigation({
           )}
 
           {nextRevelationSurah ? (
-            <Link href={`/quran/${nextRevelationSurah}`} className="flex-1">
+            <Link href={`/quran/${nextRevelationSurah}`} scroll className="flex-1">
               <Button variant="ghost" size="md" className="w-full flex items-center justify-center gap-2">
                 <span className="text-xs md:text-sm">Next (Revelation)</span>
                 <ChevronRight className="h-4 w-4" />
