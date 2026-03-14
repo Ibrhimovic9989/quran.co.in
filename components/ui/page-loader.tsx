@@ -30,15 +30,9 @@ export function PageLoader({ className }: PageLoaderProps) {
       ? localStorage.getItem(SPLASH_STORAGE_KEY) === 'true'
       : false;
 
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'page-loader.tsx:23',message:'Page loader check',data:{isHomepage,hasSeenSplash,pathname,authStatus:status},timestamp:Date.now(),runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-    // #endregion
 
     // Don't show if not homepage or already seen (works for both authenticated and unauthenticated)
     if (!isHomepage || hasSeenSplash) {
-      // #region agent log
-      fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'page-loader.tsx:33',message:'Hiding splash screen',data:{reason:!isHomepage?'not-homepage':'already-seen'},timestamp:Date.now(),runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-      // #endregion
       setIsVisible(false);
       setIsLoading(false);
       return;

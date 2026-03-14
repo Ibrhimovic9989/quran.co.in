@@ -23,7 +23,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Permissions-Policy',
-            value: 'geolocation=(), microphone=(), camera=(), interest-cohort=(), payment=(), usb=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=(), web-share=(), clipboard-read=(), clipboard-write=(), ambient-light-sensor=(), autoplay=(), battery=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), gamepad=(), keyboard-map=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), xr-spatial-tracking=(), window-management=(), window-placement=(), local-fonts=(), idle-detection=(), keyboard-map=()',
+            value: 'camera=(), microphone=(), geolocation=(), web-share=(), window-management=(), local-fonts=(), idle-detection=(), usb=(), bluetooth=(), serial=(), hid=(), payment=(), interest-cohort=()',
           },
         ],
       },

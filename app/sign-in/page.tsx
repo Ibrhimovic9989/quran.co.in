@@ -44,26 +44,15 @@ function SignInContent() {
     [searchParams]
   );
 
-  // #region agent log
-  useEffect(() => {
-    fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'sign-in/page.tsx:18',message:'Sign-in page loaded',data:{callbackUrl,hasCallbackUrl:!!searchParams.get('callbackUrl')},timestamp:Date.now(),runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  }, [callbackUrl, searchParams]);
-  // #endregion
 
   // Redirect if already authenticated
   useEffect(() => {
     if (status === 'authenticated' && session?.user) {
-      // #region agent log
-      fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'sign-in/page.tsx:25',message:'Redirecting authenticated user',data:{callbackUrl},timestamp:Date.now(),runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
       router.replace(callbackUrl);
     }
   }, [session, status, router, callbackUrl]);
 
   const handleSignIn = () => {
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'sign-in/page.tsx:33',message:'Sign in button clicked',data:{callbackUrl},timestamp:Date.now(),runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
     setIsLoading(true);
     signIn('google', {
       callbackUrl: callbackUrl,

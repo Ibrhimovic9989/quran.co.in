@@ -26,16 +26,8 @@ export default function ProfilePage() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loadingUserData, setLoadingUserData] = useState(true);
 
-  // #region agent log
-  useEffect(() => {
-    fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'profile/page.tsx:15',message:'Profile page loaded',data:{status,hasSession:!!session,userName:session?.user?.name,pathname:window.location.pathname},timestamp:Date.now(),runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  }, [status, session]);
-  // #endregion
 
   useEffect(() => {
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'profile/page.tsx:20',message:'Auth status check',data:{status,willRedirect:status==='unauthenticated'},timestamp:Date.now(),runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
     if (status === 'unauthenticated') {
       // Redirect to sign-in with callbackUrl to return to profile
       router.replace('/sign-in?callbackUrl=/profile');

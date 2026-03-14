@@ -47,13 +47,7 @@ export function Navbar({ className }: NavbarProps) {
 
   // Filter nav items based on authentication status
   const filteredNavItems = navItems.filter((item) => {
-    // #region agent log
-    fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'navbar.tsx:47',message:'Filtering nav item',data:{label:item.label,href:item.href,requiresAuth:item.requiresAuth,authStatus:status,hasSession:!!session},timestamp:Date.now(),runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
     if (item.requiresAuth === true) {
-      // #region agent log
-      fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'navbar.tsx:50',message:'Checking auth requirement',data:{label:item.label,status:status,willShow:status==="authenticated"},timestamp:Date.now(),runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-      // #endregion
       return status === "authenticated";
     }
     if (item.label === "Sign In") {
@@ -114,9 +108,6 @@ export function Navbar({ className }: NavbarProps) {
                   key={item.label}
                   href={item.href}
                   onClick={(e) => {
-                    // #region agent log
-                    fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'navbar.tsx:106',message:'Nav item clicked',data:{label:item.label,href:item.href,index:idx,authStatus:status,willNavigate:true},timestamp:Date.now(),runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-                    // #endregion
                     handleNavClick(idx);
                     // Don't prevent default - let Link handle navigation
                   }}
@@ -177,9 +168,6 @@ export function Navbar({ className }: NavbarProps) {
                 whileTap={{ scale: 0.95 }}
                 whileHover={{ scale: 1.02 }}
                 onClick={() => {
-                  // #region agent log
-                  fetch('http://127.0.0.1:7244/ingest/52b67fd4-58b7-42fe-bb56-c406287f7fc9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'navbar.tsx:170',message:'Sign out clicked',data:{},timestamp:Date.now(),runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-                  // #endregion
                   signOut({ callbackUrl: '/' });
                 }}
                 aria-label="Sign Out"
