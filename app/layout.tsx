@@ -40,6 +40,7 @@ export default function RootLayout({
       <head>
         {/* CRITICAL: Block Web Share API IMMEDIATELY - Must run before ANY other script */}
         <script
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
@@ -53,6 +54,7 @@ export default function RootLayout({
                     try {
                       delete navigator.canShare;
                     } catch(e) {}
+                    // Use Object.defineProperty to permanently block
                     Object.defineProperty(navigator, 'share', {
                       get: function() { return undefined; },
                       set: function() {},
@@ -65,6 +67,17 @@ export default function RootLayout({
                       configurable: false,
                       enumerable: false
                     });
+                    // Also block any attempts to check for share
+                    if (navigator.hasOwnProperty) {
+                      try {
+                        Object.defineProperty(navigator, 'hasOwnProperty', {
+                          value: function(prop) {
+                            if (prop === 'share' || prop === 'canShare') return false;
+                            return Object.prototype.hasOwnProperty.call(this, prop);
+                          }
+                        });
+                      } catch(e) {}
+                    }
                   }
                 } catch(e) {
                   // Silently fail if blocking fails
