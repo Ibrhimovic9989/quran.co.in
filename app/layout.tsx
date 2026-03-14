@@ -38,25 +38,36 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* CRITICAL: Block Web Share API and permissions IMMEDIATELY before browser detects them */}
+        {/* CRITICAL: Block Web Share API IMMEDIATELY - Must run before ANY other script */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
                 'use strict';
-                // Block navigator.share completely
-                if (typeof navigator !== 'undefined') {
-                  Object.defineProperty(navigator, 'share', {
-                    value: undefined,
-                    writable: false,
-                    configurable: false
-                  });
-                  // Also block canShare
-                  Object.defineProperty(navigator, 'canShare', {
-                    value: undefined,
-                    writable: false,
-                    configurable: false
-                  });
+                try {
+                  // Block navigator.share completely - prevent browser from detecting it
+                  if (typeof navigator !== 'undefined') {
+                    try {
+                      delete navigator.share;
+                    } catch(e) {}
+                    try {
+                      delete navigator.canShare;
+                    } catch(e) {}
+                    Object.defineProperty(navigator, 'share', {
+                      get: function() { return undefined; },
+                      set: function() {},
+                      configurable: false,
+                      enumerable: false
+                    });
+                    Object.defineProperty(navigator, 'canShare', {
+                      get: function() { return undefined; },
+                      set: function() {},
+                      configurable: false,
+                      enumerable: false
+                    });
+                  }
+                } catch(e) {
+                  // Silently fail if blocking fails
                 }
               })();
             `,
