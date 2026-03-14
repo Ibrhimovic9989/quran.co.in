@@ -45,49 +45,83 @@ export default function RootLayout({
             __html: `
               (function() {
                 'use strict';
+                // Block IMMEDIATELY - before anything else can run
                 try {
-                  // Block navigator.share completely - prevent browser from detecting it
                   if (typeof navigator !== 'undefined') {
+                    // Delete first
+                    try { delete navigator.share; } catch(e) {}
+                    try { delete navigator.canShare; } catch(e) {}
+                    
+                    // Block with defineProperty - make it completely inaccessible
                     try {
-                      delete navigator.share;
+                      Object.defineProperty(navigator, 'share', {
+                        get: function() { 
+                          return undefined; 
+                        },
+                        set: function() {},
+                        configurable: false,
+                        enumerable: false,
+                        writable: false
+                      });
                     } catch(e) {}
+                    
                     try {
-                      delete navigator.canShare;
+                      Object.defineProperty(navigator, 'canShare', {
+                        get: function() { 
+                          return undefined; 
+                        },
+                        set: function() {},
+                        configurable: false,
+                        enumerable: false,
+                        writable: false
+                      });
                     } catch(e) {}
-                    // Use Object.defineProperty to permanently block
-                    Object.defineProperty(navigator, 'share', {
-                      get: function() { return undefined; },
-                      set: function() {},
-                      configurable: false,
-                      enumerable: false
-                    });
-                    Object.defineProperty(navigator, 'canShare', {
-                      get: function() { return undefined; },
-                      set: function() {},
-                      configurable: false,
-                      enumerable: false
-                    });
-                    // Also block any attempts to check for share
-                    if (navigator.hasOwnProperty) {
-                      try {
-                        Object.defineProperty(navigator, 'hasOwnProperty', {
-                          value: function(prop) {
-                            if (prop === 'share' || prop === 'canShare') return false;
-                            return Object.prototype.hasOwnProperty.call(this, prop);
-                          }
+                    
+                    // Block via prototype if possible
+                    try {
+                      if (navigator.__proto__) {
+                        Object.defineProperty(navigator.__proto__, 'share', {
+                          get: function() { return undefined; },
+                          set: function() {},
+                          configurable: false,
+                          enumerable: false
                         });
-                      } catch(e) {}
-                    }
+                        Object.defineProperty(navigator.__proto__, 'canShare', {
+                          get: function() { return undefined; },
+                          set: function() {},
+                          configurable: false,
+                          enumerable: false
+                        });
+                      }
+                    } catch(e) {}
                   }
-                } catch(e) {
-                  // Silently fail if blocking fails
+                } catch(e) {}
+                
+                // Also block on window load event
+                if (typeof window !== 'undefined') {
+                  window.addEventListener('DOMContentLoaded', function() {
+                    try {
+                      if (navigator.share !== undefined) {
+                        Object.defineProperty(navigator, 'share', {
+                          get: function() { return undefined; },
+                          configurable: false
+                        });
+                      }
+                      if (navigator.canShare !== undefined) {
+                        Object.defineProperty(navigator, 'canShare', {
+                          get: function() { return undefined; },
+                          configurable: false
+                        });
+                      }
+                    } catch(e) {}
+                  }, true);
                 }
               })();
             `,
           }}
         />
         {/* Prevent permission popups - Block ALL device access requests including Web Share API */}
-        <meta httpEquiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=(), interest-cohort=(), payment=(), usb=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=(), web-share=(), ambient-light-sensor=(), autoplay=(), battery=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), gamepad=(), keyboard-map=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), xr-spatial-tracking=()" />
+        <meta httpEquiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=(), interest-cohort=(), payment=(), usb=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=(), web-share=(), clipboard-read=(), clipboard-write=(), ambient-light-sensor=(), autoplay=(), battery=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), gamepad=(), keyboard-map=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), xr-spatial-tracking=()" />
         {/* Google tag (gtag.js) */}
         <script
           async
