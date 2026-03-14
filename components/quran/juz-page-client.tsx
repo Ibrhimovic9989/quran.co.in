@@ -96,6 +96,11 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
     fetchJuzPage(0);
   }, [fetchJuzPage]);
 
+  // Scroll to top when juz number changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [juzNumber]);
+
   // Group ayahs by surah (derived for rendering)
   const ayahsBySurah = useMemo(() => {
     return ayahs.reduce((acc, ayah) => {
@@ -279,30 +284,40 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
           <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-gray-200">
             <div className="flex gap-3 md:gap-4 justify-between items-center">
               {juzNumber > 1 ? (
-                <Link href={`/quran/juz/${juzNumber - 1}`} className="flex-1">
+                <div className="flex-1">
                   <Button
                     variant="secondary"
                     size="md"
                     className="w-full flex items-center justify-center gap-2"
+                    onClick={() => {
+                      window.scrollTo(0, 0);
+                      router.push(`/quran/juz/${juzNumber - 1}`);
+                      setTimeout(() => window.scrollTo(0, 0), 100);
+                    }}
                   >
                     <ChevronLeft className="w-4 h-4" />
                     <span className="text-xs md:text-sm">Previous Juz ({juzNumber - 1})</span>
                   </Button>
-                </Link>
+                </div>
               ) : (
                 <div className="flex-1" />
               )}
               {juzNumber < 30 ? (
-                <Link href={`/quran/juz/${juzNumber + 1}`} className="flex-1">
+                <div className="flex-1">
                   <Button
                     variant="secondary"
                     size="md"
                     className="w-full flex items-center justify-center gap-2"
+                    onClick={() => {
+                      window.scrollTo(0, 0);
+                      router.push(`/quran/juz/${juzNumber + 1}`);
+                      setTimeout(() => window.scrollTo(0, 0), 100);
+                    }}
                   >
                     <span className="text-xs md:text-sm">Next Juz ({juzNumber + 1})</span>
                     <ChevronRight className="w-4 h-4" />
                   </Button>
-                </Link>
+                </div>
               ) : (
                 <div className="flex-1" />
               )}

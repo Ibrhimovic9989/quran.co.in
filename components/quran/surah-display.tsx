@@ -230,6 +230,11 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
     setDisplayMode((currentMode) => (currentMode === nextMode ? currentMode : nextMode));
   }, [searchParams]);
 
+  // Scroll to top when surah number changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [surah.surahNo]);
+
   return (
     <BookmarksProvider>
       <SurahPlaybackProvider surahNo={surah.surahNo} totalAyahs={surah.totalAyah}>
