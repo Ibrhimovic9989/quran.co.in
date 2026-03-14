@@ -222,7 +222,7 @@ export function AyahShareButton({
               <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-gray-200 md:hidden" />
               <button
                 type="button"
-                aria-label="Close share dialog"
+                aria-label="Close send dialog"
                 className="absolute right-3 top-3 z-10 rounded-full bg-white/90 p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 md:right-4 md:top-4"
                 onClick={closeDialog}
               >
@@ -265,7 +265,7 @@ export function AyahShareButton({
               </div>
 
               <div className="mt-4 rounded-2xl bg-gray-50 px-4 py-3 text-center text-sm text-gray-600 md:mt-6">
-                {copyMessage ?? 'Deep link shares open this exact ayah in the app.'}
+                {copyMessage ?? 'Deep link sends open this exact ayah in the app.'}
               </div>
 
               <div className="mt-4 flex justify-center pb-[max(0.25rem,env(safe-area-inset-bottom))] md:hidden">
