@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     apple: '/favicon.svg',
   },
   other: {
-    'permissions-policy': 'geolocation=(), microphone=(), camera=(), interest-cohort=(), payment=(), usb=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=(), web-share=()',
+    'permissions-policy': 'geolocation=(), microphone=(), camera=(), interest-cohort=(), payment=(), usb=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=(), web-share=(), clipboard-read=(), clipboard-write=()',
   },
 };
 
