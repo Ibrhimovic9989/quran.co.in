@@ -39,7 +39,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* CRITICAL: Block Web Share API IMMEDIATELY - Must run before ANY other script */}
+        {/* CRITICAL: Block Web Share API IMMEDIATELY - Must be FIRST in head */}
+        <script
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: `(function(){'use strict';try{if(typeof navigator!=='undefined'){try{delete navigator.share}catch(e){}try{delete navigator.canShare}catch(e){}try{Object.defineProperty(navigator,'share',{get:function(){return undefined},set:function(){},configurable:false,enumerable:false,writable:false})}catch(e){}try{Object.defineProperty(navigator,'canShare',{get:function(){return undefined},set:function(){},configurable:false,enumerable:false,writable:false})}catch(e){}try{if(navigator.__proto__){Object.defineProperty(navigator.__proto__,'share',{get:function(){return undefined},configurable:false})}Object.defineProperty(navigator.__proto__,'canShare',{get:function(){return undefined},configurable:false})}catch(e){}}}catch(e){}})();`,
+          }}
+        />
         <script
           suppressHydrationWarning
           dangerouslySetInnerHTML={{

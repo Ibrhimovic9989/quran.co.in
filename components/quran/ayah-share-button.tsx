@@ -198,11 +198,11 @@ export function AyahShareButton({
           'flex items-center gap-2',
           iconOnly && 'h-9 w-9 rounded-full border-0 bg-stone-100 p-0 text-stone-600 hover:bg-stone-200'
         )}
-        aria-label="Share ayah"
-        title="Share ayah"
+        aria-label="Send ayah"
+        title="Send ayah"
       >
         <Share2 className="w-4 h-4" />
-        {!iconOnly && <span>Share</span>}
+        {!iconOnly && <span>Send</span>}
       </Button>
 
       {isMounted &&
@@ -212,7 +212,7 @@ export function AyahShareButton({
             className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 px-0 py-0 md:items-center md:px-3 md:py-4"
             role="dialog"
             aria-modal="true"
-            aria-label={`Share ${shareTitle}`}
+            aria-label={`Send ${shareTitle}`}
             onClick={closeDialog}
           >
             <div
@@ -230,7 +230,7 @@ export function AyahShareButton({
               </button>
 
               <div className="mx-auto max-w-xl text-center">
-                <h2 className="pr-10 text-xl font-bold text-gray-900 md:pr-0 md:text-4xl">Share this Ayah</h2>
+                <h2 className="pr-10 text-xl font-bold text-gray-900 md:pr-0 md:text-4xl">Send this Ayah</h2>
                 <p className="mt-1 text-sm text-gray-600 md:mt-3 md:text-lg">
                   {shareTitle}
                 </p>
