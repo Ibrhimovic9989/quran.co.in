@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     apple: '/favicon.svg',
   },
   other: {
-    'permissions-policy': 'geolocation=(), microphone=(), camera=(), interest-cohort=(), payment=(), usb=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=(), web-share=(), clipboard-read=(), clipboard-write=()',
+    'permissions-policy': 'geolocation=(), microphone=(), camera=(), interest-cohort=(), payment=(), usb=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=(), web-share=(), clipboard-read=(), clipboard-write=(), window-management=(), window-placement=(), local-fonts=(), idle-detection=()',
   },
 };
 
@@ -43,7 +43,7 @@ export default function RootLayout({
         <script
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
-            __html: `(function(){'use strict';try{if(typeof navigator!=='undefined'){try{delete navigator.share}catch(e){}try{delete navigator.canShare}catch(e){}try{Object.defineProperty(navigator,'share',{get:function(){return undefined},set:function(){},configurable:false,enumerable:false,writable:false})}catch(e){}try{Object.defineProperty(navigator,'canShare',{get:function(){return undefined},set:function(){},configurable:false,enumerable:false,writable:false})}catch(e){}try{if(navigator.__proto__){Object.defineProperty(navigator.__proto__,'share',{get:function(){return undefined},configurable:false})}Object.defineProperty(navigator.__proto__,'canShare',{get:function(){return undefined},configurable:false})}catch(e){}}}catch(e){}})();`,
+            __html: `(function(){'use strict';try{if(typeof window!=='undefined'){try{delete window.getScreenDetails;window.getScreenDetails=undefined;delete window.queryLocalFonts;window.queryLocalFonts=undefined}catch(e){}try{Object.defineProperty(window,'getScreenDetails',{get:function(){return undefined},configurable:false});Object.defineProperty(window,'queryLocalFonts',{get:function(){return undefined},configurable:false})}catch(e){}}if(typeof navigator!=='undefined'){try{delete navigator.share;delete navigator.canShare;delete navigator.windowControlsOverlay}catch(e){}try{Object.defineProperty(navigator,'share',{get:function(){return undefined},set:function(){},configurable:false});Object.defineProperty(navigator,'canShare',{get:function(){return undefined},set:function(){},configurable:false});Object.defineProperty(navigator,'windowControlsOverlay',{get:function(){return undefined},configurable:false})}catch(e){}}}catch(e){}})();`,
           }}
         />
         <script
@@ -54,6 +54,15 @@ export default function RootLayout({
                 'use strict';
                 // Block IMMEDIATELY - before anything else can run
                 try {
+                  if (typeof window !== 'undefined') {
+                    try { delete window.getScreenDetails; window.getScreenDetails = undefined; } catch(e) {}
+                    try {
+                      Object.defineProperty(window, 'getScreenDetails', {
+                        get: function() { return undefined; },
+                        configurable: false
+                      });
+                    } catch(e) {}
+                  }
                   if (typeof navigator !== 'undefined') {
                     // Delete first
                     try { delete navigator.share; } catch(e) {}
@@ -108,6 +117,9 @@ export default function RootLayout({
                 if (typeof window !== 'undefined') {
                   window.addEventListener('DOMContentLoaded', function() {
                     try {
+                      if (typeof window.getScreenDetails !== 'undefined') {
+                        window.getScreenDetails = undefined;
+                      }
                       if (navigator.share !== undefined) {
                         Object.defineProperty(navigator, 'share', {
                           get: function() { return undefined; },
@@ -128,7 +140,7 @@ export default function RootLayout({
           }}
         />
         {/* Prevent permission popups - Block ALL device access requests including Web Share API */}
-        <meta httpEquiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=(), interest-cohort=(), payment=(), usb=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=(), web-share=(), clipboard-read=(), clipboard-write=(), ambient-light-sensor=(), autoplay=(), battery=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), gamepad=(), keyboard-map=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), xr-spatial-tracking=()" />
+        <meta httpEquiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=(), interest-cohort=(), payment=(), usb=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=(), web-share=(), clipboard-read=(), clipboard-write=(), ambient-light-sensor=(), autoplay=(), battery=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), gamepad=(), keyboard-map=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), xr-spatial-tracking=(), window-management=(), window-placement=(), local-fonts=(), idle-detection=(), keyboard-map=()" />
         {/* Google tag (gtag.js) */}
         <script
           async
@@ -155,17 +167,16 @@ export default function RootLayout({
               (function() {
                 'use strict';
                 try {
+                  if (typeof window !== 'undefined') {
+                    try { window.getScreenDetails = undefined; window.queryLocalFonts = undefined; } catch(e) {}
+                  }
                   if (typeof navigator !== 'undefined') {
                     try { delete navigator.share; } catch(e) {}
                     try { delete navigator.canShare; } catch(e) {}
-                    Object.defineProperty(navigator, 'share', {
-                      get: function() { return undefined; },
-                      configurable: false
-                    });
-                    Object.defineProperty(navigator, 'canShare', {
-                      get: function() { return undefined; },
-                      configurable: false
-                    });
+                    try { delete navigator.windowControlsOverlay; } catch(e) {}
+                    Object.defineProperty(navigator, 'share', { get: function() { return undefined; }, configurable: false });
+                    Object.defineProperty(navigator, 'canShare', { get: function() { return undefined; }, configurable: false });
+                    Object.defineProperty(navigator, 'windowControlsOverlay', { get: function() { return undefined; }, configurable: false });
                   }
                 } catch(e) {}
               })();
