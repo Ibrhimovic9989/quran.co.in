@@ -16,6 +16,9 @@ export const metadata: Metadata = {
     shortcut: '/favicon.svg',
     apple: '/favicon.svg',
   },
+  other: {
+    'permissions-policy': 'geolocation=(), microphone=(), camera=(), interest-cohort=(), payment=(), usb=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=(), web-share=()',
+  },
 };
 
 export const viewport: Viewport = {
@@ -35,6 +38,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Prevent permission popups - Block ALL device access requests including Web Share API */}
+        <meta httpEquiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=(), interest-cohort=(), payment=(), usb=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=(), web-share=(), ambient-light-sensor=(), autoplay=(), battery=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), gamepad=(), keyboard-map=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), xr-spatial-tracking=()" />
         {/* Google tag (gtag.js) */}
         <script
           async
