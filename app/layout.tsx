@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 import { Inter } from 'next/font/google';
 import { AuthProvider } from '@/components/auth/auth-provider';
 import { Navbar } from '@/components/layout/navbar';
@@ -139,6 +140,32 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
+        {/* Additional blocking script with beforeInteractive strategy */}
+        <Script
+          id="block-web-share-api"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                'use strict';
+                try {
+                  if (typeof navigator !== 'undefined') {
+                    try { delete navigator.share; } catch(e) {}
+                    try { delete navigator.canShare; } catch(e) {}
+                    Object.defineProperty(navigator, 'share', {
+                      get: function() { return undefined; },
+                      configurable: false
+                    });
+                    Object.defineProperty(navigator, 'canShare', {
+                      get: function() { return undefined; },
+                      configurable: false
+                    });
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
         <AuthProvider>
           <PageLoader />
           <Navbar />
