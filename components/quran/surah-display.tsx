@@ -8,6 +8,7 @@ import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Container } from '@/components/ui/container';
 import { Text } from '@/components/ui/typography';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Spinner, Button } from '@/components/ui/atoms';
 import { LoadingMessage } from '@/components/ui/loading-message';
 import { getRevelationOrder, getSurahsByRevelationOrder } from '@/lib/data/revelation-order';
@@ -75,7 +76,18 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
   
   const [visibleAyahs, setVisibleAyahs] = useState(Math.min(INITIAL_AYAHS, surah.totalAyah, surah.english.length));
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedReciter, setSelectedReciter] = useState<string | null>(null);
+  const RECITER_KEY = 'preferred-reciter';
+  const [selectedReciter, setSelectedReciter] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem(RECITER_KEY) ?? null;
+  });
+
+  const handleReciterChange = useCallback((reciterId: string) => {
+    setSelectedReciter(reciterId);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(RECITER_KEY, reciterId);
+    }
+  }, []);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const hasScrolledRef = useRef(false);
 
@@ -240,17 +252,28 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
       <SurahPlaybackProvider surahNo={surah.surahNo} totalAyahs={surah.totalAyah}>
         <Container>
           <div className="py-6 md:py-20">
+            <Breadcrumb
+              className="mb-4 md:mb-6"
+              items={[
+                { label: 'Quran', href: '/quran' },
+                { label: `${surah.surahNo}. ${surah.surahNameTranslation}` },
+              ]}
+            />
             <SurahHeader
               surah={surah}
               mode={displayMode}
               onModeChange={handleModeChange}
               selectedReciter={selectedReciter}
-              onReciterChange={setSelectedReciter}
+              onReciterChange={handleReciterChange}
             />
 
             {displayMode === 'reading' ? (
               <SurahReadingView
                 surahNumber={surah.surahNo}
+                surahNameArabic={surah.surahNameArabicLong}
+                surahNameTranslation={surah.surahNameTranslation}
+                revelationPlace={surah.revelationPlace}
+                totalAyah={surah.totalAyah}
                 loadedAyahs={{
                   english: loadedAyahs.english,
                   arabic1: loadedAyahs.arabic1,
@@ -258,7 +281,7 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
                 visibleAyahs={visibleAyahs}
                 audioData={surah.audio}
                 selectedReciter={selectedReciter}
-                onReciterChange={setSelectedReciter}
+                onReciterChange={handleReciterChange}
               />
             ) : (
               <SurahVerseListView
@@ -268,7 +291,7 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
                 visibleAyahs={visibleAyahs}
                 tafsirs={tafsirs}
                 selectedReciter={selectedReciter}
-                onReciterChange={setSelectedReciter}
+                onReciterChange={handleReciterChange}
               />
             )}
 

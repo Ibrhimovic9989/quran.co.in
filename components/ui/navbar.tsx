@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 import {
   Home,
   BookOpen,
-  LayoutDashboard,
+  Bookmark,
   User,
   LogIn,
   LogOut,
@@ -32,6 +32,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: "Home", icon: Home, href: "/" },
   { label: "Quran", icon: BookOpen, href: "/quran" },
+  { label: "Bookmarks", icon: Bookmark, href: "/bookmarks", requiresAuth: true },
   { label: "Profile", icon: User, href: "/profile", requiresAuth: true },
   { label: "Sign In", icon: LogIn, href: "/sign-in", requiresAuth: false },
 ];

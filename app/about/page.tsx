@@ -1,7 +1,18 @@
 // About Us Page
 // Information about the mission and vision of Quran.co.in
 
+import type { Metadata } from 'next';
 import { Container } from '@/components/ui/container';
+
+export const metadata: Metadata = {
+  title: 'About Us — Quran.co.in',
+  description: 'Learn about the mission, values, and team behind Quran.co.in — a free, authentic, and beautiful platform for reading and studying the Holy Quran.',
+  openGraph: {
+    title: 'About Us — Quran.co.in',
+    description: 'Learn about the mission and values behind Quran.co.in.',
+    type: 'website',
+  },
+};
 import { Heading, Text } from '@/components/ui/typography';
 import { Card } from '@/components/ui/card';
 import { BookOpen, Heart, Shield, Globe } from 'lucide-react';

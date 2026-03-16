@@ -30,6 +30,27 @@ interface SurahVerseListViewProps {
   onReciterChange: (reciterId: string) => void;
 }
 
+// Surah 1 (Al-Fatiha): Bismillah is ayah 1 — already in data, don't duplicate.
+// Surah 9 (At-Tawbah): No Bismillah by Quranic convention.
+// All other surahs: show Bismillah as a header before the first ayah.
+const SURAH_WITHOUT_BISMILLAH = 9;
+const SURAH_FATIHA = 1;
+
+function BismillahHeader() {
+  return (
+    <div className="mb-4 md:mb-8 text-center py-4 md:py-6">
+      <p
+        dir="rtl"
+        lang="ar"
+        className="font-arabic text-2xl md:text-4xl text-gray-800 leading-relaxed"
+        aria-label="Bismillah ir-Rahman ir-Raheem"
+      >
+        بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+      </p>
+    </div>
+  );
+}
+
 export function SurahVerseListView({
   surahNumber,
   surahBaseData,
@@ -40,9 +61,11 @@ export function SurahVerseListView({
   onReciterChange,
 }: SurahVerseListViewProps) {
   const sharedPlayback = useOptionalSurahPlayback();
+  const showBismillah = surahNumber !== SURAH_FATIHA && surahNumber !== SURAH_WITHOUT_BISMILLAH;
 
   return (
     <div className="space-y-4 md:space-y-8">
+      {showBismillah && <BismillahHeader />}
       {loadedAyahs.english.slice(0, visibleAyahs).map((translation, index) => {
         const ayahNo = index + 1;
         const tafsirKey = `${surahNumber}_${ayahNo}`;

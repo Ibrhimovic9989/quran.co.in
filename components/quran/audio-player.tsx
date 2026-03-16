@@ -99,6 +99,7 @@ export function AudioPlayer({
     const audio = audioRef.current;
     if (audio) {
       // Save position periodically while playing (only for surah-level)
+      // Debounced: only write to localStorage every 10 seconds to reduce thrashing
       const savePosition = () => {
         if (!ayahNo && selectedReciter) {
           const storageKey = getStorageKey(selectedReciter);
@@ -107,13 +108,13 @@ export function AudioPlayer({
           }
         }
       };
-      
-      // Save position every 2 seconds while playing
+
+      // Save position every 10 seconds while playing (was 2s — reduced to limit writes)
       const interval = setInterval(() => {
         if (isPlaying && audio) {
           savePosition();
         }
-      }, 2000);
+      }, 10000);
       
       audio.addEventListener('ended', () => {
         setIsPlaying(false);

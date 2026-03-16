@@ -32,7 +32,7 @@ export function SurahHeader({
       {mode === 'reading' ? (
         <div className="px-1 py-1 md:rounded-3xl md:border md:border-gray-200 md:bg-white/70 md:px-8 md:py-8 md:shadow-sm md:backdrop-blur-sm">
           <div className="grid grid-cols-[120px_1fr] items-center gap-3 md:grid-cols-[1.2fr_1fr] md:gap-5">
-            <Text className="text-left text-[3.2rem] font-arabic font-semibold leading-none text-gray-900 md:text-right md:text-8xl">
+            <Text className="text-left text-[3.2rem] font-mushaf font-semibold leading-none text-gray-900 md:text-right md:text-8xl">
               {surah.surahNameArabicLong}
             </Text>
             <div className="text-left">

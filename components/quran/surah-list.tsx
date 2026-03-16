@@ -172,13 +172,27 @@ export function SurahList({ surahs, searchQuery = '' }: SurahListProps) {
           </div>
         )}
 
-        {!hasMore && (
+        {!hasMore && filteredSurahs.length === 0 && searchQuery && (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
+              </svg>
+            </div>
+            <Heading level={3} className="text-lg font-bold text-gray-900 mb-2">
+              No results for &ldquo;{searchQuery}&rdquo;
+            </Heading>
+            <Text className="text-gray-500 text-sm max-w-xs">
+              Try searching by surah name, number, or meaning — in English or Arabic.
+            </Text>
+          </div>
+        )}
+
+        {!hasMore && filteredSurahs.length > 0 && (
           <div className="text-center mt-4 md:mt-6">
             <Text className="text-gray-600 text-xs md:text-base">
-              {searchQuery 
-                ? filteredSurahs.length === 0 
-                  ? 'No surahs found matching your search'
-                  : `All ${filteredSurahs.length} matching surahs loaded`
+              {searchQuery
+                ? `All ${filteredSurahs.length} matching surahs shown`
                 : `All ${surahs.length} surahs loaded`
               }
             </Text>

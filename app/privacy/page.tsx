@@ -1,7 +1,18 @@
 // Privacy Policy Page
 // Standard privacy policy for a digital Quran application
 
+import type { Metadata } from 'next';
 import { Container } from '@/components/ui/container';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy — Quran.co.in',
+  description: 'Read the Quran.co.in privacy policy. We are committed to protecting your data and your privacy.',
+  openGraph: {
+    title: 'Privacy Policy — Quran.co.in',
+    description: 'How Quran.co.in handles and protects your personal data.',
+    type: 'website',
+  },
+};
 import { Heading, Text } from '@/components/ui/typography';
 
 export default function PrivacyPage() {

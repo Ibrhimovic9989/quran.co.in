@@ -27,11 +27,51 @@ body {
   .text-balance {
     text-wrap: balance;
   }
-  
+
   .font-arabic {
     font-family: 'Amiri', 'Noto Sans Arabic', 'Arial', sans-serif;
   }
+
+  /* Saudi/Uthmani style — Amiri */
+  .font-mushaf {
+    font-family: var(--font-amiri), var(--font-scheherazade), 'Amiri', 'Scheherazade New', serif;
+  }
+
+  /* Indo-Pak style — Noto Naskh Arabic */
+  .font-mushaf-indopak {
+    font-family: var(--font-noto-naskh), 'Noto Naskh Arabic', 'Amiri', serif;
+  }
 }
+
+/* ─── Mushaf Page ─────────────────────────────────────────────── */
+
+/* Parchment paper background with subtle warm noise */
+.mushaf-paper {
+  background-color: #fef8ed;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeBlend in='SourceGraphic' mode='multiply' result='blend'/%3E%3CfeComposite in='blend' in2='SourceGraphic' operator='in'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+}
+
+/* Double ornamental border */
+.mushaf-border {
+  border: 2px solid #c9a84c;
+  box-shadow:
+    0 0 0 6px #fef8ed,
+    0 0 0 8px #c9a84c55,
+    0 6px 32px rgba(100, 70, 20, 0.14),
+    0 1px 6px rgba(0,0,0,0.06);
+}
+
+/* Flowing justified Quran text — font-family is controlled by the sibling utility class */
+.mushaf-text {
+  direction: rtl;
+  text-align: justify;
+  text-justify: inter-word;
+  word-spacing: 0.06em;
+  letter-spacing: 0.01em;
+}
+
+/* ─── End Mushaf Page ──────────────────────────────────────────── */
 
 /* Tafsir Content Styling */
 .tafsir-content .tafsir-arabic-block {

@@ -1,7 +1,18 @@
 // Terms of Service Page
 // Standard terms and conditions for Quran.co.in
 
+import type { Metadata } from 'next';
 import { Container } from '@/components/ui/container';
+
+export const metadata: Metadata = {
+  title: 'Terms of Service — Quran.co.in',
+  description: 'Read the Quran.co.in terms of service and usage guidelines.',
+  openGraph: {
+    title: 'Terms of Service — Quran.co.in',
+    description: 'The terms and conditions for using Quran.co.in.',
+    type: 'website',
+  },
+};
 import { Heading, Text } from '@/components/ui/typography';
 
 export default function TermsPage() {

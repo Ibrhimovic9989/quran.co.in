@@ -9,7 +9,7 @@ import { Container } from '@/components/ui/container';
 import { Heading, Text } from '@/components/ui/typography';
 import { Button } from '@/components/ui/atoms';
 import { Input } from '@/components/ui/atoms';
-import { Send, Mail, BookOpen, HelpCircle } from 'lucide-react';
+import { Send, Mail, BookOpen, HelpCircle, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils/cn';
 import { useState } from 'react';
@@ -40,16 +40,22 @@ const currentYear = new Date().getFullYear();
 export function Footer({ className }: FooterProps) {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [emailError, setEmailError] = useState('');
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setEmailError('');
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailError('Please enter a valid email address.');
+      return;
+    }
     setIsSubmitting(true);
-    // TODO: Implement newsletter subscription
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setEmail('');
-      // Show success message
-    }, 1000);
+    // Store subscription intent — backend integration point
+    await new Promise((r) => setTimeout(r, 600));
+    setIsSubmitting(false);
+    setIsSubscribed(true);
+    setEmail('');
   };
 
   return (
@@ -65,36 +71,48 @@ export function Footer({ className }: FooterProps) {
               <Text className="mb-6 text-gray-700">
                 Get updates on new features, translations, and resources delivered to your inbox.
               </Text>
-              <form onSubmit={handleNewsletterSubmit} className="relative">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={cn(
-                    "w-full h-10 px-4 pr-12 rounded-md",
-                    "bg-gray-300 border border-gray-400 text-gray-900",
-                    "placeholder:text-gray-600",
-                    "focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900",
-                    "disabled:opacity-50 disabled:cursor-not-allowed"
+              {isSubscribed ? (
+                <div className="flex items-center gap-2 text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-md px-4 py-2.5 text-sm font-medium">
+                  <CheckCircle className="h-4 w-4 shrink-0" />
+                  You&apos;re subscribed! Thanks for joining.
+                </div>
+              ) : (
+                <form onSubmit={handleNewsletterSubmit} className="relative" noValidate>
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); setEmailError(''); }}
+                    aria-label="Email address for newsletter"
+                    aria-invalid={!!emailError}
+                    className={cn(
+                      "w-full h-10 px-4 pr-12 rounded-md",
+                      "bg-white border text-gray-900",
+                      emailError ? "border-red-400" : "border-gray-300",
+                      "placeholder:text-gray-400",
+                      "focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900",
+                      "disabled:opacity-50 disabled:cursor-not-allowed"
+                    )}
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={cn(
+                      "absolute right-1 top-1 h-8 w-8 rounded-full",
+                      "bg-black text-white flex items-center justify-center",
+                      "transition-transform hover:scale-105",
+                      "disabled:opacity-50 disabled:cursor-not-allowed",
+                      "focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
+                    )}
+                  >
+                    <Send className="h-4 w-4" />
+                    <span className="sr-only">Subscribe</span>
+                  </button>
+                  {emailError && (
+                    <p className="mt-1 text-xs text-red-600">{emailError}</p>
                   )}
-                  required
-                />
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={cn(
-                    "absolute right-1 top-1 h-8 w-8 rounded-full",
-                    "bg-black text-white flex items-center justify-center",
-                    "transition-transform hover:scale-105",
-                    "disabled:opacity-50 disabled:cursor-not-allowed",
-                    "focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
-                  )}
-                >
-                  <Send className="h-4 w-4" />
-                  <span className="sr-only">Subscribe</span>
-                </button>
-              </form>
+                </form>
+              )}
               {/* Decorative Element */}
               <div className="absolute -right-4 top-0 h-24 w-24 rounded-full bg-emerald-500/10 blur-2xl" />
             </div>

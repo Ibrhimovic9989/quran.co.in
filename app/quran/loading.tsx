@@ -1,16 +1,19 @@
 // Loading state for /quran page
-// Shows while surah list is being fetched
+// Shows skeleton placeholders while surah list is being fetched
 
-import { Spinner } from '@/components/ui/atoms';
-import { LoadingMessage } from '@/components/ui/loading-message';
+import { SurahListSkeleton } from '@/components/ui/skeleton';
 
 export default function QuranLoading() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/30 to-white">
-      <div className="container mx-auto px-4 py-16">
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8">
-          <Spinner size="lg" />
-          <LoadingMessage />
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 md:py-8">
+        <div className="py-6 md:py-20">
+          {/* Header placeholder */}
+          <div className="mb-6 md:mb-16 text-center space-y-3">
+            <div className="h-8 md:h-14 w-48 mx-auto rounded-xl bg-gray-100 animate-pulse" />
+            <div className="h-4 w-40 mx-auto rounded-lg bg-gray-100 animate-pulse" />
+          </div>
+          <SurahListSkeleton count={12} />
         </div>
       </div>
     </div>

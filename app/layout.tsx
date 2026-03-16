@@ -1,13 +1,37 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
-import { Inter } from 'next/font/google';
+import { Inter, Scheherazade_New, Amiri, Noto_Naskh_Arabic } from 'next/font/google';
 import { AuthProvider } from '@/components/auth/auth-provider';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { PageLoader } from '@/components/ui/page-loader';
+import { ToastProvider } from '@/components/ui/toast';
 import '@/app/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
+
+const scheherazade = Scheherazade_New({
+  subsets: ['arabic'],
+  weight: ['400', '700'],
+  variable: '--font-scheherazade',
+  display: 'swap',
+});
+
+// Amiri — Saudi/Uthmani Quranic script
+const amiri = Amiri({
+  subsets: ['arabic'],
+  weight: ['400', '700'],
+  variable: '--font-amiri',
+  display: 'swap',
+});
+
+// Noto Naskh Arabic — Indo-Pak rounded Naskh style
+const notoNaskh = Noto_Naskh_Arabic({
+  subsets: ['arabic'],
+  weight: ['400', '700'],
+  variable: '--font-noto-naskh',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'Quran.co.in - Your Gateway to the Holy Quran',
@@ -62,12 +86,14 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={inter.className}>
+      <body className={`${inter.className} ${scheherazade.variable} ${amiri.variable} ${notoNaskh.variable}`}>
         <AuthProvider>
-          <PageLoader />
-          <Navbar />
-          {children}
-          <Footer />
+          <ToastProvider>
+            <PageLoader />
+            <Navbar />
+            {children}
+            <Footer />
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

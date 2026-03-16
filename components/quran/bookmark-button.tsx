@@ -8,6 +8,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Bookmark, BookmarkCheck } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
+import { useToast } from '@/components/ui/toast';
 import { useBookmarks } from './bookmarks-provider';
 
 interface BookmarkButtonProps {
@@ -21,6 +22,7 @@ export function BookmarkButton({ surahNumber, ayahNumber, className, iconOnly = 
   const { data: session, status } = useSession();
   const router = useRouter();
   const { isLoading: isLoadingBookmarks, isBookmarked, toggle, refresh } = useBookmarks();
+  const { success, error: toastError } = useToast();
 
   const bookmarked = useMemo(() => isBookmarked(surahNumber, ayahNumber), [ayahNumber, isBookmarked, surahNumber]);
 
@@ -33,9 +35,12 @@ export function BookmarkButton({ surahNumber, ayahNumber, className, iconOnly = 
     }
 
     try {
+      const wasBookmarked = bookmarked;
       toggle({ surahNumber, ayahNumber });
-    } catch (error) {
-      console.error('Error toggling bookmark:', error);
+      success(wasBookmarked ? 'Bookmark removed' : 'Bookmark saved');
+    } catch (err) {
+      console.error('Error toggling bookmark:', err);
+      toastError('Failed to update bookmark. Please try again.');
     }
   };
 
