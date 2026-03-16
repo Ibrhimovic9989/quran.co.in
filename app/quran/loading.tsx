@@ -2,6 +2,7 @@
 // Shows skeleton placeholders while surah list is being fetched
 
 import { SurahListSkeleton } from '@/components/ui/skeleton';
+import { LoadingMessage } from '@/components/ui/loading-message';
 
 export default function QuranLoading() {
   return (
@@ -13,6 +14,7 @@ export default function QuranLoading() {
             <div className="h-8 md:h-14 w-48 mx-auto rounded-xl bg-gray-100 animate-pulse" />
             <div className="h-4 w-40 mx-auto rounded-lg bg-gray-100 animate-pulse" />
           </div>
+          <LoadingMessage className="mb-10" />
           <SurahListSkeleton count={12} />
         </div>
       </div>
