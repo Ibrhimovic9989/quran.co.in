@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Text, Heading } from './typography';
 import { getRandomLoadingMessage, type LoadingMessage } from '@/lib/data/loading-messages';
 import { BookOpen, Heart, Lightbulb, Sparkles } from 'lucide-react';
@@ -30,16 +30,7 @@ const typeColors = {
 };
 
 export function LoadingMessage({ className, showIcon = true }: LoadingMessageProps) {
-  const [message, setMessage] = useState<LoadingMessage | null>(null);
-
-  useEffect(() => {
-    // Get a random message on mount
-    setMessage(getRandomLoadingMessage());
-  }, []);
-
-  if (!message) {
-    return null;
-  }
+  const [message] = useState<LoadingMessage>(() => getRandomLoadingMessage());
 
   const Icon = typeIcons[message.type];
 

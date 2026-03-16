@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Container } from '@/components/ui/container';
 import { Heading, Text } from '@/components/ui/typography';
@@ -24,6 +24,22 @@ const normalizeSearchText = (value: string): string =>
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]/g, '');
+
+function JuzReadLink({ juzNumber }: { juzNumber: number }) {
+  const [loading, setLoading] = useState(false);
+  return (
+    <Link
+      href={`/quran/juz/${juzNumber}`}
+      onClick={() => setLoading(true)}
+      className="inline-flex items-center gap-1.5 text-xs md:text-sm text-gray-600 hover:text-gray-900 underline transition-colors duration-300"
+    >
+      {loading && (
+        <span className="inline-block w-3 h-3 border-2 border-gray-400 border-t-gray-700 rounded-full animate-spin" />
+      )}
+      {loading ? 'Loading...' : 'Read Juz'}
+    </Link>
+  );
+}
 
 export function JuzView({ surahs, searchQuery = '' }: JuzViewProps) {
   // Create a map of surah number to surah data for quick lookup
@@ -139,12 +155,7 @@ export function JuzView({ surahs, searchQuery = '' }: JuzViewProps) {
                   <Heading level={3} className="text-lg md:text-2xl font-bold text-gray-900">
                     Juz {group.juzNumber}
                   </Heading>
-                  <Link
-                    href={`/quran/juz/${group.juzNumber}`}
-                    className="text-xs md:text-sm text-gray-600 hover:text-gray-900 underline transition-colors duration-300"
-                  >
-                    Read Juz
-                  </Link>
+                  <JuzReadLink juzNumber={group.juzNumber} />
                 </div>
                 
                 <div className="space-y-2 md:space-y-3">

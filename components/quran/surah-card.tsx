@@ -1,6 +1,9 @@
 // Surah Card Component
 // Displays a surah in card format
 
+'use client';
+
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Heading, Text } from '@/components/ui/typography';
 import { cn } from '@/lib/utils/cn';
@@ -13,6 +16,8 @@ interface SurahCardProps {
 }
 
 export function SurahCard({ surah, className }: SurahCardProps) {
+  const [loading, setLoading] = useState(false);
+
   // Determine gradient based on surah number for visual variety
   const gradients = [
     'from-blue-50 to-blue-100/30',
@@ -23,13 +28,14 @@ export function SurahCard({ surah, className }: SurahCardProps) {
   const gradient = gradients[surah.surahNo % gradients.length];
 
   return (
-    <Link href={`/quran/${surah.surahNo}`}>
-      <Card 
+    <Link href={`/quran/${surah.surahNo}`} onClick={() => setLoading(true)}>
+      <Card
         className={cn(
           "relative overflow-hidden border border-gray-200 hover:border-gray-300",
           "transition-all duration-300 ease-in-out hover:shadow-lg md:hover:shadow-xl hover:-translate-y-0.5 md:hover:-translate-y-1",
           `bg-gradient-to-br ${gradient}`,
           "group/card cursor-pointer",
+          loading && "opacity-70",
           className
         )}
       >
@@ -52,6 +58,12 @@ export function SurahCard({ surah, className }: SurahCardProps) {
               <span>{surah.revelationPlace}</span>
             </div>
           </div>
+
+          {loading && (
+            <div className="shrink-0 ml-2 flex items-center">
+              <span className="inline-block w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+            </div>
+          )}
         </div>
 
         {/* Hover Effect Overlay */}

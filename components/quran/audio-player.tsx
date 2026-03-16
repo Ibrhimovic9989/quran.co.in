@@ -8,6 +8,7 @@ import { Text } from '@/components/ui/typography';
 import { Select } from '@/components/ui/atoms';
 import { PlayButton } from '@/components/ui/molecules';
 import { cn } from '@/lib/utils/cn';
+import { useToast } from '@/components/ui/toast';
 import type { AudioReciters } from '@/types/quran-api';
 import { useOptionalSurahPlayback } from './surah-playback-provider';
 
@@ -40,6 +41,7 @@ export function AudioPlayer({
 }: AudioPlayerProps) {
   const sharedPlayback = useOptionalSurahPlayback();
   const useSharedPlayback = Boolean(enableSharedPlayback && sharedPlayback);
+  const { info } = useToast();
 
   // Use prop reciter if provided (surah level), otherwise manage locally
   const isSurahLevel = propSelectedReciter !== undefined;
@@ -52,6 +54,9 @@ export function AudioPlayer({
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const [ayahAudioData, setAyahAudioData] = useState<AudioReciters | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Resume hint: show saved position below player
+  const [resumeSeconds, setResumeSeconds] = useState<number | null>(null);
   
   // Storage key for saving playback position (only for surah-level playback)
   const getStorageKey = (reciterId: string) => {
@@ -63,6 +68,35 @@ export function AudioPlayer({
     id,
     ...data,
   }));
+
+  // ── One-time audio hint for new users (surah-level only) ─────────────────
+  const AUDIO_HINT_KEY = 'quran-audio-hint-shown';
+  useEffect(() => {
+    if (ayahNo) return;
+    if (typeof window === 'undefined') return;
+    if (localStorage.getItem(AUDIO_HINT_KEY)) return;
+    localStorage.setItem(AUDIO_HINT_KEY, '1');
+    const t = setTimeout(() => {
+      info('Tip: Switch reciters anytime from the dropdown above.');
+    }, 2000);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── Resume position hint ───────────────────────────────────────────────────
+  useEffect(() => {
+    if (ayahNo || !propSelectedReciter) return;
+    const key = getStorageKey(propSelectedReciter);
+    if (!key) return;
+    const saved = localStorage.getItem(key);
+    if (saved) {
+      const secs = parseFloat(saved);
+      if (secs > 10) setResumeSeconds(Math.floor(secs));
+    } else {
+      setResumeSeconds(null);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [propSelectedReciter, surahNo]);
 
   // Fetch ayah-specific audio when at ayah level (always fetch for ayah level)
   useEffect(() => {
@@ -148,6 +182,7 @@ export function AudioPlayer({
   };
 
   const handlePlay = () => {
+    setResumeSeconds(null);
     if (useSharedPlayback && sharedPlayback) {
       handleSharedPlay();
       return;
@@ -381,6 +416,12 @@ export function AudioPlayer({
               'rounded-full border-stone-200 bg-stone-900 px-3 py-1.5 text-sm text-white hover:bg-stone-800'
           )}
         />
+
+        {resumeSeconds !== null && !isPlaying && (
+          <span className="text-xs text-gray-400 italic">
+            Resumes from {Math.floor(resumeSeconds / 60)}m {resumeSeconds % 60}s
+          </span>
+        )}
       </div>
     </div>
   );

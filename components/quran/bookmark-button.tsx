@@ -22,7 +22,7 @@ export function BookmarkButton({ surahNumber, ayahNumber, className, iconOnly = 
   const { data: session, status } = useSession();
   const router = useRouter();
   const { isLoading: isLoadingBookmarks, isBookmarked, toggle, refresh } = useBookmarks();
-  const { success, error: toastError } = useToast();
+  const { success, info, error: toastError } = useToast();
 
   const bookmarked = useMemo(() => isBookmarked(surahNumber, ayahNumber), [ayahNumber, isBookmarked, surahNumber]);
 
@@ -37,7 +37,11 @@ export function BookmarkButton({ surahNumber, ayahNumber, className, iconOnly = 
     try {
       const wasBookmarked = bookmarked;
       toggle({ surahNumber, ayahNumber });
-      success(wasBookmarked ? 'Bookmark removed' : 'Bookmark saved');
+      if (wasBookmarked) {
+        info('Removed from bookmarks.');
+      } else {
+        success('Saved. May this verse be a source of guidance for you.');
+      }
     } catch (err) {
       console.error('Error toggling bookmark:', err);
       toastError('Failed to update bookmark. Please try again.');

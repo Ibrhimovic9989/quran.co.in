@@ -6,6 +6,8 @@ import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { PageLoader } from '@/components/ui/page-loader';
 import { ToastProvider } from '@/components/ui/toast';
+import { NavigationProgress } from '@/components/ui/navigation-progress';
+import { Suspense } from 'react';
 import '@/app/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -89,6 +91,9 @@ export default function RootLayout({
       <body className={`${inter.className} ${scheherazade.variable} ${amiri.variable} ${notoNaskh.variable}`}>
         <AuthProvider>
           <ToastProvider>
+            <Suspense fallback={null}>
+              <NavigationProgress />
+            </Suspense>
             <PageLoader />
             <Navbar />
             {children}

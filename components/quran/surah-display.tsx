@@ -11,7 +11,9 @@ import { Text } from '@/components/ui/typography';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Spinner, Button } from '@/components/ui/atoms';
 import { LoadingMessage } from '@/components/ui/loading-message';
+import { useToast } from '@/components/ui/toast';
 import { getRevelationOrder, getSurahsByRevelationOrder } from '@/lib/data/revelation-order';
+import { recordSurahVisit } from '@/lib/data/reading-progress';
 import { BookmarksProvider } from './bookmarks-provider';
 import { SurahHeader } from './surah-header';
 import { SurahNavigation } from './surah-navigation';
@@ -245,6 +247,94 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
   // Scroll to top when surah number changes
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, [surah.surahNo]);
+
+  const { success, info } = useToast();
+
+  // ── Reading progress: record visit & show milestone toast ──────────────────
+  useEffect(() => {
+    const milestone = recordSurahVisit(surah.surahNo, surah.surahName);
+    if (milestone) {
+      const t = setTimeout(() => info(milestone, 6000), 1500);
+      return () => clearTimeout(t);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [surah.surahNo, surah.surahName]);
+
+  // ── Surah completion toast (only for surahs longer than INITIAL_AYAHS) ─────
+  const completionFiredRef = useRef(false);
+  useEffect(() => {
+    if (!hasMore && totalAyahs > INITIAL_AYAHS && !completionFiredRef.current) {
+      completionFiredRef.current = true;
+      success(
+        `MashaAllah! You've completed Surah ${surah.surahName}. May Allah accept your recitation.`,
+        7000
+      );
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasMore, totalAyahs, surah.surahName]);
+
+  // ── Long reading session message (25 min) ──────────────────────────────────
+  const readingStartRef = useRef(Date.now());
+  const longReadFiredRef = useRef(false);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (longReadFiredRef.current) { clearInterval(interval); return; }
+      if (Date.now() - readingStartRef.current >= 25 * 60 * 1000) {
+        longReadFiredRef.current = true;
+        info("You've spent quite some time with the Quran today. May it be a light for you.", 8000);
+      }
+    }, 60_000);
+    return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── Session recap: remember last ayah, show welcome-back on return ─────────
+  const visibleAyahsRef = useRef(visibleAyahs);
+  useEffect(() => { visibleAyahsRef.current = visibleAyahs; }, [visibleAyahs]);
+
+  const lastSessionKey = `quran-last-session-${surah.surahNo}`;
+
+  // On mount: show welcome-back if a previous session exists within 30 days
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const raw = localStorage.getItem(lastSessionKey);
+      if (!raw) return;
+      const prev = JSON.parse(raw) as { lastAyah: number; date: string };
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - 30);
+      if (prev.lastAyah > 0 && new Date(prev.date) > cutoff) {
+        const t = setTimeout(() => {
+          info(
+            `Welcome back to Surah ${surah.surahName}. Last time you read up to verse ${prev.lastAyah}.`,
+            6000
+          );
+        }, 800);
+        return () => clearTimeout(t);
+      }
+    } catch {
+      // malformed storage — ignore
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [surah.surahNo, surah.surahName]);
+
+  // On unmount: save session if user spent more than 2 minutes
+  useEffect(() => {
+    const mountTime = Date.now();
+    return () => {
+      const elapsed = Date.now() - mountTime;
+      if (elapsed < 2 * 60 * 1000) return;
+      try {
+        localStorage.setItem(
+          lastSessionKey,
+          JSON.stringify({ lastAyah: visibleAyahsRef.current, date: new Date().toISOString() })
+        );
+      } catch {
+        // quota — ignore
+      }
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [surah.surahNo]);
 
   return (

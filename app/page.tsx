@@ -3,6 +3,7 @@
 // Content is Quran/Hadith-led narrative
 
 import { HeroSection } from '@/components/ui/hero-section';
+import { HomeClientSection } from '@/components/ui/home-client-section';
 import { ValueProposition } from '@/components/ui/value-proposition';
 import { FeaturesShowcase } from '@/components/ui/features-showcase';
 import { BenefitsSection } from '@/components/ui/benefits-section';
@@ -15,6 +16,9 @@ export default function HomePage() {
     <main className="min-h-screen bg-white">
       {/* Hero Section with 3D Quran Scene - Full width, no container */}
       <HeroSection />
+
+      {/* Time-based greeting + Continue Reading card (client, localStorage-driven) */}
+      <HomeClientSection />
 
       {/* Value Proposition Section */}
       <ValueProposition />

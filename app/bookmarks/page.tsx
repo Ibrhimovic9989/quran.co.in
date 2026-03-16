@@ -17,11 +17,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 function BookmarksList() {
   const { bookmarks, isLoading, toggle } = useBookmarks();
-  const { success } = useToast();
+  const { info } = useToast();
 
   const handleRemove = (surahNumber: number, ayahNumber?: number) => {
     toggle({ surahNumber, ayahNumber });
-    success('Bookmark removed');
+    info('Removed. May Allah bless your recitation.');
   };
 
   if (isLoading) {
@@ -43,16 +43,22 @@ function BookmarksList() {
         <Heading level={3} className="text-xl font-bold text-gray-900 mb-3">
           No bookmarks yet
         </Heading>
-        <Text className="text-gray-500 max-w-sm mb-8">
-          While reading, tap the bookmark icon on any verse to save it here for quick access later.
+        <Text className="text-gray-500 max-w-sm mb-2">
+          You don't have any bookmarks yet. You can bookmark ayahs that touch your heart to revisit them later.
         </Text>
-        <Link
-          href="/quran"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-black text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors"
-        >
-          <BookOpen className="w-4 h-4" />
-          Start Reading
-        </Link>
+        <Text className="text-gray-400 text-xs max-w-xs mb-8 italic">
+          Tap the bookmark icon on any verse while reading to save it here.
+        </Text>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Link
+            href="/quran"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-black text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors"
+          >
+            <BookOpen className="w-4 h-4" />
+            Go to Quran
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
       </div>
     );
   }

@@ -6,6 +6,7 @@
 'use client';
 
 import { Container } from '@/components/ui/container';
+import { QuranReminder } from '@/components/ui/quran-reminder';
 import { Heading, Text } from '@/components/ui/typography';
 import { Button } from '@/components/ui/atoms';
 import { Input } from '@/components/ui/atoms';
@@ -175,8 +176,13 @@ export function Footer({ className }: FooterProps) {
             </div>
           </div>
 
+          {/* Rotating reminder */}
+          <div className="mt-10 border-t border-gray-100 pt-6">
+            <QuranReminder />
+          </div>
+
           {/* Bottom Section */}
-          <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-gray-200 pt-8 md:flex-row">
+          <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-gray-200 pt-8 md:flex-row">
             <Text className="text-sm text-gray-600 text-center md:text-left">
               © {currentYear} Quran.co.in. All rights reserved.
             </Text>
