@@ -17,6 +17,14 @@ interface RevelationOrderViewProps {
   searchQuery?: string;
 }
 
+// Normalize search text for Latin-based queries (English/transliteration)
+const normalizeSearchText = (value: string): string =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '');
+
 export function RevelationOrderView({ surahs, searchQuery = '' }: RevelationOrderViewProps) {
   // Create a map of surah number to surah data for quick lookup
   const surahMap = useMemo(() => {
@@ -29,7 +37,8 @@ export function RevelationOrderView({ surahs, searchQuery = '' }: RevelationOrde
 
   // Get surahs sorted by revelation order
   const surahsByRevelation = useMemo(() => {
-    const query = searchQuery.toLowerCase().trim();
+    const rawQuery = searchQuery.trim();
+    const normalizedQuery = normalizeSearchText(rawQuery);
     const revelationOrder = getSurahsByRevelationOrder();
     
     return revelationOrder
@@ -44,20 +53,43 @@ export function RevelationOrderView({ surahs, searchQuery = '' }: RevelationOrde
       })
       .filter((s): s is NonNullable<typeof s> => s !== null)
       .filter((surah) => {
-        if (!query) return true;
+        if (!rawQuery) return true;
         
-        // Search by surah name
-        if (surah.surahNameTranslation?.toLowerCase().includes(query)) return true;
-        if (surah.surahNameArabic?.includes(query)) return true;
+        // Search by surah name (Latin / transliteration-like)
+        if (
+          normalizeSearchText(surah.surahName ?? '').includes(normalizedQuery)
+        ) {
+          return true;
+        }
+
+        // Search by surah name (English translation)
+        if (
+          normalizeSearchText(surah.surahNameTranslation ?? '').includes(
+            normalizedQuery
+          )
+        ) {
+          return true;
+        }
+
+        // Search by surah name (Arabic) - use raw query
+        if (surah.surahNameArabic?.includes(rawQuery)) return true;
         
         // Search by surah number
-        if (surah.surahNo.toString().includes(query)) return true;
+        if (surah.surahNo.toString().includes(normalizedQuery)) return true;
         
         // Search by revelation order
-        if (surah.revelationOrder.toString().includes(query)) return true;
+        if (surah.revelationOrder.toString().includes(normalizedQuery)) {
+          return true;
+        }
         
         // Search by revelation place
-        if (surah.revelationPlaceDisplay?.toLowerCase().includes(query)) return true;
+        if (
+          normalizeSearchText(
+            surah.revelationPlaceDisplay?.toString() ?? ''
+          ).includes(normalizedQuery)
+        ) {
+          return true;
+        }
         
         return false;
       });

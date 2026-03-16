@@ -19,25 +19,49 @@ interface SurahListProps {
 const ITEMS_PER_PAGE = 30;
 const INITIAL_LOAD = 30;
 
+// Normalize search text for Latin-based queries (English/transliteration)
+// - Lowercase
+// - Strip accents/diacritics
+// - Remove non-alphanumeric characters (spaces, hyphens, etc.)
+const normalizeSearchText = (value: string): string =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '');
+
 export function SurahList({ surahs, searchQuery = '' }: SurahListProps) {
   const [visibleCount, setVisibleCount] = useState(INITIAL_LOAD);
   const [isLoading, setIsLoading] = useState(false);
 
   // Filter surahs based on search query
   const filteredSurahs = useMemo(() => {
-    if (!searchQuery.trim()) return surahs;
-    
-    const query = searchQuery.toLowerCase().trim();
+    const rawQuery = searchQuery.trim();
+    if (!rawQuery) return surahs;
+
+    const normalizedQuery = normalizeSearchText(rawQuery);
+
     return surahs.filter((surah) => {
       // Search by surah number
-      if (surah.surahNo.toString().includes(query)) return true;
-      
-      // Search by surah name (English)
-      if (surah.surahNameTranslation?.toLowerCase().includes(query)) return true;
-      
-      // Search by surah name (Arabic) - basic check
-      if (surah.surahNameArabic?.includes(query)) return true;
-      
+      if (surah.surahNo.toString().includes(normalizedQuery)) return true;
+
+      // Search by surah name (Latin / transliteration-like) e.g. "Al-Mujadila"
+      if (normalizeSearchText(surah.surahName ?? '').includes(normalizedQuery)) {
+        return true;
+      }
+
+      // Search by surah name (English translation)
+      if (
+        normalizeSearchText(surah.surahNameTranslation ?? '').includes(
+          normalizedQuery
+        )
+      ) {
+        return true;
+      }
+
+      // Search by surah name (Arabic) - use raw query so Arabic input works
+      if (surah.surahNameArabic?.includes(rawQuery)) return true;
+
       return false;
     });
   }, [surahs, searchQuery]);

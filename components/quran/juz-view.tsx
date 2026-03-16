@@ -17,6 +17,14 @@ interface JuzViewProps {
   searchQuery?: string;
 }
 
+// Normalize search text for Latin-based queries (English/transliteration)
+const normalizeSearchText = (value: string): string =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '');
+
 export function JuzView({ surahs, searchQuery = '' }: JuzViewProps) {
   // Create a map of surah number to surah data for quick lookup
   const surahMap = useMemo(() => {
@@ -29,7 +37,8 @@ export function JuzView({ surahs, searchQuery = '' }: JuzViewProps) {
 
   // Group surahs by Juz
   const juzGroups = useMemo(() => {
-    const query = searchQuery.toLowerCase().trim();
+    const rawQuery = searchQuery.trim();
+    const normalizedQuery = normalizeSearchText(rawQuery);
     
     return juzMapping
       .map((juz) => {
@@ -49,17 +58,34 @@ export function JuzView({ surahs, searchQuery = '' }: JuzViewProps) {
 
         // Filter surahs if search query exists
         let filteredSurahs = uniqueSurahs;
-        if (query) {
+        if (rawQuery) {
           filteredSurahs = uniqueSurahs.filter((surah) => {
             // Search by Juz number
-            if (juz.juzNumber.toString().includes(query)) return true;
-            
-            // Search by surah name
-            if (surah.surahNameTranslation?.toLowerCase().includes(query)) return true;
-            if (surah.surahNameArabic?.includes(query)) return true;
-            
+            if (juz.juzNumber.toString().includes(normalizedQuery)) return true;
+
+            // Search by surah name (Latin / transliteration-like)
+            if (
+              normalizeSearchText(surah.surahName ?? '').includes(
+                normalizedQuery
+              )
+            ) {
+              return true;
+            }
+
+            // Search by surah name (English translation)
+            if (
+              normalizeSearchText(
+                surah.surahNameTranslation ?? ''
+              ).includes(normalizedQuery)
+            ) {
+              return true;
+            }
+
+            // Search by surah name (Arabic) - use raw query
+            if (surah.surahNameArabic?.includes(rawQuery)) return true;
+
             // Search by surah number
-            if (surah.surahNo.toString().includes(query)) return true;
+            if (surah.surahNo.toString().includes(normalizedQuery)) return true;
             
             return false;
           });
@@ -72,7 +98,7 @@ export function JuzView({ surahs, searchQuery = '' }: JuzViewProps) {
       })
       .filter((group) => {
         // Filter out empty Juz groups if searching
-        if (query && group.surahs.length === 0) return false;
+        if (rawQuery && group.surahs.length === 0) return false;
         return true;
       });
   }, [surahMap, searchQuery]);
