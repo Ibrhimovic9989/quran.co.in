@@ -9,6 +9,7 @@ import { Container } from '@/components/ui/container';
 import { Heading, Text } from '@/components/ui/typography';
 import { Button, Spinner } from '@/components/ui/atoms';
 import { LoadingMessage } from '@/components/ui/loading-message';
+import { RevelationLegendModal } from '@/components/ui/revelation-legend-modal';
 import type { SurahInfo } from '@/types/quran-api';
 
 interface SurahListProps {
@@ -133,9 +134,12 @@ export function SurahList({ surahs, searchQuery = '' }: SurahListProps) {
               : `${surahs.length} Chapters • Complete Collection`
             }
           </Text>
-          <div className="mt-3 md:mt-6 flex items-center justify-center gap-1.5 md:gap-2 text-xs md:text-sm text-gray-600">
-            <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-900 rounded-full"></div>
-            <span>Authentic • Complete • Free Access</span>
+          <div className="mt-3 md:mt-6 flex flex-col items-center gap-2">
+            <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-gray-600">
+              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-900 rounded-full"></div>
+              <span>Authentic • Complete • Free Access</span>
+            </div>
+            <RevelationLegendModal />
           </div>
         </div>
 

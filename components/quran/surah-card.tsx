@@ -9,6 +9,7 @@ import { Heading, Text } from '@/components/ui/typography';
 import { cn } from '@/lib/utils/cn';
 import Link from 'next/link';
 import type { SurahInfo } from '@/types/quran-api';
+import { getRevelationInfo, PERIOD_LABELS, PERIOD_COLORS, PERIOD_DESCRIPTIONS, APPROXIMATION_NOTE } from '@/lib/data/revelation-periods';
 
 interface SurahCardProps {
   surah: SurahInfo & { surahNo: number };
@@ -17,6 +18,7 @@ interface SurahCardProps {
 
 export function SurahCard({ surah, className }: SurahCardProps) {
   const [loading, setLoading] = useState(false);
+  const revelation = getRevelationInfo(surah.surahNo);
 
   // Determine gradient based on surah number for visual variety
   const gradients = [
@@ -52,10 +54,26 @@ export function SurahCard({ surah, className }: SurahCardProps) {
             <Text className="text-gray-900 text-lg md:text-2xl mb-2 md:mb-4 font-arabic font-semibold leading-tight md:leading-relaxed">
               {surah.surahNameArabic}
             </Text>
-            <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm text-gray-700 font-medium">
+            <div className="flex flex-wrap items-center gap-1.5 md:gap-2 text-xs text-gray-700 font-medium">
               <span>{surah.totalAyah} Ayahs</span>
               <span className="text-gray-400">•</span>
               <span>{surah.revelationPlace}</span>
+              {revelation && (
+                <>
+                  <span className="text-gray-400">•</span>
+                  <span
+                    title={`${PERIOD_DESCRIPTIONS[revelation.period]}\n\n${APPROXIMATION_NOTE}`}
+                    className={cn(
+                      'inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] md:text-xs font-medium cursor-help',
+                      PERIOD_COLORS[revelation.period].badge
+                    )}
+                  >
+                    <span className={cn('w-1.5 h-1.5 rounded-full shrink-0', PERIOD_COLORS[revelation.period].dot)} />
+                    {PERIOD_LABELS[revelation.period]}
+                  </span>
+                  <span title={APPROXIMATION_NOTE} className="text-gray-500 text-[10px] md:text-xs cursor-help">{revelation.yearCE} CE*</span>
+                </>
+              )}
             </div>
           </div>
 

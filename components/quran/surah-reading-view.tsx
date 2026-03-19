@@ -7,6 +7,7 @@ import { ReciterSelector } from '@/components/ui/molecules';
 import { cn } from '@/lib/utils/cn';
 import { useOptionalSurahPlayback } from './surah-playback-provider';
 import { useToast } from '@/components/ui/toast';
+import { getRevelationInfo, PERIOD_LABELS, PERIOD_COLORS, PERIOD_DESCRIPTIONS, APPROXIMATION_NOTE } from '@/lib/data/revelation-periods';
 
 interface SurahReadingViewProps {
   surahNumber: number;
@@ -116,6 +117,7 @@ export function SurahReadingView({
   const showBismillah = surahNumber !== SURAH_FATIHA && surahNumber !== SURAH_WITHOUT_BISMILLAH;
   const isMadinan = revelationPlace === 'Madina';
   const fontClass = FONT_STYLES.find((f) => f.id === fontStyle)?.cssClass ?? 'font-mushaf';
+  const revelation = getRevelationInfo(surahNumber);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -315,8 +317,9 @@ export function SurahReadingView({
         </p>
         <p className="mt-1.5 text-sm md:text-base text-amber-800/60 italic">{surahNameTranslation}</p>
 
-        {/* Revelation badge */}
-        <div className="mt-2 flex items-center justify-center gap-2">
+        {/* Revelation info row */}
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+          {/* Meccan / Madinan Arabic badge */}
           <span className={cn(
             `${fontClass} text-xs md:text-sm px-3 py-0.5 rounded-full border`,
             isMadinan
@@ -325,10 +328,35 @@ export function SurahReadingView({
           )}>
             {isMadinan ? 'مَدَنِيَّة' : 'مَكِّيَّة'}
           </span>
-          <span className="text-amber-400/50 text-xs">•</span>
+
+          {/* Ayah count */}
           <span lang="ar" className={`${fontClass} text-xs md:text-sm text-amber-800/60`}>
             {toArabicIndicNumber(totalAyah)} آيَة
           </span>
+
+          {/* Period + year info */}
+          {revelation && (
+            <>
+              <span className="text-amber-400/40 text-xs">•</span>
+              <span
+                title={`${PERIOD_DESCRIPTIONS[revelation.period]}\n\n${APPROXIMATION_NOTE}`}
+                className={cn(
+                  'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[11px] md:text-xs font-medium cursor-help',
+                  PERIOD_COLORS[revelation.period].badge
+                )}
+              >
+                <span className={cn('w-1.5 h-1.5 rounded-full shrink-0', PERIOD_COLORS[revelation.period].dot)} />
+                {PERIOD_LABELS[revelation.period]}
+              </span>
+              <span title={APPROXIMATION_NOTE} className="text-amber-700/60 text-[11px] md:text-xs font-medium cursor-help">
+                {revelation.yearCE} CE*
+              </span>
+              <span className="text-amber-400/40 text-xs">•</span>
+              <span title={APPROXIMATION_NOTE} className="text-amber-700/50 text-[11px] md:text-xs italic cursor-help">
+                {revelation.yearProphethood}
+              </span>
+            </>
+          )}
         </div>
 
         {/* Bottom rule */}
