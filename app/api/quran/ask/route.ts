@@ -5,19 +5,23 @@ import { getCanonicalAyahs } from '@/lib/data/canonical-context';
 
 const prisma = new PrismaClient();
 
-const embedClient = new AzureOpenAI({
-  apiKey:     process.env.AZURE_OPENAI_API_KEY!,
-  endpoint:   process.env.AZURE_OPENAI_ENDPOINT!,
-  deployment: process.env.AZURE_OPENAI_EMBEDDING_DEPLOYMENT!,
-  apiVersion: process.env.AZURE_OPENAI_API_VERSION ?? '2023-05-15',
-});
+function getEmbedClient() {
+  return new AzureOpenAI({
+    apiKey:     process.env.AZURE_OPENAI_API_KEY!,
+    endpoint:   process.env.AZURE_OPENAI_ENDPOINT!,
+    deployment: process.env.AZURE_OPENAI_EMBEDDING_DEPLOYMENT!,
+    apiVersion: process.env.AZURE_OPENAI_API_VERSION ?? '2023-05-15',
+  });
+}
 
-const chatClient = new AzureOpenAI({
-  apiKey:     process.env.AZURE_OPENAI_API_KEY!,
-  endpoint:   process.env.AZURE_OPENAI_ENDPOINT!,
-  deployment: process.env.AZURE_OPENAI_CHAT_DEPLOYMENT!,
-  apiVersion: process.env.AZURE_OPENAI_CHAT_API_VERSION ?? '2024-04-01-preview',
-});
+function getChatClient() {
+  return new AzureOpenAI({
+    apiKey:     process.env.AZURE_OPENAI_API_KEY!,
+    endpoint:   process.env.AZURE_OPENAI_ENDPOINT!,
+    deployment: process.env.AZURE_OPENAI_CHAT_DEPLOYMENT!,
+    apiVersion: process.env.AZURE_OPENAI_CHAT_API_VERSION ?? '2024-04-01-preview',
+  });
+}
 
 // ── System prompts ────────────────────────────────────────────────────────────
 
@@ -283,7 +287,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Semantic search for related ayahs
-    const embRes = await embedClient.embeddings.create({
+    const embRes = await getEmbedClient().embeddings.create({
       input: [q],
       model: 'text-embedding-3-small',
     });
@@ -351,7 +355,7 @@ export async function POST(req: NextRequest) {
     // Keep last 10 turns (20 messages) to stay within token limits
     const recentHistory = history.slice(-20);
 
-    const stream = await chatClient.chat.completions.create({
+    const stream = await getChatClient().chat.completions.create({
       model: 'gpt-5.2-chat',
       messages: [
         { role: 'system', content: mode === 'open' ? OPEN_PROMPT : FOCUSED_PROMPT },

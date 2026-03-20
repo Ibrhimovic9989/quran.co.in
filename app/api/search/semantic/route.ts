@@ -4,12 +4,14 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const openai = new AzureOpenAI({
-  apiKey:     process.env.AZURE_OPENAI_API_KEY!,
-  endpoint:   process.env.AZURE_OPENAI_ENDPOINT!,
-  deployment: process.env.AZURE_OPENAI_EMBEDDING_DEPLOYMENT!,
-  apiVersion: process.env.AZURE_OPENAI_API_VERSION ?? '2023-05-15',
-});
+function getOpenAI() {
+  return new AzureOpenAI({
+    apiKey:     process.env.AZURE_OPENAI_API_KEY!,
+    endpoint:   process.env.AZURE_OPENAI_ENDPOINT!,
+    deployment: process.env.AZURE_OPENAI_EMBEDDING_DEPLOYMENT!,
+    apiVersion: process.env.AZURE_OPENAI_API_VERSION ?? '2023-05-15',
+  });
+}
 
 export async function GET(req: NextRequest) {
   const q     = req.nextUrl.searchParams.get('q')?.trim() ?? '';
@@ -21,7 +23,7 @@ export async function GET(req: NextRequest) {
 
   try {
     // 1. Embed the query
-    const embRes = await openai.embeddings.create({
+    const embRes = await getOpenAI().embeddings.create({
       input: [q],
       model: 'text-embedding-3-small',
     });
