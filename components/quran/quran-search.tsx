@@ -23,9 +23,9 @@ export function QuranSearch({
   className 
 }: QuranSearchProps) {
   const placeholderText = {
-    surah: 'Search by surah name or number...',
-    juz: 'Search by Juz number or surah name...',
-    revelation: 'Search by surah name or revelation order...',
+    surah: 'Search surah name, number, or a topic like "patience"…',
+    juz: 'Search by Juz number or surah name…',
+    revelation: 'Search by surah name or revelation order…',
   };
 
   return (

@@ -1,0 +1,41 @@
+1. Semantic Quran Search
+Current: Search only works if you type the exact surah name or number.
+With embeddings: Type "verses about patience during hardship" or "what does Quran say about parents" — it finds the most semantically relevant ayahs, even if those exact words aren't in the text.
+
+This alone is a massive upgrade. Users searching for topics, not keywords.
+
+2. Ask the Quran (Q&A)
+User types: "What does the Quran say about forgiving enemies?"
+System finds the most relevant ayahs → sends them as context to a language model → returns a grounded, cited answer with the actual ayah references.
+
+Not making things up — every answer is sourced directly from the Quran text you have in DB.
+
+3. "Find Similar Ayahs"
+On any ayah, a button: "Find related verses"
+Finds ayahs across the whole Quran that share the same theme, even if worded differently. Great for thematic study.
+
+4. Topic Exploration
+User picks a theme — Sabr, Tawakkul, Rizq, Death, Jannah — and gets a curated list of the most relevant ayahs across all 114 surahs, ranked by semantic relevance.
+
+5. Tafsir-Aware Search
+You have tafsir in your DB too. Embed the tafsir text alongside the ayah. Now when a user searches, results are ranked by both the ayah AND its scholarly explanation — much deeper than surface-level matching.
+
+6. Personalized "Ayah of the Day"
+Instead of a random ayah, pick one based on the user's reading history. If they've been reading surahs about trials and hardship, surface an ayah from a different surah on the same theme they haven't seen yet.
+
+What You Actually Need to Build This
+Component	Tool
+Embedding generation	Azure OpenAI (already set up)
+Vector storage	Supabase pgvector extension (already have Supabase)
+Semantic search query	pgvector cosine similarity
+Q&A generation	A language model (can use Azure OpenAI or Claude API)
+Your stack is almost entirely ready. The main work is:
+
+Run a one-time job to embed all ~6,236 ayahs
+Store vectors in a new ayah_embeddings table in Supabase
+Build a /api/search/semantic endpoint
+Wire up the UI
+What to Build First?
+Semantic search is the highest-impact, lowest-complexity starting point. It replaces the current name-only search with something users will immediately feel the difference in.
+
+Want to start with that?

@@ -2,6 +2,7 @@
 
 import { BookmarksProvider } from '@/components/quran/bookmarks-provider';
 import { ContinueReading } from '@/components/quran/continue-reading';
+import { AyahOfTheDay } from '@/components/quran/ayah-of-the-day';
 import { TimeGreeting } from '@/components/ui/time-greeting';
 import { Container } from '@/components/ui/container';
 
@@ -13,6 +14,7 @@ export function HomeClientSection() {
         <BookmarksProvider>
           <ContinueReading />
         </BookmarksProvider>
+        <AyahOfTheDay className="mt-4" />
       </Container>
     </section>
   );

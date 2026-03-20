@@ -282,3 +282,17 @@ model VerseEmbedding {
   @@index([surahNumber, ayahNumber])
   @@map("verse_embeddings")
 }
+
+model TafsirEmbedding {
+  id          String   @id @default(uuid())
+  ayahId      String   @unique
+  surahNumber Int
+  ayahNumber  Int
+  embedding   Unsupported("vector(1536)") // tafsir-enriched embedding
+  model       String   @default("text-embedding-3-small")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([surahNumber, ayahNumber])
+  @@map("tafsir_embeddings")
+}

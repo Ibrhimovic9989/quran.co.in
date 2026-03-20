@@ -13,6 +13,7 @@ import { JuzView } from './juz-view';
 import { RevelationOrderView } from './revelation-order-view';
 import { ContinueReading } from './continue-reading';
 import { BookmarksProvider } from './bookmarks-provider';
+import { SemanticSearchPanel } from './semantic-search-panel';
 import type { SurahInfo } from '@/types/quran-api';
 
 interface QuranPageClientProps {
@@ -65,11 +66,14 @@ export function QuranPageClient({ surahs }: QuranPageClientProps) {
           <QuranTabs activeView={activeView} onViewChange={handleViewChange} />
 
           {/* Search Bar */}
-          <QuranSearch 
-            searchQuery={searchQuery} 
+          <QuranSearch
+            searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             activeView={activeView}
           />
+
+          {/* Semantic search — shows automatically for topic/phrase queries */}
+          <SemanticSearchPanel query={searchQuery} className="mb-4 md:mb-6" />
 
           {/* View Content */}
           {activeView === 'surah' && <SurahList surahs={surahs} searchQuery={searchQuery} />}

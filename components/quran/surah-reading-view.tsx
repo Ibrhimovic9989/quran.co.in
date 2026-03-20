@@ -18,6 +18,7 @@ interface SurahReadingViewProps {
   loadedAyahs: {
     english: string[];
     arabic1: string[];
+    arabic2: string[];
   };
   visibleAyahs: number;
   audioData: Record<string, { reciter: string; url: string; originalUrl: string }>;
@@ -25,7 +26,7 @@ interface SurahReadingViewProps {
   onReciterChange: (reciterId: string) => void;
 }
 
-type ReadingTextMode = 'arabic' | 'translation';
+type ReadingTextMode = 'arabic' | 'transliteration' | 'translation';
 type QuranFontStyle = 'uthmani' | 'indopak';
 type QuranFontSize = 'sm' | 'md' | 'lg' | 'xl';
 
@@ -147,9 +148,10 @@ export function SurahReadingView({
     return Array.from({ length: n }, (_, i) => ({
       ayahNo: i + 1,
       arabic: loadedAyahs.arabic1[i] || '',
+      transliteration: loadedAyahs.arabic2[i] || '',
       translation: loadedAyahs.english[i] || '',
     }));
-  }, [loadedAyahs.arabic1, loadedAyahs.english, visibleAyahs]);
+  }, [loadedAyahs.arabic1, loadedAyahs.arabic2, loadedAyahs.english, visibleAyahs]);
 
   // Split into pages
   const pages = useMemo(() => {
@@ -186,24 +188,31 @@ export function SurahReadingView({
         }
       </button>
 
-      {/* Arabic / Translation toggle */}
+      {/* Arabic / Transliteration / Translation toggle */}
       <div className="inline-flex shrink-0 rounded-full border border-gray-200 bg-gray-100 p-1">
-        {(['arabic', 'translation'] as const).map((mode) => (
+        {([
+          { id: 'arabic', label: 'Arabic', beta: false },
+          { id: 'transliteration', label: 'Translit', beta: true },
+          { id: 'translation', label: 'Translation', beta: false },
+        ] as const).map((mode) => (
           <button
-            key={mode}
+            key={mode.id}
             type="button"
-            onClick={() => setTextMode(mode)}
+            onClick={() => setTextMode(mode.id)}
             className={cn(
-              'rounded-full px-4 py-2 text-sm font-semibold transition-colors capitalize',
-              textMode === mode ? 'bg-gray-900 text-white' : 'text-gray-700 hover:text-gray-900'
+              'relative rounded-full px-3 py-2 text-sm font-semibold transition-colors',
+              textMode === mode.id ? 'bg-gray-900 text-white' : 'text-gray-700 hover:text-gray-900'
             )}
           >
-            {mode}
+            {mode.label}
+            {mode.beta && (
+              <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-violet-500 ring-1 ring-white" />
+            )}
           </button>
         ))}
       </div>
 
-      {/* Font style selector */}
+      {/* Font style selector — arabic only */}
       {textMode === 'arabic' && (
         <div className="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-amber-200 bg-[#fef8ed] p-1">
           {FONT_STYLES.map((fs) => (
@@ -300,7 +309,7 @@ export function SurahReadingView({
     </div>
   );
 
-  const mushafBody = textMode === 'arabic' ? (
+  const mushafBody = textMode !== 'translation' ? (
     <div className="mushaf-paper rounded-2xl md:rounded-3xl px-4 py-8 md:px-12 md:py-12">
 
       {/* Surah header — shown once at top */}
@@ -370,14 +379,20 @@ export function SurahReadingView({
       {/* Bismillah — once, after header */}
       {showBismillah && (
         <div className="mb-6 md:mb-10 text-center">
-          <p
-            dir="rtl"
-            lang="ar"
-            className={`${fontClass} text-2xl md:text-[2rem] text-gray-900 leading-loose`}
-            aria-label="Bismillah ir-Rahman ir-Raheem"
-          >
-            بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
-          </p>
+          {textMode === 'arabic' ? (
+            <p
+              dir="rtl"
+              lang="ar"
+              className={`${fontClass} text-2xl md:text-[2rem] text-gray-900 leading-loose`}
+              aria-label="Bismillah ir-Rahman ir-Raheem"
+            >
+              بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+            </p>
+          ) : (
+            <p className="text-lg md:text-2xl italic text-amber-900/80 leading-loose">
+              Bismi Allāhi r-raḥmāni r-raḥīm
+            </p>
+          )}
           <p className="mt-1 text-[11px] md:text-xs text-amber-800/55 italic">
             In the Name of Allah—the Most Compassionate, Most Merciful
           </p>
@@ -387,25 +402,41 @@ export function SurahReadingView({
       {/* All pages — continuous vertical scroll */}
       {pages.map((pageAyahs, pageIndex) => (
         <div key={pageIndex}>
-          {/* Quran text block */}
-          <div
-            className={`mushaf-text ${fontClass} ${FONT_SIZE_CLASSES[fontSize]} text-[#1c1008]`}
-          >
-            {pageAyahs.map((ayah) => (
-              <span
-                key={ayah.ayahNo}
-                id={`ayah-${surahNumber}-${ayah.ayahNo}`}
-                className={cn(
-                  'inline transition-all duration-300 rounded px-0.5',
-                  sharedPlayback?.activeAyahNumber === ayah.ayahNo &&
-                    'bg-emerald-100/80 text-emerald-950 ring-1 ring-emerald-300/60'
-                )}
-              >
-                {ayah.arabic}
-                <AyahMedallion n={ayah.ayahNo} />
-              </span>
-            ))}
-          </div>
+          {textMode === 'arabic' ? (
+            <div className={`mushaf-text ${fontClass} ${FONT_SIZE_CLASSES[fontSize]} text-[#1c1008]`}>
+              {pageAyahs.map((ayah) => (
+                <span
+                  key={ayah.ayahNo}
+                  id={`ayah-${surahNumber}-${ayah.ayahNo}`}
+                  className={cn(
+                    'inline transition-all duration-300 rounded px-0.5',
+                    sharedPlayback?.activeAyahNumber === ayah.ayahNo &&
+                      'bg-emerald-100/80 text-emerald-950 ring-1 ring-emerald-300/60'
+                  )}
+                >
+                  {ayah.arabic}
+                  <AyahMedallion n={ayah.ayahNo} />
+                </span>
+              ))}
+            </div>
+          ) : (
+            <div className="mushaf-text text-base md:text-xl leading-[2.4] md:leading-[2.6] text-[#3a2a10] italic">
+              {pageAyahs.map((ayah) => (
+                <span
+                  key={ayah.ayahNo}
+                  id={`ayah-${surahNumber}-${ayah.ayahNo}`}
+                  className={cn(
+                    'inline transition-all duration-300 rounded px-0.5',
+                    sharedPlayback?.activeAyahNumber === ayah.ayahNo &&
+                      'bg-emerald-100/80 text-emerald-950 ring-1 ring-emerald-300/60'
+                  )}
+                >
+                  {ayah.transliteration}
+                  <AyahMedallion n={ayah.ayahNo} />
+                </span>
+              ))}
+            </div>
+          )}
 
           {/* Page separator (not after the last page) */}
           {pageIndex < pages.length - 1 && (
@@ -461,7 +492,7 @@ export function SurahReadingView({
 
       {/* ── Focus mode overlay ── */}
       {focusMode && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-[#fdf8ee] px-4 py-12">
+        <div className="fixed inset-0 z-50 overflow-y-auto theme-focus-overlay px-4 py-12">
           <button
             type="button"
             onClick={() => setFocusMode(false)}

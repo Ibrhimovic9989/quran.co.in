@@ -15,6 +15,8 @@ import {
   User,
   LogIn,
   LogOut,
+  Sparkles,
+  Compass,
 } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { cn } from "@/lib/utils/cn";
@@ -27,11 +29,14 @@ interface NavItem {
   icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string; "aria-hidden"?: boolean }>;
   href: string;
   requiresAuth?: boolean;
+  beta?: boolean;
 }
 
 const navItems: NavItem[] = [
   { label: "Home", icon: Home, href: "/" },
   { label: "Quran", icon: BookOpen, href: "/quran" },
+  { label: "Ask", icon: Sparkles, href: "/ask", beta: true },
+  { label: "Topics", icon: Compass, href: "/topics", beta: true },
   { label: "Bookmarks", icon: Bookmark, href: "/bookmarks", requiresAuth: true },
   { label: "Profile", icon: User, href: "/profile", requiresAuth: true },
   { label: "Sign In", icon: LogIn, href: "/sign-in", requiresAuth: false },
@@ -126,12 +131,17 @@ export function Navbar({ className }: NavbarProps) {
                       "focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white rounded-full",
                     )}
                   >
-                  <Icon
-                    size={18}
-                    strokeWidth={2}
-                    aria-hidden
-                    className="transition-all duration-300 ease-in-out md:w-5 md:h-5"
-                  />
+                  <span className="relative inline-flex shrink-0">
+                    <Icon
+                      size={18}
+                      strokeWidth={2}
+                      aria-hidden
+                      className="transition-all duration-300 ease-in-out md:w-5 md:h-5"
+                    />
+                    {item.beta && (
+                      <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-violet-500 ring-1 ring-white" />
+                    )}
+                  </span>
 
                   {/* Label - Only shown on desktop */}
                   <motion.div

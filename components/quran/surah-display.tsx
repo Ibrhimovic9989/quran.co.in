@@ -367,6 +367,7 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
                 loadedAyahs={{
                   english: loadedAyahs.english,
                   arabic1: loadedAyahs.arabic1,
+                  arabic2: loadedAyahs.arabic2,
                 }}
                 visibleAyahs={visibleAyahs}
                 audioData={surah.audio}

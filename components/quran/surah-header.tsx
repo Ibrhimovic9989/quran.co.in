@@ -34,22 +34,20 @@ export function SurahHeader({
       </div>
 
       {mode === 'reading' ? (
-        <div className="px-1 py-1 md:rounded-3xl md:border md:border-gray-200 md:bg-white/70 md:px-8 md:py-8 md:shadow-sm md:backdrop-blur-sm">
-          <div className="grid grid-cols-[120px_1fr] items-center gap-3 md:grid-cols-[1.2fr_1fr] md:gap-5">
-            <Text className="text-left text-[3.2rem] font-mushaf font-semibold leading-none text-gray-900 md:text-right md:text-8xl">
+        <div className="rounded-2xl border border-gray-200 bg-white/70 px-5 py-5 shadow-sm backdrop-blur-sm md:rounded-3xl md:px-8 md:py-8">
+          {/* Mobile: stacked. Desktop: side-by-side grid */}
+          <div className="flex flex-col items-center text-center gap-2 md:grid md:grid-cols-[1.2fr_1fr] md:items-center md:gap-5 md:text-left">
+            <Text className="font-mushaf font-semibold leading-tight text-gray-900 text-[4rem] md:text-right md:text-8xl">
               {surah.surahNameArabicLong}
             </Text>
-            <div className="text-left">
-              <Heading level={1} className="text-[1.95rem] font-bold leading-none text-gray-900 md:text-5xl">
+            <div>
+              <Heading level={1} className="text-2xl font-bold leading-tight text-gray-900 md:text-5xl">
                 {surah.surahNo}. {surah.surahNameTranslation}
               </Heading>
-              <div className="mt-1 inline-flex rounded-full bg-cyan-500/90 px-2 py-0.5 text-[11px] font-semibold text-white md:hidden">
-                info
-              </div>
-              <Text className="mt-1 text-[1rem] text-gray-700 md:mt-2 md:text-3xl">
+              <Text className="mt-1 text-base text-gray-600 md:mt-2 md:text-3xl">
                 {surah.surahName}
               </Text>
-              <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] font-medium text-gray-600 md:mt-4 md:justify-start md:gap-2 md:text-sm">
+              <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5 text-xs font-medium text-gray-600 md:mt-4 md:justify-start md:gap-2 md:text-sm">
                 <span>{surah.totalAyah} Ayahs</span>
                 <span className="text-gray-300">•</span>
                 <span>{surah.revelationPlace}</span>
@@ -72,7 +70,7 @@ export function SurahHeader({
                   </>
                 )}
               </div>
-              {revelation && <RevelationLegendModal className="mt-1" />}
+              {revelation && <RevelationLegendModal className="mt-1 justify-center md:justify-start" />}
             </div>
           </div>
         </div>

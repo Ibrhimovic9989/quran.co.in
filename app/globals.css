@@ -5,6 +5,13 @@
 :root {
   --background: #ffffff;
   --foreground: #000000;
+
+  /* Seasonal theme tokens (default = current look) */
+  --mushaf-paper-bg: #fef8ed;
+  --mushaf-border-color: #c9a84c;
+  --mushaf-border-color-alpha: #c9a84c55;
+  --mushaf-border-glow: rgba(100, 70, 20, 0.14);
+  --focus-overlay-bg: #fdf8ee;
 }
 
 html {
@@ -47,19 +54,95 @@ body {
 
 /* Parchment paper background with subtle warm noise */
 .mushaf-paper {
-  background-color: #fef8ed;
+  background-color: var(--mushaf-paper-bg);
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeBlend in='SourceGraphic' mode='multiply' result='blend'/%3E%3CfeComposite in='blend' in2='SourceGraphic' operator='in'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
 }
 
 /* Double ornamental border */
 .mushaf-border {
-  border: 2px solid #c9a84c;
+  border: 2px solid var(--mushaf-border-color);
   box-shadow:
-    0 0 0 6px #fef8ed,
-    0 0 0 8px #c9a84c55,
-    0 6px 32px rgba(100, 70, 20, 0.14),
+    0 0 0 6px var(--mushaf-paper-bg),
+    0 0 0 8px var(--mushaf-border-color-alpha),
+    0 6px 32px var(--mushaf-border-glow),
     0 1px 6px rgba(0,0,0,0.06);
+}
+
+/* Focus-mode overlay background (animated theme friendly) */
+.theme-focus-overlay {
+  background-color: var(--focus-overlay-bg);
+}
+
+/* ─── Seasonal Themes ─────────────────────────────── */
+
+/* Ramadan — emerald/teal, warm parchment */
+body.theme-ramadan {
+  --background: #fffdf8;
+  --foreground: #0f172a;
+  --mushaf-paper-bg: #fff3d6;
+  --mushaf-border-color: #0f766e;
+  --mushaf-border-color-alpha: #0f766e55;
+  --mushaf-border-glow: rgba(15, 118, 110, 0.18);
+  --focus-overlay-bg: #fff8e7;
+}
+
+body.theme-ramadan::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(16, 185, 129, 0.22), transparent 40%),
+    radial-gradient(circle at 80% 25%, rgba(245, 158, 11, 0.12), transparent 45%),
+    linear-gradient(180deg, rgba(16, 185, 129, 0.04) 0%, rgba(0,0,0,0) 55%);
+}
+
+/* Eid ul Fitr — warm gold, celebratory */
+body.theme-eid-ul-fitr {
+  --background: #fff9f1;
+  --foreground: #0f172a;
+  --mushaf-paper-bg: #fff2d8;
+  --mushaf-border-color: #d4a017;
+  --mushaf-border-color-alpha: rgba(212, 160, 23, 0.35);
+  --mushaf-border-glow: rgba(212, 160, 23, 0.22);
+  --focus-overlay-bg: #fff4dd;
+}
+
+body.theme-eid-ul-fitr::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(212, 160, 23, 0.25), transparent 42%),
+    radial-gradient(circle at 70% 30%, rgba(236, 72, 153, 0.11), transparent 45%),
+    linear-gradient(180deg, rgba(212, 160, 23, 0.05) 0%, rgba(0,0,0,0) 55%);
+}
+
+/* Eid ul Adha — deeper gold + olive/green (sacrifice, pilgrimage) */
+body.theme-eid-ul-adha {
+  --background: #fafff8;
+  --foreground: #0f172a;
+  --mushaf-paper-bg: #f2fce8;
+  --mushaf-border-color: #65a30d;
+  --mushaf-border-color-alpha: rgba(101, 163, 13, 0.35);
+  --mushaf-border-glow: rgba(101, 163, 13, 0.18);
+  --focus-overlay-bg: #f5fdf0;
+}
+
+body.theme-eid-ul-adha::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 20% 12%, rgba(101, 163, 13, 0.22), transparent 42%),
+    radial-gradient(circle at 75% 28%, rgba(212, 160, 23, 0.14), transparent 45%),
+    linear-gradient(180deg, rgba(101, 163, 13, 0.04) 0%, rgba(0,0,0,0) 55%);
 }
 
 /* Flowing justified Quran text — font-family is controlled by the sibling utility class */

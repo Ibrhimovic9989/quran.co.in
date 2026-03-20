@@ -7,6 +7,7 @@ import { Footer } from '@/components/layout/footer';
 import { PageLoader } from '@/components/ui/page-loader';
 import { ToastProvider } from '@/components/ui/toast';
 import { NavigationProgress } from '@/components/ui/navigation-progress';
+import { SeasonalThemeApplier } from '@/components/ui/theme/seasonal-theme-applier';
 import { Suspense } from 'react';
 import '@/app/globals.css';
 
@@ -89,6 +90,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} ${scheherazade.variable} ${amiri.variable} ${notoNaskh.variable}`}>
+        <SeasonalThemeApplier />
         <AuthProvider>
           <ToastProvider>
             <Suspense fallback={null}>
