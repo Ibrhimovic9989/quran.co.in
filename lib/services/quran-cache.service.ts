@@ -70,10 +70,10 @@ export class QuranCacheService {
           english: dbAyahs.map(a => a.translationText || ''),
           arabic1: dbAyahs.map(a => a.arabicText),
           arabic2: dbAyahs.map(a => a.transliteration || a.arabicText),
-          bengali: dbAyahs.map(a => (a.metadata as any)?.bengali || null).filter(v => v !== null),
-          urdu: dbAyahs.map(a => (a.metadata as any)?.urdu || null).filter(v => v !== null),
-          turkish: dbAyahs.map(a => (a.metadata as any)?.turkish || null).filter(v => v !== null),
-          uzbek: dbAyahs.map(a => (a.metadata as any)?.uzbek || null).filter(v => v !== null),
+          bengali: dbAyahs.map(a => (a.metadata as any)?.bengali || null),
+          urdu: dbAyahs.map(a => (a.metadata as any)?.urdu || null),
+          turkish: dbAyahs.map(a => (a.metadata as any)?.turkish || null),
+          uzbek: dbAyahs.map(a => (a.metadata as any)?.uzbek || null),
         };
         
         const totalTime = Date.now() - startTime;

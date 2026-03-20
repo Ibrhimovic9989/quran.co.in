@@ -200,13 +200,16 @@ export function SurahReadingView({
             type="button"
             onClick={() => setTextMode(mode.id)}
             className={cn(
-              'relative rounded-full px-3 py-2 text-sm font-semibold transition-colors',
+              'rounded-full px-3 py-2 text-sm font-semibold transition-colors flex items-center gap-1',
               textMode === mode.id ? 'bg-gray-900 text-white' : 'text-gray-700 hover:text-gray-900'
             )}
           >
             {mode.label}
             {mode.beta && (
-              <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-violet-500 ring-1 ring-white" />
+              <span className={cn(
+                'text-[8px] font-bold tracking-wider rounded px-1 py-0.5 leading-none',
+                textMode === mode.id ? 'bg-violet-500 text-white' : 'bg-violet-100 text-violet-600'
+              )}>BETA</span>
             )}
           </button>
         ))}

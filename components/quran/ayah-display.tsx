@@ -244,9 +244,20 @@ export function AyahDisplay({
             </div>
           </div>
 
-          <Text className="text-right font-arabic text-[2rem] font-semibold leading-[2.1] text-stone-900 md:text-[2.6rem] md:leading-[2.3]">
-          {ayah.arabic1}
-          </Text>
+          <p className="text-right font-arabic text-[2rem] font-semibold leading-[2.1] text-stone-900 md:text-[2.6rem] md:leading-[2.3]" dir="rtl" lang="ar">
+            {ayah.arabic1}
+            <span className="inline-flex items-center justify-center align-middle mx-1.5">
+              <span className="relative inline-flex items-center justify-center w-7 h-7 md:w-9 md:h-9">
+                <svg viewBox="0 0 32 32" className="absolute inset-0 w-full h-full" aria-hidden="true">
+                  <circle cx="16" cy="16" r="14.5" fill="none" stroke="#9a7c4f" strokeWidth="1" />
+                  <circle cx="16" cy="16" r="11" fill="none" stroke="#9a7c4f" strokeWidth="0.5" opacity="0.5" />
+                </svg>
+                <span className="relative font-mushaf text-[10px] md:text-[12px] text-amber-900 leading-none select-none">
+                  {ayah.ayahNo.toString().replace(/\d/g, (d) => String.fromCharCode(0x0660 + Number(d)))}
+                </span>
+              </span>
+            </span>
+          </p>
 
           {showTranslit && ayah.arabic2 && (
             <p className="text-right text-sm italic leading-7 text-stone-400 md:text-base md:leading-8">
@@ -274,13 +285,13 @@ export function AyahDisplay({
             </Text>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-stone-100 pt-3">
+          <div className="border-t border-stone-100 pt-3 space-y-2">
             {hasAudio && !showInlineAudioControl && (
               <AudioPlayer
                 audioData={ayah.audio!}
                 surahNo={ayah.surahNo}
                 ayahNo={ayah.ayahNo}
-                className="flex-1"
+                className="w-full"
                 selectedReciter={selectedReciter}
                 onReciterChange={onReciterChange}
                 enableSharedPlayback={enableSharedPlayback}
@@ -288,64 +299,69 @@ export function AyahDisplay({
               />
             )}
 
-            {ayah.arabic2 && (
+            {/* Action buttons row — equal columns */}
+            <div className="grid grid-cols-3 gap-1">
+              {/* Transliteration */}
+              {ayah.arabic2 ? (
+                <button
+                  onClick={() => {
+                    const next = !showTranslit;
+                    setShowTranslit(next);
+                    localStorage.setItem(TRANSLIT_KEY, String(next));
+                  }}
+                  className={cn(
+                    'flex flex-col items-center gap-0.5 rounded-xl px-1 py-2 text-xs font-medium transition-colors duration-200',
+                    showTranslit
+                      ? 'bg-amber-100 text-amber-700'
+                      : 'text-stone-500 hover:bg-stone-100 hover:text-stone-800'
+                  )}
+                >
+                  <span className="text-sm font-bold">A</span>
+                  <span className="leading-none">Translit</span>
+                  <span className="rounded-full bg-violet-100 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide text-violet-500 leading-none">beta</span>
+                </button>
+              ) : <div />}
+
+              {/* Tafsir */}
+              <button
+                onClick={async () => {
+                  if (!showTafsir && !tafsir) {
+                    try {
+                      const response = await fetch(
+                        `/api/quran/tafsir/${ayah.surahNo}/${ayah.ayahNo}`
+                      );
+                      if (response.ok) {
+                        const data = await response.json();
+                        setTafsir(data.tafsir);
+                      }
+                    } catch (error) {
+                      console.error('Error fetching tafsir:', error);
+                    }
+                  }
+                  setShowTafsir(!showTafsir);
+                }}
+                className="flex flex-col items-center gap-0.5 rounded-xl px-1 py-2 text-xs font-medium text-stone-500 transition-colors duration-200 hover:bg-stone-100 hover:text-stone-800"
+              >
+                {showTafsir ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                <span className="leading-none">Tafsir</span>
+              </button>
+
+              {/* Similar verses */}
               <button
                 onClick={() => {
-                  const next = !showTranslit;
-                  setShowTranslit(next);
-                  localStorage.setItem(TRANSLIT_KEY, String(next));
+                  if (!showSimilar) fetchSimilar();
+                  setShowSimilar((v) => !v);
                 }}
-                className={cn(
-                  'inline-flex items-center gap-1 rounded-full px-2 py-1 text-sm font-medium transition-colors duration-200',
-                  showTranslit
-                    ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-                    : 'text-stone-500 hover:bg-stone-100 hover:text-stone-800'
-                )}
+                className="flex flex-col items-center gap-0.5 rounded-xl px-1 py-2 text-xs font-medium text-purple-500 transition-colors duration-200 hover:bg-purple-50 hover:text-purple-700"
               >
-                <span className="text-[11px] font-bold tracking-wide">A</span>
-                <span>Transliteration</span>
-                <span className="rounded-full bg-violet-100 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-violet-600">beta</span>
+                {similarLoading
+                  ? <Loader2 className="h-4 w-4 animate-spin" />
+                  : showSimilar
+                    ? <ChevronDown className="h-4 w-4" />
+                    : <Sparkles className="h-4 w-4" />}
+                <span className="leading-none">Similar</span>
               </button>
-            )}
-
-            <button
-              onClick={async () => {
-                if (!showTafsir && !tafsir) {
-                  try {
-                    const response = await fetch(
-                      `/api/quran/tafsir/${ayah.surahNo}/${ayah.ayahNo}`
-                    );
-                    if (response.ok) {
-                      const data = await response.json();
-                      setTafsir(data.tafsir);
-                    }
-                  } catch (error) {
-                    console.error('Error fetching tafsir:', error);
-                  }
-                }
-                setShowTafsir(!showTafsir);
-              }}
-              className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-sm font-medium text-stone-500 transition-colors duration-200 hover:bg-stone-100 hover:text-stone-800"
-            >
-              {showTafsir ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-              <span>Tafsir</span>
-            </button>
-
-            {/* Similar Ayahs button */}
-            <button
-              onClick={() => {
-                if (!showSimilar) fetchSimilar();
-                setShowSimilar((v) => !v);
-              }}
-              className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-sm font-medium text-purple-500 transition-colors duration-200 hover:bg-purple-50 hover:text-purple-700"
-            >
-              {similarLoading
-                ? <Loader2 className="h-4 w-4 animate-spin" />
-                : showSimilar
-                  ? <ChevronDown className="h-4 w-4" />
-                  : <Sparkles className="h-4 w-4" />}
-              <span>Similar verses</span>
-            </button>
+            </div>
           </div>
 
           {showTafsir && tafsir && (

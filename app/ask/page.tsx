@@ -264,19 +264,18 @@ export default function AskPage() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Scroll to the new assistant message when it first appears (message count increases)
+  // Scroll to the assistant message only once it has actual content (not empty loading bubble)
   const prevCountRef = useRef(0);
   useEffect(() => {
     if (messages.length <= prevCountRef.current) return;
     prevCountRef.current = messages.length;
     const last = messages[messages.length - 1];
-    if (last?.role === 'assistant') {
-      // Small delay to let the DOM paint the empty bubble first
+    if (last?.role === 'assistant' && last.content) {
       setTimeout(() => {
         lastAssistantRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 60);
     }
-  }, [messages.length]);
+  }, [messages]);
 
   // During streaming: only follow bottom if user is already there
   useEffect(() => {
@@ -372,7 +371,7 @@ export default function AskPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50/40 via-white to-white">
-      <div className="max-w-3xl mx-auto px-4 py-8 md:py-12">
+      <div className="max-w-3xl mx-auto px-4 py-8 md:py-12 pb-44 md:pb-48">
 
         {/* Header */}
         <div className="text-center mb-6">
@@ -519,8 +518,9 @@ export default function AskPage() {
           </div>
         )}
 
-        {/* Input */}
-        <div className="sticky bottom-4">
+        {/* Input — fixed to viewport so it's always visible */}
+        <div className="fixed bottom-0 left-0 right-0 z-40 px-4 pb-4 pt-2 bg-gradient-to-t from-white via-white/95 to-transparent">
+          <div className="max-w-3xl mx-auto">
           <div className={cn(
             'bg-white border rounded-2xl shadow-lg overflow-hidden transition-all',
             mode === 'focused'
@@ -557,6 +557,7 @@ export default function AskPage() {
           <p className="text-center text-[11px] text-gray-400 mt-2">
             Not a substitute for scholarly guidance. Always refer to qualified scholars.
           </p>
+          </div>
         </div>
 
       </div>

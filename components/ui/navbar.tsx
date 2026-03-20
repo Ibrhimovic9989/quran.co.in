@@ -139,7 +139,9 @@ export function Navbar({ className }: NavbarProps) {
                       className="transition-all duration-300 ease-in-out md:w-5 md:h-5"
                     />
                     {item.beta && (
-                      <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-violet-500 ring-1 ring-white" />
+                      <span className="absolute -top-2 -right-3 rounded bg-violet-500 px-1 py-px text-[7px] font-bold text-white leading-none">
+                        beta
+                      </span>
                     )}
                   </span>
 

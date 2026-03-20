@@ -20,11 +20,8 @@ export function SurahNavigation({
   const router = useRouter();
 
   const handleNavigation = (url: string) => {
-    // Scroll to top immediately before navigation
-    window.scrollTo(0, 0);
-    router.push(url);
-    // Also scroll after a brief delay to ensure it works
-    setTimeout(() => window.scrollTo(0, 0), 100);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    router.push(url, { scroll: false });
   };
 
   return (

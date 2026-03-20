@@ -30,7 +30,14 @@ export function SurahCard({ surah, className }: SurahCardProps) {
   const gradient = gradients[surah.surahNo % gradients.length];
 
   return (
-    <Link href={`/quran/${surah.surahNo}`} onClick={() => setLoading(true)}>
+    <Link
+      href={`/quran/${surah.surahNo}`}
+      scroll={false}
+      onClick={() => {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        setLoading(true);
+      }}
+    >
       <Card
         className={cn(
           "relative overflow-hidden border border-gray-200 hover:border-gray-300",

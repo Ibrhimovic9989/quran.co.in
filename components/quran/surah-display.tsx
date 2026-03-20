@@ -244,9 +244,9 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
     setDisplayMode((currentMode) => (currentMode === nextMode ? currentMode : nextMode));
   }, [searchParams]);
 
-  // Scroll to top when surah number changes
+  // Fallback scroll-to-top on surah change (covers edge cases like direct URL navigation)
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [surah.surahNo]);
 
   const { success, info } = useToast();
