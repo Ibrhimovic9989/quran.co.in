@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import { Inter, Scheherazade_New, Amiri, Noto_Naskh_Arabic } from 'next/font/google';
+import { WebSiteSchema } from '@/components/seo/json-ld';
 import { AuthProvider } from '@/components/auth/auth-provider';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
@@ -36,24 +37,78 @@ const notoNaskh = Noto_Naskh_Arabic({
   display: 'swap',
 });
 
+const BASE_URL = 'https://quran.co.in';
+
 export const metadata: Metadata = {
-  title: 'Quran.co.in - Your Gateway to the Holy Quran',
-  description: 'A modern, beautiful application for reading and studying the Holy Quran',
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: 'Quran.co.in — Read the Holy Quran Online, Free',
+    template: '%s | Quran.co.in',
+  },
+  description:
+    'Read the Holy Quran online in Arabic with English translation, transliteration, audio recitation, and tafsir. All 114 surahs, 6,236 ayahs. Free, beautiful, and fast.',
+  keywords: [
+    'Quran online', 'read Quran', 'Holy Quran', 'Quran translation', 'Quran in English',
+    'Quran Arabic', 'Quran with translation', 'Surah', 'Ayah', 'Islamic app',
+    'Quran recitation', 'Quran audio', 'Quran tafsir', 'Quran transliteration',
+    'read Quran online free', 'Quran.co.in',
+  ],
+  authors: [{ name: 'Quran.co.in' }],
+  creator: 'Quran.co.in',
+  publisher: 'Quran.co.in',
+  category: 'religion',
+  applicationName: 'Quran.co.in',
+  alternates: {
+    canonical: BASE_URL,
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: BASE_URL,
+    siteName: 'Quran.co.in',
+    title: 'Quran.co.in — Read the Holy Quran Online, Free',
+    description:
+      'Read the Holy Quran online in Arabic with English translation, transliteration, audio recitation, and tafsir. All 114 surahs, 6,236 ayahs. Free, beautiful, and fast.',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Quran.co.in — Read the Holy Quran Online',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@qurancoinn',
+    creator: '@qurancoinn',
+    title: 'Quran.co.in — Read the Holy Quran Online, Free',
+    description:
+      'Read the Holy Quran online in Arabic with English translation, audio, and tafsir. All 114 surahs free.',
+    images: ['/og-image.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',
     apple: '/favicon.svg',
-  },
-  other: {
-    'permissions-policy': 'camera=(), microphone=(), geolocation=(), web-share=(), window-management=(), local-fonts=(), idle-detection=()',
   },
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
@@ -90,6 +145,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} ${scheherazade.variable} ${amiri.variable} ${notoNaskh.variable}`}>
+        <WebSiteSchema />
         <SeasonalThemeApplier />
         <AuthProvider>
           <ToastProvider>
