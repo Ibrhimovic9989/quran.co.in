@@ -2,7 +2,21 @@
 // Landing page with hero section and 3D Quran scene
 // Content is Quran/Hadith-led narrative
 
+import type { Metadata } from 'next';
 import { HeroSection } from '@/components/ui/hero-section';
+
+export const metadata: Metadata = {
+  title: 'Quran.co.in — Read the Holy Quran Online, Free',
+  description:
+    'Read the Holy Quran online in Arabic with English translation, transliteration, audio recitation by world-famous reciters, and tafsir. All 114 surahs, 6,236 ayahs. Free, beautiful, and fast.',
+  alternates: { canonical: 'https://quran.co.in' },
+  openGraph: {
+    type: 'website',
+    url: 'https://quran.co.in',
+    title: 'Quran.co.in — Read the Holy Quran Online, Free',
+    description: 'Read, listen, and understand the Holy Quran. Arabic text, English translation, audio recitation, tafsir, and AI-powered search across all 6,236 ayahs.',
+  },
+};
 import { HomeClientSection } from '@/components/ui/home-client-section';
 import { ValueProposition } from '@/components/ui/value-proposition';
 import { FeaturesShowcase } from '@/components/ui/features-showcase';

@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Block API routes and auth endpoints
+Disallow: /api/
+Disallow: /sign-in
+Disallow: /dashboard
+Disallow: /profile
+
+# Allow key content pages
+Allow: /quran
+Allow: /ask
+Allow: /topics
+
+Sitemap: https://quran.co.in/sitemap.xml

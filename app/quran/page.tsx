@@ -1,7 +1,21 @@
 // Quran List Page
 // Displays all surahs with tab navigation (Surah/Juz/Revelation Order)
 
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
+
+export const metadata: Metadata = {
+  title: 'All 114 Surahs of the Holy Quran',
+  description:
+    'Browse all 114 surahs of the Holy Quran. Read in Arabic with English translation, listen to audio recitations, and explore by surah, juz, or revelation order. Free at Quran.co.in.',
+  alternates: { canonical: 'https://quran.co.in/quran' },
+  openGraph: {
+    type: 'website',
+    url: 'https://quran.co.in/quran',
+    title: 'All 114 Surahs of the Holy Quran — Quran.co.in',
+    description: 'Browse all 114 surahs. Arabic text, English translation, audio, tafsir. Free.',
+  },
+};
 import { QuranPageClient } from '@/components/quran/quran-page-client';
 import { QuranCacheService } from '@/lib/services/quran-cache.service';
 import { Spinner } from '@/components/ui/atoms';
