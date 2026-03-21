@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 
+const OG_IMAGE = 'https://quran.co.in/api/og/today';
+
 export const metadata: Metadata = {
   title: 'Verse of the Day — Quran.co.in',
   description:
@@ -9,10 +11,10 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://quran.co.in/today',
     title: 'Verse of the Day — Quran.co.in',
-    description: 'A beautiful ayah from the Quran, shared daily. Read, reflect, and share.',
+    description: "A beautiful ayah from the Quran, shared daily. Read, reflect, and share.",
     images: [
       {
-        url: '/api/og?surah=2&ayah=286&surahName=Al-Baqarah&today=1&translation=Allah+does+not+burden+a+soul+beyond+that+it+can+bear.',
+        url: OG_IMAGE,
         width: 1200,
         height: 630,
         alt: 'Verse of the Day — Quran.co.in',
@@ -22,8 +24,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Verse of the Day — Quran.co.in',
-    description: 'A beautiful ayah from the Quran, shared daily. Read, reflect, and share.',
-    images: ['/api/og?surah=2&ayah=286&surahName=Al-Baqarah&today=1&translation=Allah+does+not+burden+a+soul+beyond+that+it+can+bear.'],
+    description: "A beautiful ayah from the Quran, shared daily. Read, reflect, and share.",
+    images: [OG_IMAGE],
   },
 };
 
