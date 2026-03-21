@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 
-const OG_IMAGE = 'https://quran.co.in/api/og/today';
+// Date-based cache buster — WhatsApp/Twitter re-fetch the image each day
+const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+const OG_IMAGE = `https://quran.co.in/api/og/today?d=${today}`;
 
 export const metadata: Metadata = {
   title: 'Verse of the Day — Quran.co.in',
@@ -12,14 +14,7 @@ export const metadata: Metadata = {
     url: 'https://quran.co.in/today',
     title: 'Verse of the Day — Quran.co.in',
     description: "A beautiful ayah from the Quran, shared daily. Read, reflect, and share.",
-    images: [
-      {
-        url: OG_IMAGE,
-        width: 1200,
-        height: 630,
-        alt: 'Verse of the Day — Quran.co.in',
-      },
-    ],
+    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: 'Verse of the Day — Quran.co.in' }],
   },
   twitter: {
     card: 'summary_large_image',

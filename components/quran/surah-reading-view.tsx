@@ -1,12 +1,14 @@
 'use client';
 
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
-import { ChevronDown, ChevronUp, Play, Maximize2, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Play, Maximize2, X, Bookmark, BookmarkCheck, ExternalLink } from 'lucide-react';
+import Link from 'next/link';
 import { AudioPlayer } from './audio-player';
 import { ReciterSelector } from '@/components/ui/molecules';
 import { cn } from '@/lib/utils/cn';
 import { useOptionalSurahPlayback } from './surah-playback-provider';
 import { useToast } from '@/components/ui/toast';
+import { useBookmarks } from './bookmarks-provider';
 import { getRevelationInfo, PERIOD_LABELS, PERIOD_COLORS, PERIOD_DESCRIPTIONS, APPROXIMATION_NOTE } from '@/lib/data/revelation-periods';
 
 interface SurahReadingViewProps {
@@ -53,8 +55,8 @@ function toArabicIndicNumber(n: number) {
   return n.toString().replace(/\d/g, (d) => String.fromCharCode(0x0660 + Number(d)));
 }
 
-/** Compact ayah-end medallion — smaller, inline */
-function AyahMedallion({ n }: { n: number }) {
+/** Compact ayah-end medallion — smaller, inline. Amber fill when bookmarked. */
+function AyahMedallion({ n, bookmarked }: { n: number; bookmarked?: boolean }) {
   return (
     <span
       className="inline-flex items-center justify-center align-middle mx-1"
@@ -62,7 +64,7 @@ function AyahMedallion({ n }: { n: number }) {
     >
       <span className="relative inline-flex items-center justify-center w-6 h-6 md:w-8 md:h-8">
         <svg viewBox="0 0 32 32" className="absolute inset-0 w-full h-full" aria-hidden="true">
-          <circle cx="16" cy="16" r="14.5" fill="none" stroke="#9a7c4f" strokeWidth="1" />
+          <circle cx="16" cy="16" r="14.5" fill={bookmarked ? '#fef3c7' : 'none'} stroke="#9a7c4f" strokeWidth="1" />
           <circle cx="16" cy="16" r="11"   fill="none" stroke="#9a7c4f" strokeWidth="0.5" opacity="0.5" />
         </svg>
         <span className="relative font-mushaf text-[9px] md:text-[11px] text-amber-900 leading-none select-none">
@@ -114,6 +116,8 @@ export function SurahReadingView({
 
   const sharedPlayback = useOptionalSurahPlayback();
   const { info } = useToast();
+  const { isBookmarked, toggle: toggleBookmark } = useBookmarks();
+  const [selectedAyahNo, setSelectedAyahNo] = useState<number | null>(null);
 
   const showBismillah = surahNumber !== SURAH_FATIHA && surahNumber !== SURAH_WITHOUT_BISMILLAH;
   const isMadinan = revelationPlace === 'Madina';
@@ -418,7 +422,14 @@ export function SurahReadingView({
                   )}
                 >
                   {ayah.arabic}
-                  <AyahMedallion n={ayah.ayahNo} />
+                  <button
+                    type="button"
+                    onClick={() => setSelectedAyahNo(ayah.ayahNo === selectedAyahNo ? null : ayah.ayahNo)}
+                    aria-label={`Actions for verse ${ayah.ayahNo}`}
+                    className="inline align-middle cursor-pointer"
+                  >
+                    <AyahMedallion n={ayah.ayahNo} bookmarked={isBookmarked(surahNumber, ayah.ayahNo)} />
+                  </button>
                 </span>
               ))}
             </div>
@@ -435,7 +446,14 @@ export function SurahReadingView({
                   )}
                 >
                   {ayah.transliteration}
-                  <AyahMedallion n={ayah.ayahNo} />
+                  <button
+                    type="button"
+                    onClick={() => setSelectedAyahNo(ayah.ayahNo === selectedAyahNo ? null : ayah.ayahNo)}
+                    aria-label={`Actions for verse ${ayah.ayahNo}`}
+                    className="inline align-middle cursor-pointer"
+                  >
+                    <AyahMedallion n={ayah.ayahNo} bookmarked={isBookmarked(surahNumber, ayah.ayahNo)} />
+                  </button>
                 </span>
               ))}
             </div>
@@ -492,6 +510,63 @@ export function SurahReadingView({
         {audioPanel}
         {mushafBody}
       </div>
+
+      {/* ── Ayah action sheet — appears when medallion is tapped ── */}
+      {selectedAyahNo !== null && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setSelectedAyahNo(null)}
+          />
+          {/* Bottom sheet */}
+          <div className="fixed bottom-0 inset-x-0 z-50 animate-in slide-in-from-bottom-4 duration-200">
+            <div className="mx-auto max-w-lg rounded-t-2xl border border-amber-200 bg-[#fdf8ee] px-5 py-4 shadow-2xl">
+              <div className="mb-3 flex items-center justify-between">
+                <p className="text-sm font-semibold text-amber-900">
+                  {surahNameTranslation} — Verse {selectedAyahNo}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setSelectedAyahNo(null)}
+                  className="rounded-full p-1 text-amber-700 hover:bg-amber-100 transition-colors"
+                  aria-label="Close"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    toggleBookmark({ surahNumber, ayahNumber: selectedAyahNo });
+                    setSelectedAyahNo(null);
+                  }}
+                  className={cn(
+                    'flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors',
+                    isBookmarked(surahNumber, selectedAyahNo)
+                      ? 'bg-amber-200 text-amber-800 hover:bg-amber-300'
+                      : 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+                  )}
+                >
+                  {isBookmarked(surahNumber, selectedAyahNo)
+                    ? <><BookmarkCheck className="h-4 w-4" /> Bookmarked</>
+                    : <><Bookmark className="h-4 w-4" /> Bookmark</>
+                  }
+                </button>
+                <Link
+                  href={`/quran/${surahNumber}?ayah=${selectedAyahNo}`}
+                  onClick={() => setSelectedAyahNo(null)}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-stone-100 px-4 py-2.5 text-sm font-medium text-stone-700 hover:bg-stone-200 transition-colors"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Verse view
+                </Link>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* ── Focus mode overlay ── */}
       {focusMode && (
