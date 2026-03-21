@@ -42,12 +42,10 @@ export default function TodayPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const shareUrl = ayah
-    ? `https://quran.co.in/quran/${ayah.surahNumber}?ayah=${ayah.ayahNumber}`
-    : 'https://quran.co.in/today';
+  const shareUrl = 'https://quran.co.in/today';
 
   const shareText = ayah
-    ? `"${ayah.translationText ?? ''}" — Quran ${ayah.surahNumber}:${ayah.ayahNumber} (${ayah.englishName})\n\nRead more: ${shareUrl}`
+    ? `"${ayah.translationText ?? ''}" — Quran ${ayah.surahNumber}:${ayah.ayahNumber} (${ayah.englishName})\n\n${shareUrl}`
     : '';
 
   const handleCopy = async () => {
