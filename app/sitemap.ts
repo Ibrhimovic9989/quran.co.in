@@ -52,6 +52,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/quran`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
     { url: `${BASE_URL}/ask`,   lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE_URL}/topics`,lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE_URL}/today`, lastModified: now, changeFrequency: 'daily',   priority: 0.85 },
     { url: `${BASE_URL}/about`, lastModified: now, changeFrequency: 'yearly',  priority: 0.4 },
     { url: `${BASE_URL}/faq`,   lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${BASE_URL}/help`,  lastModified: now, changeFrequency: 'monthly', priority: 0.4 },

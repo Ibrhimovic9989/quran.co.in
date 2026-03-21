@@ -10,6 +10,7 @@ import { ToastProvider } from '@/components/ui/toast';
 import { NavigationProgress } from '@/components/ui/navigation-progress';
 import { GAPageTracker } from '@/components/ui/ga-page-tracker';
 import { SeasonalThemeApplier } from '@/components/ui/theme/seasonal-theme-applier';
+import { SWRegister } from '@/components/ui/sw-register';
 import { Suspense } from 'react';
 import '@/app/globals.css';
 
@@ -148,6 +149,7 @@ export default function RootLayout({
       <body className={`${inter.className} ${scheherazade.variable} ${amiri.variable} ${notoNaskh.variable}`}>
         <WebSiteSchema />
         <SeasonalThemeApplier />
+        <SWRegister />
         <AuthProvider>
           <ToastProvider>
             <Suspense fallback={null}>

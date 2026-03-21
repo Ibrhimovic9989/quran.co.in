@@ -17,6 +17,7 @@ import {
   LogOut,
   Sparkles,
   Compass,
+  Sun,
 } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { cn } from "@/lib/utils/cn";
@@ -35,6 +36,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: "Home", icon: Home, href: "/" },
   { label: "Quran", icon: BookOpen, href: "/quran" },
+  { label: "Today", icon: Sun, href: "/today" },
   { label: "Ask", icon: Sparkles, href: "/ask", beta: true },
   { label: "Topics", icon: Compass, href: "/topics", beta: true },
   { label: "Bookmarks", icon: Bookmark, href: "/bookmarks", requiresAuth: true },
