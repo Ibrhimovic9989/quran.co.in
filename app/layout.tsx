@@ -121,8 +121,10 @@ export default function RootLayout({
   const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-JDCEZRC9GF';
 
   return (
-    <html lang="en">
+    <html lang="en" translate="no">
       <head>
+        {/* Suppress browser translate bar — app has its own translations */}
+        <meta name="google" content="notranslate" />
         {/* Block device APIs that trigger popups - Must be as early as possible */}
         <script
           suppressHydrationWarning

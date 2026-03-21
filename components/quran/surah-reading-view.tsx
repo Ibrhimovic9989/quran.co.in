@@ -55,16 +55,19 @@ function toArabicIndicNumber(n: number) {
   return n.toString().replace(/\d/g, (d) => String.fromCharCode(0x0660 + Number(d)));
 }
 
-/** Compact ayah-end medallion — smaller, inline. Amber fill when bookmarked. */
-function AyahMedallion({ n, bookmarked }: { n: number; bookmarked?: boolean }) {
+/** Compact ayah-end medallion — smaller, inline. Amber fill when bookmarked, pulsing ring when targeted. */
+function AyahMedallion({ n, bookmarked, pulsing }: { n: number; bookmarked?: boolean; pulsing?: boolean }) {
   return (
     <span
       className="inline-flex items-center justify-center align-middle mx-1"
       aria-label={`Verse ${n}`}
     >
       <span className="relative inline-flex items-center justify-center w-6 h-6 md:w-8 md:h-8">
+        {pulsing && (
+          <span className="absolute inset-0 rounded-full bg-amber-400/50 animate-ping" aria-hidden="true" />
+        )}
         <svg viewBox="0 0 32 32" className="absolute inset-0 w-full h-full" aria-hidden="true">
-          <circle cx="16" cy="16" r="14.5" fill={bookmarked ? '#fef3c7' : 'none'} stroke="#9a7c4f" strokeWidth="1" />
+          <circle cx="16" cy="16" r="14.5" fill={bookmarked || pulsing ? '#fef3c7' : 'none'} stroke="#9a7c4f" strokeWidth="1" />
           <circle cx="16" cy="16" r="11"   fill="none" stroke="#9a7c4f" strokeWidth="0.5" opacity="0.5" />
         </svg>
         <span className="relative font-mushaf text-[9px] md:text-[11px] text-amber-900 leading-none select-none">
