@@ -21,11 +21,7 @@ export function Logo({
   href = '/',
   showText = true
 }: LogoProps) {
-  const logoSrc = dark 
-    ? '/logo-dark.svg' 
-    : variant === 'icon' 
-      ? '/logo-icon.svg' 
-      : '/logo.svg';
+  const logoSrc = '/logo.png';
 
   const content = (
     <div className={cn('flex items-center', className)}>

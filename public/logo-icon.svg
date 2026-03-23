@@ -1,22 +1,3 @@
-<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background circle -->
-  <circle cx="30" cy="30" r="28" fill="none" stroke="#059669" stroke-width="2" opacity="0.2"/>
-  
-  <!-- Stylized Quran/Mushaf Book -->
-  <g transform="translate(30, 30)">
-    <!-- Book base -->
-    <rect x="-18" y="-12" width="36" height="24" rx="2" fill="#059669" opacity="0.1"/>
-    <rect x="-18" y="-12" width="36" height="24" rx="2" fill="none" stroke="#059669" stroke-width="1.5"/>
-    
-    <!-- Book pages/lines (representing verses) -->
-    <line x1="-14" y1="-8" x2="14" y2="-8" stroke="#059669" stroke-width="1" opacity="0.6"/>
-    <line x1="-14" y1="-4" x2="14" y2="-4" stroke="#059669" stroke-width="1" opacity="0.6"/>
-    <line x1="-14" y1="0" x2="14" y2="0" stroke="#059669" stroke-width="1" opacity="0.6"/>
-    <line x1="-14" y1="4" x2="14" y2="4" stroke="#059669" stroke-width="1" opacity="0.6"/>
-    <line x1="-14" y1="8" x2="14" y2="8" stroke="#059669" stroke-width="1" opacity="0.6"/>
-    
-    <!-- Crescent moon (Islamic symbol) -->
-    <path d="M 8 -8 A 4 4 0 0 1 8 0 A 4 4 0 0 1 8 -8" fill="#059669" opacity="0.8"/>
-    <path d="M 8 -8 A 4 4 0 0 0 8 0 A 4 4 0 0 0 8 -8" fill="white"/>
-  </g>
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <text x="50%" y="39" text-anchor="middle" font-family="Georgia, 'Times New Roman', 'Palatino Linotype', serif" font-size="44" font-weight="bold" fill="#1a2e1a">Q</text>
 </svg>

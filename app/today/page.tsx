@@ -103,8 +103,8 @@ export default function TodayPage() {
       `;
       card.appendChild(footer);
 
-      const dataUrl = await toPng(card, {
-        pixelRatio: isMobile ? 3 : 2,
+      const rawDataUrl = await toPng(card, {
+        pixelRatio: 3,
         quality: 0.95,
       });
 
@@ -114,9 +114,36 @@ export default function TodayPage() {
       card.style.padding = origPad;
       card.style.borderRadius = origRadius;
 
-      // Convert + share
-      const res = await fetch(dataUrl);
-      const blob = await res.blob();
+      // Resize onto 1080x1440 (3:4 Instagram) canvas
+      const IG_W = 1080;
+      const IG_H = 1440;
+      const rawImg = new window.Image();
+      rawImg.src = rawDataUrl;
+      await new Promise<void>((r) => { rawImg.onload = () => r(); });
+
+      const canvas = document.createElement('canvas');
+      canvas.width = IG_W;
+      canvas.height = IG_H;
+      const ctx = canvas.getContext('2d')!;
+
+      // Fill with the same dark background
+      ctx.fillStyle = '#0d2218';
+      ctx.fillRect(0, 0, IG_W, IG_H);
+
+      // Scale content to fit within canvas with padding
+      const pad = 60;
+      const maxW = IG_W - pad * 2;
+      const maxH = IG_H - pad * 2;
+      const scale = Math.min(maxW / rawImg.width, maxH / rawImg.height, 1);
+      const drawW = rawImg.width * scale;
+      const drawH = rawImg.height * scale;
+      const dx = (IG_W - drawW) / 2;
+      const dy = (IG_H - drawH) / 2;
+      ctx.drawImage(rawImg, dx, dy, drawW, drawH);
+
+      const blob = await new Promise<Blob>((resolve) =>
+        canvas.toBlob((b) => resolve(b!), 'image/png')
+      );
       const file = new File([blob], 'verse-of-the-day.png', { type: 'image/png' });
 
       if (navigator.canShare?.({ files: [file] })) {

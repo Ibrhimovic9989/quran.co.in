@@ -421,10 +421,9 @@ export default function AskPage() {
       `;
       bubble.appendChild(footer);
 
-      // Capture
-      const isMobile = window.innerWidth < 768;
+      // Capture at high res
       const dataUrl = await toPng(bubble, {
-        pixelRatio: isMobile ? 3 : 2,
+        pixelRatio: 3,
         quality: 0.95,
         backgroundColor: '#ffffff',
       });
@@ -433,17 +432,40 @@ export default function AskPage() {
       bubble.querySelectorAll('[data-tmp]').forEach((el) => el.remove());
       if (shareBtn) shareBtn.style.display = '';
 
-      // Load image to check height for splitting
+      // Load raw image
       const img = new window.Image();
       img.src = dataUrl;
       await new Promise<void>((resolve) => { img.onload = () => resolve(); });
 
-      const maxHeight = isMobile ? 1920 : 1200;
+      // Instagram 3:4 dimensions
+      const IG_W = 1080;
+      const IG_H = 1440;
+      const pad = 48;
+      const contentW = IG_W - pad * 2;
 
-      if (img.height <= maxHeight) {
-        // Single image
-        const res = await fetch(dataUrl);
-        const blob = await res.blob();
+      // Scale content width to fit IG_W
+      const scale = Math.min(contentW / img.width, 1);
+      const scaledW = img.width * scale;
+      const scaledH = img.height * scale;
+
+      // Available content height per page
+      const contentH = IG_H - pad * 2;
+
+      if (scaledH <= contentH) {
+        // Single page — center on 1080x1440 canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = IG_W;
+        canvas.height = IG_H;
+        const ctx = canvas.getContext('2d')!;
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, IG_W, IG_H);
+        const dx = (IG_W - scaledW) / 2;
+        const dy = (IG_H - scaledH) / 2;
+        ctx.drawImage(img, dx, dy, scaledW, scaledH);
+
+        const blob = await new Promise<Blob>((resolve) =>
+          canvas.toBlob((b) => resolve(b!), 'image/png')
+        );
         const file = new File([blob], 'quran-answer.png', { type: 'image/png' });
         if (navigator.canShare?.({ files: [file] })) {
           await navigator.share({ files: [file], title: 'Ask the Quran — Quran.co.in' });
@@ -451,18 +473,30 @@ export default function AskPage() {
           downloadBlob(blob, 'quran-answer.png');
         }
       } else {
-        // Split into pages
-        const pages = Math.ceil(img.height / maxHeight);
+        // Multi-page: split scaled image into 1080x1440 pages
+        // Source pixels per page (in original image coords)
+        const srcPageH = contentH / scale;
+        const pages = Math.ceil(img.height / srcPageH);
         const files: File[] = [];
 
         for (let p = 0; p < pages; p++) {
           const canvas = document.createElement('canvas');
-          canvas.width = img.width;
-          canvas.height = Math.min(maxHeight, img.height - p * maxHeight);
+          canvas.width = IG_W;
+          canvas.height = IG_H;
           const ctx = canvas.getContext('2d')!;
           ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, 0, -p * maxHeight);
+          ctx.fillRect(0, 0, IG_W, IG_H);
+
+          const srcY = p * srcPageH;
+          const srcRemaining = Math.min(srcPageH, img.height - srcY);
+          const drawH = srcRemaining * scale;
+          const dx = (IG_W - scaledW) / 2;
+          ctx.drawImage(
+            img,
+            0, srcY, img.width, srcRemaining,
+            dx, pad, scaledW, drawH
+          );
+
           const pageBlob = await new Promise<Blob>((resolve) =>
             canvas.toBlob((b) => resolve(b!), 'image/png')
           );
