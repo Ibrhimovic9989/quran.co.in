@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, BookOpen, Loader2, RotateCcw, ExternalLink, Globe, Focus, Share2, Image, Download } from 'lucide-react';
+import { Send, Sparkles, BookOpen, Loader2, RotateCcw, ExternalLink, Globe, Focus, Share2, Download } from 'lucide-react';
+import { toPng } from 'html-to-image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils/cn';
 
@@ -369,35 +370,118 @@ export default function AskPage() {
 
   const [sharingIdx, setSharingIdx] = useState<number | null>(null);
 
-  const handleShareAnswer = async (question: string, answer: string, idx: number) => {
+  function downloadBlob(blob: Blob, name: string) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  const handleShareAnswer = async (question: string, idx: number) => {
     setSharingIdx(idx);
     try {
-      const res = await fetch('/api/og/ask', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, answer }),
-      });
-      if (!res.ok) throw new Error('Failed');
-      const blob = await res.blob();
-      const file = new File([blob], 'quran-answer.png', { type: 'image/png' });
+      const bubble = document.querySelector(`[data-msg-idx="${idx}"] .answer-bubble`) as HTMLElement;
+      if (!bubble) return;
 
-      if (typeof navigator !== 'undefined' && navigator.canShare?.({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: 'Ask the Quran — Quran.co.in',
-        });
+      // Hide share button temporarily
+      const shareBtn = bubble.querySelector('[data-share-btn]') as HTMLElement;
+      if (shareBtn) shareBtn.style.display = 'none';
+
+      // Inject branding header
+      const header = document.createElement('div');
+      header.setAttribute('data-tmp', 'true');
+      header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid #e5e7eb;';
+      header.innerHTML = `
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:28px;height:28px;border-radius:8px;background:#f3e8ff;display:flex;align-items:center;justify-content:center;font-size:14px;">✨</div>
+          <span style="font-size:14px;font-weight:700;color:#7c3aed;">Ask the Quran</span>
+        </div>
+        <span style="font-size:12px;color:#9ca3af;font-family:system-ui;">quran.co.in</span>
+      `;
+      bubble.prepend(header);
+
+      // Inject question bubble
+      const qDiv = document.createElement('div');
+      qDiv.setAttribute('data-tmp', 'true');
+      qDiv.style.cssText = 'background:#1f2937;color:white;border-radius:14px;padding:10px 16px;margin-bottom:16px;font-size:14px;display:inline-block;max-width:90%;line-height:1.5;';
+      qDiv.textContent = question;
+      header.after(qDiv);
+
+      // Inject footer
+      const footer = document.createElement('div');
+      footer.setAttribute('data-tmp', 'true');
+      footer.style.cssText = 'padding-top:14px;margin-top:14px;border-top:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;';
+      footer.innerHTML = `
+        <span style="font-size:10px;color:#9ca3af;">Answers sourced from the Holy Quran</span>
+        <span style="font-size:13px;font-weight:700;color:#7c3aed;">quran.co.in</span>
+      `;
+      bubble.appendChild(footer);
+
+      // Capture
+      const isMobile = window.innerWidth < 768;
+      const dataUrl = await toPng(bubble, {
+        pixelRatio: isMobile ? 3 : 2,
+        quality: 0.95,
+        backgroundColor: '#ffffff',
+      });
+
+      // Restore DOM
+      bubble.querySelectorAll('[data-tmp]').forEach((el) => el.remove());
+      if (shareBtn) shareBtn.style.display = '';
+
+      // Load image to check height for splitting
+      const img = new window.Image();
+      img.src = dataUrl;
+      await new Promise<void>((resolve) => { img.onload = () => resolve(); });
+
+      const maxHeight = isMobile ? 1920 : 1200;
+
+      if (img.height <= maxHeight) {
+        // Single image
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+        const file = new File([blob], 'quran-answer.png', { type: 'image/png' });
+        if (navigator.canShare?.({ files: [file] })) {
+          await navigator.share({ files: [file], title: 'Ask the Quran — Quran.co.in' });
+        } else {
+          downloadBlob(blob, 'quran-answer.png');
+        }
       } else {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'quran-answer.png';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        // Split into pages
+        const pages = Math.ceil(img.height / maxHeight);
+        const files: File[] = [];
+
+        for (let p = 0; p < pages; p++) {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = Math.min(maxHeight, img.height - p * maxHeight);
+          const ctx = canvas.getContext('2d')!;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, -p * maxHeight);
+          const pageBlob = await new Promise<Blob>((resolve) =>
+            canvas.toBlob((b) => resolve(b!), 'image/png')
+          );
+          files.push(
+            new File([pageBlob], `quran-answer-${p + 1}.png`, { type: 'image/png' })
+          );
+        }
+
+        if (navigator.canShare?.({ files })) {
+          await navigator.share({ files, title: 'Ask the Quran — Quran.co.in' });
+        } else {
+          files.forEach((f) => downloadBlob(f, f.name));
+        }
       }
-    } catch { /* user cancelled or error */ }
-    finally { setSharingIdx(null); }
+    } catch (e) {
+      console.error('Share image failed:', e);
+    } finally {
+      setSharingIdx(null);
+    }
   };
 
   const accentClass = mode === 'focused' ? 'purple' : 'emerald';
@@ -485,6 +569,7 @@ export default function AskPage() {
               <div
                 key={i}
                 ref={isLastAssistant ? lastAssistantRef : undefined}
+                data-msg-idx={i}
                 className={cn('flex', msg.role === 'user' ? 'justify-end' : 'justify-start')}
               >
                 {msg.role === 'user' ? (
@@ -494,9 +579,9 @@ export default function AskPage() {
                 ) : (
                   <div className="w-full space-y-3">
                     {/* Answer bubble */}
-                    <div className="bg-white border border-gray-100 rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm">
+                    <div className="answer-bubble bg-white border border-gray-100 rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm">
                       {msg.content ? (
-                        <div className="text-sm md:text-base space-y-0.5">
+                        <div className="text-sm md:text-base space-y-0.5 msg-content">
                           {renderMarkdown(msg.content)}
                         </div>
                       ) : (
@@ -505,13 +590,12 @@ export default function AskPage() {
 
                       {/* Share as Image button */}
                       {msg.content && !loading && (
-                        <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+                        <div data-share-btn="true" className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
                           <button
                             onClick={() => {
-                              // Find the user question for this answer
                               const qIdx = i - 1;
                               const q = qIdx >= 0 ? messages[qIdx].content : '';
-                              handleShareAnswer(q, msg.content, i);
+                              handleShareAnswer(q, i);
                             }}
                             disabled={sharingIdx === i}
                             className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-purple-600 transition-colors disabled:opacity-50"
@@ -519,7 +603,7 @@ export default function AskPage() {
                             {sharingIdx === i ? (
                               <Loader2 className="w-3.5 h-3.5 animate-spin" />
                             ) : (
-                              <Image className="w-3.5 h-3.5" />
+                              <Share2 className="w-3.5 h-3.5" />
                             )}
                             {sharingIdx === i ? 'Generating…' : 'Share as Image'}
                           </button>
