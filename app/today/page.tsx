@@ -64,10 +64,23 @@ export default function TodayPage() {
   };
 
   const handleShareImage = async () => {
+    if (!ayah) return;
     setSharingImage(true);
     try {
-      const res = await fetch('/api/og/today');
-      if (!res.ok) throw new Error('Failed to fetch image');
+      // POST the actual ayah data so the image matches what user sees
+      const res = await fetch('/api/og/today', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          arabicText: ayah.arabicText,
+          translationText: ayah.translationText,
+          surahNumber: ayah.surahNumber,
+          ayahNumber: ayah.ayahNumber,
+          englishName: ayah.englishName,
+          englishNameTranslation: ayah.englishNameTranslation,
+        }),
+      });
+      if (!res.ok) throw new Error('Failed to generate image');
       const blob = await res.blob();
       const file = new File([blob], 'verse-of-the-day.png', { type: 'image/png' });
 
@@ -75,7 +88,7 @@ export default function TodayPage() {
         await navigator.share({
           files: [file],
           title: 'Verse of the Day — Quran.co.in',
-          text: ayah ? `Quran ${ayah.surahNumber}:${ayah.ayahNumber}` : undefined,
+          text: `Quran ${ayah.surahNumber}:${ayah.ayahNumber} — quran.co.in/today`,
         });
       } else {
         // Fallback: download the image
