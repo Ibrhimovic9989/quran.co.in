@@ -33,9 +33,9 @@ export function Logo({
         src={logoSrc}
         alt="Quran.co.in"
         className={cn(
-          variant === 'icon' 
-            ? 'h-8 w-8 md:h-10 md:w-10' 
-            : 'h-7 w-auto md:h-9'
+          variant === 'icon'
+            ? 'h-8 w-8 md:h-10 md:w-10'
+            : 'h-8 w-auto md:h-10'
         )}
       />
       {!showText && variant === 'icon' && (
