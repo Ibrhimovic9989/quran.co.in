@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { Container } from '@/components/ui/container';
-import { BookOpen, Copy, Check, Share2, RefreshCw } from 'lucide-react';
+import { BookOpen, Copy, Check, Share2, RefreshCw, Image, Download, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 interface DailyAyah {
@@ -24,6 +24,7 @@ export default function TodayPage() {
   const [type, setType] = useState<'personalised' | 'daily'>('daily');
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [sharingImage, setSharingImage] = useState(false);
   const [date, setDate] = useState('');
 
   const load = useCallback(async () => {
@@ -59,6 +60,38 @@ export default function TodayPage() {
       navigator.share({ title: 'Quran — Verse of the Day', text: shareText, url: shareUrl }).catch(() => {});
     } else {
       handleCopy();
+    }
+  };
+
+  const handleShareImage = async () => {
+    setSharingImage(true);
+    try {
+      const res = await fetch('/api/og/today');
+      if (!res.ok) throw new Error('Failed to fetch image');
+      const blob = await res.blob();
+      const file = new File([blob], 'verse-of-the-day.png', { type: 'image/png' });
+
+      if (typeof navigator !== 'undefined' && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'Verse of the Day — Quran.co.in',
+          text: ayah ? `Quran ${ayah.surahNumber}:${ayah.ayahNumber}` : undefined,
+        });
+      } else {
+        // Fallback: download the image
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'verse-of-the-day.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    } catch {
+      // User cancelled or error — silent
+    } finally {
+      setSharingImage(false);
     }
   };
 
@@ -161,7 +194,17 @@ export default function TodayPage() {
                   {copied ? 'Copied!' : 'Copy verse'}
                 </button>
 
-                {/* Share (native or WhatsApp) */}
+                {/* Share as Image — primary share action */}
+                <button
+                  onClick={handleShareImage}
+                  disabled={sharingImage}
+                  className="inline-flex items-center gap-2 rounded-full border border-amber-600/60 bg-amber-900/30 px-4 py-2.5 text-sm font-medium text-amber-300 hover:bg-amber-800/40 transition-colors disabled:opacity-50"
+                >
+                  {sharingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <Image className="h-4 w-4" />}
+                  {sharingImage ? 'Generating…' : 'Share as Image'}
+                </button>
+
+                {/* Share text (native or copy) */}
                 <button
                   onClick={handleNativeShare}
                   className="inline-flex items-center gap-2 rounded-full border border-emerald-700/60 bg-emerald-900/40 px-4 py-2.5 text-sm font-medium text-emerald-300 hover:bg-emerald-800/40 transition-colors"

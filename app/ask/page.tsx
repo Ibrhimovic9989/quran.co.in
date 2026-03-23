@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, BookOpen, Loader2, RotateCcw, ExternalLink, Globe, Focus } from 'lucide-react';
+import { Send, Sparkles, BookOpen, Loader2, RotateCcw, ExternalLink, Globe, Focus, Share2, Image, Download } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils/cn';
 
@@ -367,6 +367,39 @@ export default function AskPage() {
     }
   };
 
+  const [sharingIdx, setSharingIdx] = useState<number | null>(null);
+
+  const handleShareAnswer = async (question: string, answer: string, idx: number) => {
+    setSharingIdx(idx);
+    try {
+      const res = await fetch('/api/og/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, answer }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      const blob = await res.blob();
+      const file = new File([blob], 'quran-answer.png', { type: 'image/png' });
+
+      if (typeof navigator !== 'undefined' && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'Ask the Quran — Quran.co.in',
+        });
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'quran-answer.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    } catch { /* user cancelled or error */ }
+    finally { setSharingIdx(null); }
+  };
+
   const accentClass = mode === 'focused' ? 'purple' : 'emerald';
 
   return (
@@ -468,6 +501,29 @@ export default function AskPage() {
                         </div>
                       ) : (
                         <LoadingIndicator />
+                      )}
+
+                      {/* Share as Image button */}
+                      {msg.content && !loading && (
+                        <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+                          <button
+                            onClick={() => {
+                              // Find the user question for this answer
+                              const qIdx = i - 1;
+                              const q = qIdx >= 0 ? messages[qIdx].content : '';
+                              handleShareAnswer(q, msg.content, i);
+                            }}
+                            disabled={sharingIdx === i}
+                            className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-purple-600 transition-colors disabled:opacity-50"
+                          >
+                            {sharingIdx === i ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <Image className="w-3.5 h-3.5" />
+                            )}
+                            {sharingIdx === i ? 'Generating…' : 'Share as Image'}
+                          </button>
+                        </div>
                       )}
                     </div>
 
