@@ -440,7 +440,8 @@ export default function AskPage() {
       // Instagram 3:4 dimensions
       const IG_W = 1080;
       const IG_H = 1440;
-      const pad = 48;
+      const pad = 60;
+      const brandingH = 56; // bottom branding bar height
       const contentW = IG_W - pad * 2;
 
       // Scale content width to fit IG_W
@@ -448,11 +449,35 @@ export default function AskPage() {
       const scaledW = img.width * scale;
       const scaledH = img.height * scale;
 
-      // Available content height per page
-      const contentH = IG_H - pad * 2;
+      // Helper: draw branding bar at bottom of a canvas
+      const drawBranding = (ctx: CanvasRenderingContext2D, pageNum: number, totalPages: number) => {
+        const barY = IG_H - brandingH;
+        // Subtle top border
+        ctx.strokeStyle = '#e5e7eb';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(pad, barY);
+        ctx.lineTo(IG_W - pad, barY);
+        ctx.stroke();
+        // "quran.co.in" right-aligned
+        ctx.fillStyle = '#7c3aed';
+        ctx.font = 'bold 28px system-ui, sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText('quran.co.in', IG_W - pad, barY + 36);
+        // Page indicator left-aligned
+        if (totalPages > 1) {
+          ctx.fillStyle = '#9ca3af';
+          ctx.font = '24px system-ui, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText(`${pageNum} / ${totalPages}`, pad, barY + 34);
+        }
+      };
+
+      // Available content height per page (above branding bar)
+      const contentH = IG_H - pad - brandingH - 16;
 
       if (scaledH <= contentH) {
-        // Single page — center on 1080x1440 canvas
+        // Single page — center vertically
         const canvas = document.createElement('canvas');
         canvas.width = IG_W;
         canvas.height = IG_H;
@@ -460,8 +485,9 @@ export default function AskPage() {
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, IG_W, IG_H);
         const dx = (IG_W - scaledW) / 2;
-        const dy = (IG_H - scaledH) / 2;
+        const dy = Math.min((contentH - scaledH) / 2 + pad, pad);
         ctx.drawImage(img, dx, dy, scaledW, scaledH);
+        drawBranding(ctx, 1, 1);
 
         const blob = await new Promise<Blob>((resolve) =>
           canvas.toBlob((b) => resolve(b!), 'image/png')
@@ -473,13 +499,15 @@ export default function AskPage() {
           downloadBlob(blob, 'quran-answer.png');
         }
       } else {
-        // Multi-page: split scaled image into 1080x1440 pages
-        // Source pixels per page (in original image coords)
+        // Multi-page carousel
+        // Overlap between pages (in source px) so text isn't cut mid-line
+        const overlapPx = 60 / scale;
         const srcPageH = contentH / scale;
-        const pages = Math.ceil(img.height / srcPageH);
+        const srcStep = srcPageH - overlapPx; // each page advances by this much
+        const totalPages = Math.ceil((img.height - overlapPx) / srcStep);
         const files: File[] = [];
 
-        for (let p = 0; p < pages; p++) {
+        for (let p = 0; p < totalPages; p++) {
           const canvas = document.createElement('canvas');
           canvas.width = IG_W;
           canvas.height = IG_H;
@@ -487,7 +515,7 @@ export default function AskPage() {
           ctx.fillStyle = '#ffffff';
           ctx.fillRect(0, 0, IG_W, IG_H);
 
-          const srcY = p * srcPageH;
+          const srcY = p * srcStep;
           const srcRemaining = Math.min(srcPageH, img.height - srcY);
           const drawH = srcRemaining * scale;
           const dx = (IG_W - scaledW) / 2;
@@ -496,6 +524,19 @@ export default function AskPage() {
             0, srcY, img.width, srcRemaining,
             dx, pad, scaledW, drawH
           );
+
+          // Fade-out gradient at bottom for non-last pages (signals "swipe")
+          if (p < totalPages - 1) {
+            const fadeH = 80;
+            const fadeY = IG_H - brandingH - 16 - fadeH;
+            const grad = ctx.createLinearGradient(0, fadeY, 0, fadeY + fadeH);
+            grad.addColorStop(0, 'rgba(255,255,255,0)');
+            grad.addColorStop(1, 'rgba(255,255,255,1)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, fadeY, IG_W, fadeH);
+          }
+
+          drawBranding(ctx, p + 1, totalPages);
 
           const pageBlob = await new Promise<Blob>((resolve) =>
             canvas.toBlob((b) => resolve(b!), 'image/png')
