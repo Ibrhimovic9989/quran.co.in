@@ -44,6 +44,14 @@ export async function GET(req: NextRequest) {
           // Use [0] fallback so the array is never empty (avoids ANY(ARRAY[]::int[]) edge case)
           const seenSurahsArr = seenSurahs.length > 0 ? seenSurahs : [0];
 
+          // Use day-of-year as offset into the top-N closest results
+          // so the verse changes daily while staying relevant
+          const startP = new Date(new Date().getFullYear(), 0, 0);
+          const diffP = Date.now() - startP.getTime();
+          const dayOfYearP = Math.floor(diffP / (1000 * 60 * 60 * 24));
+          const poolSize = 30; // pick from top 30 closest
+          const pickIndex = dayOfYearP % poolSize;
+
           const result = await prisma.$queryRaw<{
             surahNumber: number;
             ayahNumber: number;
@@ -76,7 +84,7 @@ export async function GET(req: NextRequest) {
             JOIN surahs s ON s.number = ve."surahNumber" AND s."apiProvider" = 'TEMPORARY_API'
             WHERE ve."surahNumber" != ALL(ARRAY[${Prisma.join(seenSurahsArr)}]::integer[])
             ORDER BY ve.embedding <=> centroid.vec
-            LIMIT 1
+            LIMIT 1 OFFSET ${pickIndex}
           `);
 
           if (result.length > 0) {
