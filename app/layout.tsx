@@ -160,8 +160,10 @@ export default function RootLayout({
             </Suspense>
             <PageLoader />
             <Navbar />
-            {children}
-            <Footer />
+            <div className="pb-16 md:pb-0">
+              {children}
+              <Footer />
+            </div>
           </ToastProvider>
         </AuthProvider>
       </body>
