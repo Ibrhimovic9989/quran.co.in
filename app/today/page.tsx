@@ -42,7 +42,7 @@ export default function TodayPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/quran/ayah-of-the-day');
+      const res = await fetch('/api/quran/ayah-of-the-day', { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         setAyah(data.ayah);

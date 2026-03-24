@@ -4,6 +4,10 @@ import { auth } from '@/app/api/auth/[...nextauth]/route';
 
 const prisma = new PrismaClient();
 
+// Prevent Vercel/Next.js from caching this route
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Cache key: one ayah per user per day (or one global per day for guests)
 function todayKey() {
   return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
@@ -80,6 +84,8 @@ export async function GET(req: NextRequest) {
               ayah: result[0],
               type: 'personalised',
               date: today,
+            }, {
+              headers: { 'Cache-Control': 'no-store, max-age=0' },
             });
           }
         }
@@ -120,6 +126,8 @@ export async function GET(req: NextRequest) {
       ayah: daily[0] ?? null,
       type: 'daily',
       date: today,
+    }, {
+      headers: { 'Cache-Control': 'no-store, max-age=0' },
     });
 
   } catch (err) {

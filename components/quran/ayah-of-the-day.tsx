@@ -29,7 +29,7 @@ export function AyahOfTheDay({ className }: { className?: string }) {
   useEffect(() => {
     if (status === 'loading') return;
     setLoading(true);
-    fetch('/api/quran/ayah-of-the-day')
+    fetch('/api/quran/ayah-of-the-day', { cache: 'no-store' })
       .then((r) => r.json())
       .then(setData)
       .catch(() => {})
