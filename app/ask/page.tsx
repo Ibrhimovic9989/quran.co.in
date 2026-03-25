@@ -370,7 +370,15 @@ export default function AskPage() {
 
   const [sharingIdx, setSharingIdx] = useState<number | null>(null);
 
+  const isIOSDevice = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
   function downloadBlob(blob: Blob, name: string) {
+    if (isIOSDevice()) {
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+      return;
+    }
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -379,6 +387,14 @@ export default function AskPage() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  }
+
+  async function safeToPng(el: HTMLElement, opts: Parameters<typeof toPng>[1]) {
+    if (/Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) || isIOSDevice()) {
+      await toPng(el, opts).catch(() => {});
+      await toPng(el, opts).catch(() => {});
+    }
+    return toPng(el, opts);
   }
 
   const handleShareAnswer = async (question: string, idx: number) => {
@@ -422,7 +438,7 @@ export default function AskPage() {
       bubble.appendChild(footer);
 
       // Capture at high res
-      const dataUrl = await toPng(bubble, {
+      const dataUrl = await safeToPng(bubble, {
         pixelRatio: 3,
         quality: 0.95,
         backgroundColor: '#ffffff',

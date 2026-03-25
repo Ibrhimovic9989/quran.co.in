@@ -20,7 +20,17 @@ function toArabicIndicNumber(n: number) {
   return n.toString().replace(/\d/g, (d) => String.fromCharCode(0x0660 + Number(d)));
 }
 
+const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
 function downloadBlob(blob: Blob, name: string) {
+  // iOS Safari doesn't support a.click() downloads — open in new tab instead
+  if (isIOS()) {
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    // Don't revoke immediately — iOS needs time to load
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
+    return;
+  }
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -29,6 +39,15 @@ function downloadBlob(blob: Blob, name: string) {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+// Safari/WebKit renders blank on first toPng call — warm up with throwaway calls
+async function safeToPng(el: HTMLElement, opts: Parameters<typeof toPng>[1]) {
+  if (/Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) || isIOS()) {
+    await toPng(el, opts).catch(() => {});
+    await toPng(el, opts).catch(() => {});
+  }
+  return toPng(el, opts);
 }
 
 export default function TodayPage() {
@@ -103,7 +122,7 @@ export default function TodayPage() {
       `;
       card.appendChild(footer);
 
-      const rawDataUrl = await toPng(card, {
+      const rawDataUrl = await safeToPng(card, {
         pixelRatio: 3,
         quality: 0.95,
       });
