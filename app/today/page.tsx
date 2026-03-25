@@ -21,14 +21,14 @@ function toArabicIndicNumber(n: number) {
 }
 
 const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isSafari = () => /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
 
 function downloadBlob(blob: Blob, name: string) {
-  // iOS Safari doesn't support a.click() downloads — open in new tab instead
   if (isIOS()) {
+    // iOS Safari: open in new tab — user long-presses to save
     const url = URL.createObjectURL(blob);
     window.open(url, '_blank');
-    // Don't revoke immediately — iOS needs time to load
-    setTimeout(() => URL.revokeObjectURL(url), 30000);
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
     return;
   }
   const url = URL.createObjectURL(blob);
@@ -41,13 +41,25 @@ function downloadBlob(blob: Blob, name: string) {
   URL.revokeObjectURL(url);
 }
 
-// Safari/WebKit renders blank on first toPng call — warm up with throwaway calls
+function toPngWithTimeout(el: HTMLElement, opts: Parameters<typeof toPng>[1], ms = 8000): Promise<string> {
+  return Promise.race([
+    toPng(el, opts),
+    new Promise<never>((_, reject) => setTimeout(() => reject(new Error('toPng timeout')), ms)),
+  ]);
+}
+
 async function safeToPng(el: HTMLElement, opts: Parameters<typeof toPng>[1]) {
-  if (/Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) || isIOS()) {
-    await toPng(el, opts).catch(() => {});
-    await toPng(el, opts).catch(() => {});
+  if (isSafari() || isIOS()) {
+    // Safari/WebKit: first calls often render blank — retry up to 3 times
+    for (let i = 0; i < 3; i++) {
+      try {
+        const result = await toPngWithTimeout(el, opts);
+        // Check it's not a blank/tiny image (blank = very short data URL)
+        if (result && result.length > 1000) return result;
+      } catch { /* timeout or error — retry */ }
+    }
   }
-  return toPng(el, opts);
+  return toPngWithTimeout(el, opts);
 }
 
 export default function TodayPage() {
@@ -174,8 +186,9 @@ export default function TodayPage() {
       } else {
         downloadBlob(blob, 'verse-of-the-day.png');
       }
-    } catch {
-      // User cancelled or error
+    } catch (err) {
+      console.error('Share image failed:', err);
+      alert('Could not generate image. Please try again or take a screenshot instead.');
     } finally {
       setSharingImage(false);
     }

@@ -129,7 +129,7 @@ export default function RootLayout({
         <script
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
-            __html: `(function(){'use strict';try{if(typeof window!=='undefined'){try{window.getScreenDetails=undefined;window.queryLocalFonts=undefined}catch(e){}try{Object.defineProperty(window,'getScreenDetails',{value:undefined,writable:false,configurable:false});Object.defineProperty(window,'queryLocalFonts',{value:undefined,writable:false,configurable:false})}catch(e){}}if(typeof navigator!=='undefined'){try{Object.defineProperty(navigator,'share',{value:undefined,writable:false,configurable:false});Object.defineProperty(navigator,'canShare',{value:undefined,writable:false,configurable:false});Object.defineProperty(navigator,'windowControlsOverlay',{value:undefined,writable:false,configurable:false})}catch(e){}}}catch(e){}})();`,
+            __html: `(function(){'use strict';try{if(typeof window!=='undefined'){try{window.getScreenDetails=undefined;window.queryLocalFonts=undefined}catch(e){}try{Object.defineProperty(window,'getScreenDetails',{value:undefined,writable:false,configurable:false});Object.defineProperty(window,'queryLocalFonts',{value:undefined,writable:false,configurable:false})}catch(e){}}if(typeof navigator!=='undefined'){try{Object.defineProperty(navigator,'windowControlsOverlay',{value:undefined,writable:false,configurable:false})}catch(e){}}}catch(e){}})();`,
           }}
         />
         {/* Google tag (gtag.js) */}

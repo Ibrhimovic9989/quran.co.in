@@ -371,12 +371,13 @@ export default function AskPage() {
   const [sharingIdx, setSharingIdx] = useState<number | null>(null);
 
   const isIOSDevice = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isSafariDevice = () => /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
 
   function downloadBlob(blob: Blob, name: string) {
     if (isIOSDevice()) {
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
-      setTimeout(() => URL.revokeObjectURL(url), 30000);
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
       return;
     }
     const url = URL.createObjectURL(blob);
@@ -389,12 +390,23 @@ export default function AskPage() {
     URL.revokeObjectURL(url);
   }
 
+  function toPngWithTimeout(el: HTMLElement, opts: Parameters<typeof toPng>[1], ms = 8000): Promise<string> {
+    return Promise.race([
+      toPng(el, opts),
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('toPng timeout')), ms)),
+    ]);
+  }
+
   async function safeToPng(el: HTMLElement, opts: Parameters<typeof toPng>[1]) {
-    if (/Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) || isIOSDevice()) {
-      await toPng(el, opts).catch(() => {});
-      await toPng(el, opts).catch(() => {});
+    if (isSafariDevice() || isIOSDevice()) {
+      for (let i = 0; i < 3; i++) {
+        try {
+          const result = await toPngWithTimeout(el, opts);
+          if (result && result.length > 1000) return result;
+        } catch { /* timeout or error — retry */ }
+      }
     }
-    return toPng(el, opts);
+    return toPngWithTimeout(el, opts);
   }
 
   const handleShareAnswer = async (question: string, idx: number) => {
