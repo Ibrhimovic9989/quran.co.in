@@ -69,7 +69,9 @@ export class LlmService {
    * models (R1/thinking variants) are excluded because their chain-of-thought
    * output would leak into the streamed answer.
    */
-  // All names verified against each vendor's /v1/models on 2026-07-22.
+  // Quality-ordered HEAD of the NVIDIA chain (names verified 2026-07-22).
+  // Every other chat-capable model on build.nvidia.com is auto-discovered at
+  // runtime and appended after these as deep fallback (see nvidiaModels()).
   private static readonly NVIDIA_DEFAULT_MODELS = [
     'nvidia/llama-3.3-nemotron-super-49b-v1', // verified warm + strong
     'meta/llama-3.3-70b-instruct',
@@ -82,6 +84,57 @@ export class LlmService {
     'mistralai/mixtral-8x7b-instruct-v0.1',
     'meta/llama-3.1-8b-instruct', // fast last resort, verified warm
   ];
+
+  // Auto-discovery filters: a model joins the fallback pool only if it looks
+  // chat-capable AND is none of: embedding/reward/safety/vision/translation/
+  // parse/code/reasoning model, and not tiny (≤4B → too weak for this domain).
+  private static readonly DISCOVER_INCLUDE =
+    /instruct|chat|nemotron|gemma|gpt-oss|jamba|solar|granite|dbrx|seed-oss/i;
+  private static readonly DISCOVER_EXCLUDE =
+    /embed|reward|guard|safety|parse|translat|rerank|vision|-vl|omni|reasoning|coder|code|-[0-4]b\b|\b(350|800)m\b|minitron-4b|mini-4b/i;
+
+  private discoveredNvidia: string[] = [];
+  private discoveryAt = 0;
+  private static readonly DISCOVERY_REFRESH_MS = 6 * 60 * 60_000; // 6h
+
+  /** Fetch + filter the live NVIDIA roster (best-effort, cached 6h). */
+  private async refreshNvidiaDiscovery(): Promise<void> {
+    if (Date.now() - this.discoveryAt < LlmService.DISCOVERY_REFRESH_MS) return;
+    this.discoveryAt = Date.now(); // even on failure, don't retry for a while
+
+    try {
+      const res = await fetch('https://integrate.api.nvidia.com/v1/models', {
+        headers: { Authorization: `Bearer ${process.env.NVIDIA_API_KEY}` },
+        signal: AbortSignal.timeout(5000),
+      });
+      if (!res.ok) throw new Error(`models list: ${res.status}`);
+      const body = (await res.json()) as { data?: { id: string }[] };
+      this.discoveredNvidia = (body.data ?? [])
+        .map((m) => m.id)
+        .filter(
+          (id) =>
+            LlmService.DISCOVER_INCLUDE.test(id) && !LlmService.DISCOVER_EXCLUDE.test(id),
+        );
+      this.logger.log(
+        `NVIDIA discovery: ${this.discoveredNvidia.length} chat-capable models in fallback pool`,
+      );
+    } catch (err) {
+      this.logger.warn(`NVIDIA model discovery failed (using curated list): ${String(err)}`);
+    }
+  }
+
+  /** Curated head + auto-discovered tail (or the env override verbatim). */
+  private async nvidiaModels(): Promise<string[]> {
+    const override = this.modelList(process.env.NVIDIA_CHAT_MODELS, []);
+    if (override.length > 0) return override;
+
+    const preferred = LlmService.NVIDIA_DEFAULT_MODELS;
+    if (process.env.NVIDIA_AUTO_DISCOVER === 'false') return preferred;
+
+    await this.refreshNvidiaDiscovery();
+    const extras = this.discoveredNvidia.filter((m) => !preferred.includes(m));
+    return [...preferred, ...extras];
+  }
 
   private static readonly OPENROUTER_DEFAULT_MODELS = [
     'nvidia/nemotron-3-super-120b-a12b:free',
@@ -100,14 +153,11 @@ export class LlmService {
     return fromEnv.length > 0 ? fromEnv : defaults;
   }
 
-  private chatChain(): ChatProviderConfig[] {
+  private async chatChain(): Promise<ChatProviderConfig[]> {
     const chain: ChatProviderConfig[] = [];
 
     if (process.env.NVIDIA_API_KEY) {
-      for (const model of this.modelList(
-        process.env.NVIDIA_CHAT_MODELS,
-        LlmService.NVIDIA_DEFAULT_MODELS,
-      )) {
+      for (const model of await this.nvidiaModels()) {
         chain.push({ id: `nvidia:${model}`, vendor: 'nvidia', model });
       }
     }
@@ -182,7 +232,7 @@ export class LlmService {
    * Falls through the chain on request-time failures (429/401/5xx/network).
    */
   async chatStream(messages: ChatCompletionMessageParam[], maxTokens = 1024) {
-    const chain = this.chatChain();
+    const chain = await this.chatChain();
     if (chain.length === 0) {
       throw new ServiceUnavailableException({
         error: 'No LLM provider configured. Set NVIDIA_API_KEY or OPENROUTER_API_KEY.',
