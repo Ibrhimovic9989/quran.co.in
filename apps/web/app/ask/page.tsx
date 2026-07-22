@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils/cn';
 import { type Mode, SUGGESTED, LOADING_STEPS } from './constants';
 import { renderMarkdown } from './answer-renderer';
+import { backendUrl } from '@/lib/api/backend';
 
 interface SourceAyah {
   surahNumber: number;
@@ -115,7 +116,7 @@ export default function AskPage() {
     try {
       const historyToSend = messages.map((m) => ({ role: m.role, content: m.content }));
 
-      const res = await fetch('/api/quran/ask', {
+      const res = await fetch(backendUrl('/api/quran/ask'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: question.trim(), mode, history: historyToSend }),

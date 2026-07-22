@@ -6,6 +6,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { BookmarksModule } from './bookmarks/bookmarks.module';
 import { ReadingHistoryModule } from './reading-history/reading-history.module';
+import { SearchModule } from './search/search.module';
+import { AskModule } from './ask/ask.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { ReadingHistoryModule } from './reading-history/reading-history.module';
     QuranModule,
     BookmarksModule,
     ReadingHistoryModule,
+    SearchModule,
+    AskModule,
   ],
 })
 export class AppModule {}

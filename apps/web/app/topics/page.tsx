@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ExternalLink, Loader2, ChevronLeft, X } from 'lucide-react';
 import { QURAN_TOPICS, type QuranTopic } from '@/lib/data/quran-topics';
 import { cn } from '@/lib/utils/cn';
+import { backendUrl } from '@/lib/api/backend';
 
 interface TopicResult {
   surahNumber: number;
@@ -29,7 +30,7 @@ export default function TopicsPage() {
     setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
     try {
       const res = await fetch(
-        `/api/search/semantic?q=${encodeURIComponent(topic.query)}&limit=10`
+        backendUrl(`/api/search/semantic?q=${encodeURIComponent(topic.query)}&limit=10`)
       );
       const data = await res.json();
       setResults(data.results ?? []);

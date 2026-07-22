@@ -1,39 +1,16 @@
-import { NextRequest } from 'next/server';
+// "Ask the Quran" RAG service.
+// Ported from apps/web/app/api/quran/ask/route.ts: direct-reference detection,
+// canonical guaranteed ayahs, hybrid pgvector retrieval, and the Azure OpenAI
+// streaming chat completion.
+
+import { Injectable } from '@nestjs/common';
 import { AzureOpenAI } from 'openai';
-import { prisma } from '@/lib/prisma';
-import { getCanonicalAyahs } from '@/lib/data/canonical-context';
-import { rateLimit, clientIp, tooManyRequests } from '@/lib/utils/rate-limit';
-
-// Input limits — cap attacker-controlled payload to bound token cost / injection surface.
-const MAX_QUESTION_LENGTH = 1000;
-const MAX_HISTORY_MESSAGES = 20;
-const MAX_HISTORY_CONTENT_LENGTH = 4000;
-
-// Rate limit: this route fires an embedding + a streaming chat completion per call.
-const ASK_RATE_LIMIT = 15;          // requests
-const ASK_RATE_WINDOW_MS = 60_000;  // per minute per IP
-
-function getEmbedClient() {
-  return new AzureOpenAI({
-    apiKey:     process.env.AZURE_OPENAI_API_KEY!,
-    endpoint:   process.env.AZURE_OPENAI_ENDPOINT!,
-    deployment: process.env.AZURE_OPENAI_EMBEDDING_DEPLOYMENT!,
-    apiVersion: process.env.AZURE_OPENAI_API_VERSION ?? '2023-05-15',
-  });
-}
-
-function getChatClient() {
-  return new AzureOpenAI({
-    apiKey:     process.env.AZURE_OPENAI_API_KEY!,
-    endpoint:   process.env.AZURE_OPENAI_ENDPOINT!,
-    deployment: process.env.AZURE_OPENAI_CHAT_DEPLOYMENT!,
-    apiVersion: process.env.AZURE_OPENAI_CHAT_API_VERSION ?? '2024-04-01-preview',
-  });
-}
+import { PrismaService } from '../prisma/prisma.service';
+import { getCanonicalAyahs } from './canonical-context';
 
 // ── System prompts ────────────────────────────────────────────────────────────
 
-const FOCUSED_PROMPT = `You are a knowledgeable and respectful assistant for Quran.co.in.
+export const FOCUSED_PROMPT = `You are a knowledgeable and respectful assistant for Quran.co.in.
 You help users understand the Quran using ayahs automatically retrieved by the system.
 
 Formatting rules (strictly follow these):
@@ -48,7 +25,7 @@ Formatting rules (strictly follow these):
 - Do not give personal religious rulings (fatwas).
 - Write in plain English. Do NOT use **bold** markers or *italic* markers.`;
 
-const OPEN_PROMPT = `You are a knowledgeable and respectful Islamic scholar assistant for Quran.co.in.
+export const OPEN_PROMPT = `You are a knowledgeable and respectful Islamic scholar assistant for Quran.co.in.
 You have deep knowledge of the entire Quran.
 
 Formatting rules (strictly follow these):
@@ -69,12 +46,12 @@ const SURAH_NAMES: Record<string, number> = {
   'fatiha': 1, 'al-fatiha': 1, 'fatihah': 1,
   'baqarah': 2, 'al-baqarah': 2, 'bakara': 2,
   'imran': 3, "al-imran": 3, 'imraan': 3,
-  'nisa': 4, 'nisa\'': 4, 'an-nisa': 4, 'nisaa': 4,
+  'nisa': 4, "nisa'": 4, 'an-nisa': 4, 'nisaa': 4,
   'maidah': 5, 'al-maidah': 5, 'maida': 5,
-  'anam': 6, 'al-anam': 6, 'an\'am': 6,
+  'anam': 6, 'al-anam': 6, "an'am": 6,
   'araf': 7, 'al-araf': 7,
   'anfal': 8, 'al-anfal': 8,
-  'tawbah': 9, 'at-tawbah': 9, 'taubah': 9, 'bara\'ah': 9,
+  'tawbah': 9, 'at-tawbah': 9, 'taubah': 9, "bara'ah": 9,
   'yunus': 10, 'jonah': 10,
   'hud': 11,
   'yusuf': 12, 'joseph': 12,
@@ -88,7 +65,7 @@ const SURAH_NAMES: Record<string, number> = {
   'taha': 20,
   'anbiya': 21, 'al-anbiya': 21,
   'hajj': 22, 'al-hajj': 22,
-  'muminun': 23, 'al-muminun': 23, 'mu\'minun': 23,
+  'muminun': 23, 'al-muminun': 23, "mu'minun": 23,
   'nur': 24, 'an-nur': 24,
   'furqan': 25, 'al-furqan': 25,
   'shuara': 26, 'ash-shuara': 26,
@@ -105,7 +82,7 @@ const SURAH_NAMES: Record<string, number> = {
   'saffat': 37, 'as-saffat': 37,
   'sad': 38,
   'zumar': 39, 'az-zumar': 39,
-  'ghafir': 40, 'mu\'min': 40,
+  'ghafir': 40, "mu'min": 40,
   'fussilat': 41,
   'shura': 42, 'ash-shura': 42,
   'zukhruf': 43, 'az-zukhruf': 43,
@@ -196,7 +173,6 @@ function extractDirectRef(q: string): { surah: number; ayah: number } | null {
   // Pattern 2: "surah <name> <number>" or "<name> <number> ayah/ayat/verse"
   for (const [name, num] of Object.entries(SURAH_NAMES)) {
     if (lower.includes(name)) {
-      // Look for an ayah number after the surah name (or anywhere in the query)
       const afterName = lower.slice(lower.indexOf(name) + name.length);
       const ayahMatch = afterName.match(/\b(\d{1,3})\b/) ?? q.match(/\b(\d{1,3})\b/);
       if (ayahMatch) {
@@ -209,118 +185,84 @@ function extractDirectRef(q: string): { surah: number; ayah: number } | null {
   return null;
 }
 
-type AyahRow = {
+export interface AyahRow {
   surahNumber: number;
   ayahNumber: number;
   arabicText: string;
   translationText: string | null;
   englishName: string;
-};
+}
 
-interface HistoryMessage {
+export interface HistoryMessage {
   role: 'user' | 'assistant';
   content: string;
 }
 
-export async function POST(req: NextRequest) {
-  // Rate limit per client IP before doing any expensive work.
-  const limit = rateLimit(`ask:${clientIp(req)}`, ASK_RATE_LIMIT, ASK_RATE_WINDOW_MS);
-  if (!limit.ok) return tooManyRequests(limit);
+@Injectable()
+export class AskService {
+  constructor(private readonly prisma: PrismaService) {}
 
-  const { question, mode = 'focused', history = [] } = await req.json() as {
-    question?: string;
-    mode?: 'focused' | 'open';
-    history?: HistoryMessage[];
-  };
-
-  if (!question || typeof question !== 'string' || question.trim().length < 3) {
-    return new Response(JSON.stringify({ error: 'Question is required' }), { status: 400 });
+  private getEmbedClient(): AzureOpenAI {
+    return new AzureOpenAI({
+      apiKey: process.env.AZURE_OPENAI_API_KEY!,
+      endpoint: process.env.AZURE_OPENAI_ENDPOINT!,
+      deployment: process.env.AZURE_OPENAI_EMBEDDING_DEPLOYMENT!,
+      apiVersion: process.env.AZURE_OPENAI_API_VERSION ?? '2023-05-15',
+    });
   }
 
-  if (question.length > MAX_QUESTION_LENGTH) {
-    return new Response(JSON.stringify({ error: 'Question is too long' }), { status: 400 });
+  private getChatClient(): AzureOpenAI {
+    return new AzureOpenAI({
+      apiKey: process.env.AZURE_OPENAI_API_KEY!,
+      endpoint: process.env.AZURE_OPENAI_ENDPOINT!,
+      deployment: process.env.AZURE_OPENAI_CHAT_DEPLOYMENT!,
+      apiVersion: process.env.AZURE_OPENAI_CHAT_API_VERSION ?? '2024-04-01-preview',
+    });
   }
 
-  if (mode !== 'focused' && mode !== 'open') {
-    return new Response(JSON.stringify({ error: 'Invalid mode' }), { status: 400 });
+  private async findAyah(surah: number, ayah: number): Promise<AyahRow | null> {
+    const found = await this.prisma.ayah.findFirst({
+      where: { surahNumber: surah, number: ayah, apiProvider: 'TEMPORARY_API' },
+      select: {
+        surahNumber: true,
+        number: true,
+        arabicText: true,
+        translationText: true,
+        surah: { select: { englishName: true } },
+      },
+    });
+    if (!found) return null;
+    return {
+      surahNumber: found.surahNumber,
+      ayahNumber: found.number,
+      arabicText: found.arabicText,
+      translationText: found.translationText,
+      englishName: found.surah?.englishName ?? `Surah ${found.surahNumber}`,
+    };
   }
 
-  // Sanitize client-supplied history: validate role, cap count and per-message length.
-  const safeHistory: HistoryMessage[] = (Array.isArray(history) ? history : [])
-    .filter((m): m is HistoryMessage =>
-      !!m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
-    .slice(-MAX_HISTORY_MESSAGES)
-    .map((m) => ({ role: m.role, content: m.content.slice(0, MAX_HISTORY_CONTENT_LENGTH) }));
-
-  const q = question.trim();
-
-  try {
-    // 1a. Detect direct ayah reference (e.g. "2:214")
+  /**
+   * Retrieve context ayahs: direct reference → canonical → semantic (deduped).
+   */
+  async retrieveContext(q: string): Promise<AyahRow[]> {
+    // 1a. Direct ayah reference (e.g. "2:214")
     const directRef = extractDirectRef(q);
-    let directAyah: AyahRow | null = null;
-
-    if (directRef) {
-      const found = await prisma.ayah.findFirst({
-        where: { surahNumber: directRef.surah, number: directRef.ayah, apiProvider: 'TEMPORARY_API' },
-        select: {
-          surahNumber: true,
-          number: true,
-          arabicText: true,
-          translationText: true,
-          surah: { select: { englishName: true } },
-        },
-      });
-      if (found) {
-        directAyah = {
-          surahNumber: found.surahNumber,
-          ayahNumber: found.number,
-          arabicText: found.arabicText,
-          translationText: found.translationText,
-          englishName: found.surah?.englishName ?? `Surah ${found.surahNumber}`,
-        };
-      }
-    }
+    const directAyah = directRef ? await this.findAyah(directRef.surah, directRef.ayah) : null;
 
     // 1b. Canonical guaranteed ayahs (e.g. "duas for parents" always includes 14:41)
     const canonicalRefs = getCanonicalAyahs(q);
-    const canonicalAyahs: AyahRow[] = [];
-
-    if (canonicalRefs.length > 0) {
-      const fetched = await Promise.all(
-        canonicalRefs.map(({ surah, ayah }) =>
-          prisma.ayah.findFirst({
-            where: { surahNumber: surah, number: ayah, apiProvider: 'TEMPORARY_API' },
-            select: {
-              surahNumber: true,
-              number: true,
-              arabicText: true,
-              translationText: true,
-              surah: { select: { englishName: true } },
-            },
-          })
-        )
-      );
-      for (const found of fetched) {
-        if (found) {
-          canonicalAyahs.push({
-            surahNumber: found.surahNumber,
-            ayahNumber: found.number,
-            arabicText: found.arabicText,
-            translationText: found.translationText,
-            englishName: found.surah?.englishName ?? `Surah ${found.surahNumber}`,
-          });
-        }
-      }
-    }
+    const canonicalAyahs = (
+      await Promise.all(canonicalRefs.map(({ surah, ayah }) => this.findAyah(surah, ayah)))
+    ).filter((r): r is AyahRow => r !== null);
 
     // 2. Semantic search for related ayahs
-    const embRes = await getEmbedClient().embeddings.create({
+    const embRes = await this.getEmbedClient().embeddings.create({
       input: [q],
       model: 'text-embedding-3-small',
     });
     const vector = `[${embRes.data[0].embedding.join(',')}]`;
 
-    const semanticRows = await prisma.$queryRaw<AyahRow[]>`
+    const semanticRows = await this.prisma.$queryRaw<AyahRow[]>`
       WITH verse_scores AS (
         SELECT ve."ayahId", ve."surahNumber", ve."ayahNumber",
                ve.embedding <=> ${vector}::vector AS dist
@@ -352,84 +294,50 @@ export async function POST(req: NextRequest) {
     // 3. Merge: direct → canonical → semantic (all deduplicated)
     const seen = new Set<string>();
     const rows: AyahRow[] = [];
-
     const addRow = (r: AyahRow) => {
       const key = `${r.surahNumber}:${r.ayahNumber}`;
-      if (!seen.has(key)) { seen.add(key); rows.push(r); }
+      if (!seen.has(key)) {
+        seen.add(key);
+        rows.push(r);
+      }
     };
 
     if (directAyah) addRow(directAyah);
     for (const r of canonicalAyahs) addRow(r);
     for (const r of semanticRows) addRow(r);
 
-    if (!rows.length) {
-      return new Response(JSON.stringify({ error: 'No relevant ayahs found' }), { status: 404 });
-    }
+    return rows;
+  }
 
-    // 4. Build context block
+  /** Open the streaming chat completion for the given context + history. */
+  async createChatStream(
+    q: string,
+    mode: 'focused' | 'open',
+    rows: AyahRow[],
+    history: HistoryMessage[],
+  ) {
     const context = rows
-      .map((r) =>
-        `[${r.englishName}, ${r.surahNumber}:${r.ayahNumber}]\n` +
-        `Arabic: ${r.arabicText}\n` +
-        `Translation: ${r.translationText ?? 'Not available'}`
+      .map(
+        (r) =>
+          `[${r.englishName}, ${r.surahNumber}:${r.ayahNumber}]\n` +
+          `Arabic: ${r.arabicText}\n` +
+          `Translation: ${r.translationText ?? 'Not available'}`,
       )
       .join('\n\n');
 
-    const label = mode === 'open' ? 'Context Ayahs (retrieved by system)' : 'Retrieved Ayahs (system-fetched context)';
+    const label =
+      mode === 'open' ? 'Context Ayahs (retrieved by system)' : 'Retrieved Ayahs (system-fetched context)';
     const userMessage = `Question: ${q}\n\n${label}:\n\n${context}`;
 
-    // 5. Build full message history for context continuity
-    // Already validated + capped to the last MAX_HISTORY_MESSAGES messages above.
-    const recentHistory = safeHistory;
-
-    const stream = await getChatClient().chat.completions.create({
+    return this.getChatClient().chat.completions.create({
       model: 'gpt-5.2-chat',
       messages: [
         { role: 'system', content: mode === 'open' ? OPEN_PROMPT : FOCUSED_PROMPT },
-        ...recentHistory.map((m) => ({ role: m.role, content: m.content })),
-        { role: 'user',   content: userMessage },
+        ...history.map((m) => ({ role: m.role, content: m.content })),
+        { role: 'user', content: userMessage },
       ],
       stream: true,
       max_completion_tokens: 1024,
     });
-
-    const readable = new ReadableStream({
-      async start(controller) {
-        const encoder = new TextEncoder();
-
-        const sourcesChunk = JSON.stringify({
-          type: 'sources',
-          ayahs: rows.map((r) => ({
-            surahNumber: r.surahNumber,
-            ayahNumber: r.ayahNumber,
-            englishName: r.englishName,
-            translationText: r.translationText,
-          })),
-        });
-        controller.enqueue(encoder.encode(`data: ${sourcesChunk}\n\n`));
-
-        for await (const chunk of stream) {
-          const text = chunk.choices[0]?.delta?.content ?? '';
-          if (text) {
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'token', text })}\n\n`));
-          }
-        }
-
-        controller.enqueue(encoder.encode('data: {"type":"done"}\n\n'));
-        controller.close();
-      },
-    });
-
-    return new Response(readable, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-      },
-    });
-
-  } catch (err) {
-    console.error('[ask-quran]', err);
-    return new Response(JSON.stringify({ error: 'Failed to generate answer' }), { status: 500 });
   }
 }

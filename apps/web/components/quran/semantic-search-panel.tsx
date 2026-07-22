@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { Sparkles, ExternalLink, Loader2, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
+import { backendUrl } from '@/lib/api/backend';
 
 interface SemanticResult {
   surahNumber:            number;
@@ -56,7 +57,7 @@ export function SemanticSearchPanel({ query, className }: SemanticSearchPanelPro
 
     try {
       const res = await fetch(
-        `/api/search/semantic?q=${encodeURIComponent(q)}&limit=6`,
+        backendUrl(`/api/search/semantic?q=${encodeURIComponent(q)}&limit=6`),
         { signal: ctrl.signal }
       );
       if (!res.ok) throw new Error('Search failed');

@@ -76,7 +76,7 @@ export function AyahDisplay({
     if (similarResults.length > 0) return; // already loaded
     setSimilarLoading(true);
     try {
-      const res = await fetch(`/api/search/similar?surah=${ayah.surahNo}&ayah=${ayah.ayahNo}&limit=5&offset=0`);
+      const res = await fetch(backendUrl(`/api/search/similar?surah=${ayah.surahNo}&ayah=${ayah.ayahNo}&limit=5&offset=0`));
       if (res.ok) {
         const data = await res.json();
         setSimilarResults(data.results ?? []);
@@ -90,7 +90,7 @@ export function AyahDisplay({
     setSimilarLoadingMore(true);
     try {
       const res = await fetch(
-        `/api/search/similar?surah=${ayah.surahNo}&ayah=${ayah.ayahNo}&limit=5&offset=${similarResults.length}`
+        backendUrl(`/api/search/similar?surah=${ayah.surahNo}&ayah=${ayah.ayahNo}&limit=5&offset=${similarResults.length}`)
       );
       if (res.ok) {
         const data = await res.json();
