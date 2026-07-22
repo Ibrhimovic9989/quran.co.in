@@ -1,0 +1,23 @@
+# Render blueprint for the NestJS API (apps/api).
+# The web app stays on Vercel; this deploys only the backend.
+
+services:
+  - type: web
+    name: quran-api
+    runtime: node
+    plan: starter
+    rootDir: .
+    buildCommand: npm install --ignore-scripts && npm run db:generate && npm run build:api
+    startCommand: node apps/api/dist/main.js
+    healthCheckPath: /api/quran/surahs
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3001"
+      - key: WEB_ORIGIN
+        value: https://quran.co.in,https://www.quran.co.in
+      - key: DATABASE_URL
+        sync: false # set in Render dashboard (Supabase pooled URL)
+      - key: DIRECT_URL
+        sync: false # set in Render dashboard (Supabase direct URL)

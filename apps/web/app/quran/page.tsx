@@ -17,7 +17,8 @@ export const metadata: Metadata = {
   },
 };
 import { QuranPageClient } from '@/components/quran/quran-page-client';
-import { QuranCacheService } from '@/lib/services/quran-cache.service';
+import { backendUrl } from '@/lib/api/backend';
+import type { SurahListItem } from '@/lib/services/quran-surah-list-cache';
 import { Spinner } from '@/components/ui/atoms';
 import { LoadingMessage } from '@/components/ui/loading-message';
 
@@ -26,8 +27,11 @@ export const revalidate = 3600;
 
 export default async function QuranPage() {
   try {
-    const cacheService = new QuranCacheService();
-    const surahs = await cacheService.getAllSurahs('TEMPORARY_API');
+    const res = await fetch(backendUrl('/api/quran/surahs'), {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) throw new Error(`Failed to load surahs (${res.status})`);
+    const { surahs } = (await res.json()) as { surahs: SurahListItem[] };
 
     return (
       <main>

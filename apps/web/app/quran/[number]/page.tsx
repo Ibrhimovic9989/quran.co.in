@@ -4,11 +4,25 @@
 import type { Metadata } from 'next';
 import { SurahDisplay } from '@/components/quran/surah-display';
 import { SurahSchema } from '@/components/seo/json-ld';
-import { QuranCacheService } from '@/lib/services/quran-cache.service';
+import { backendUrl } from '@/lib/api/backend';
 import { notFound } from 'next/navigation';
-import type { TafsirResponse } from '@/types/quran-api';
+import type { SurahResponse, TafsirResponse } from '@/types/quran-api';
 
 const BASE_URL = 'https://quran.co.in';
+
+// Fetch a surah from the dedicated backend (apps/api), cached for an hour.
+async function fetchSurah(surahNo: number): Promise<SurahResponse | null> {
+  try {
+    const res = await fetch(backendUrl(`/api/quran/surah/${surahNo}`), {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { surah: SurahResponse };
+    return data.surah;
+  } catch {
+    return null;
+  }
+}
 
 // Force dynamic rendering - don't try to fetch at build time
 export const dynamic = 'force-dynamic';
@@ -24,8 +38,7 @@ export async function generateMetadata({
   if (isNaN(surahNo) || surahNo < 1 || surahNo > 114) return {};
 
   try {
-    const cacheService = new QuranCacheService();
-    const surah = await cacheService.getSurah(surahNo, 'TEMPORARY_API');
+    const surah = await fetchSurah(surahNo);
     if (!surah) return {};
 
     const title = `Surah ${surah.surahNameTranslation} (${surah.surahName}) — ${surahNo}:1-${surah.totalAyah}`;
@@ -78,8 +91,7 @@ export default async function SurahPage({
   }
 
   try {
-    const cacheService = new QuranCacheService();
-    const surah = await cacheService.getSurah(surahNo, 'TEMPORARY_API');
+    const surah = await fetchSurah(surahNo);
 
     if (!surah) {
       return (

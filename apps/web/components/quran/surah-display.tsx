@@ -17,6 +17,7 @@ import { recordSurahVisit } from '@/lib/data/reading-progress';
 import { BookmarksProvider } from './bookmarks-provider';
 import { SurahHeader } from './surah-header';
 import { SurahNavigation } from './surah-navigation';
+import { backendUrl } from '@/lib/api/backend';
 import { SurahPlaybackProvider } from './surah-playback-provider';
 import { SurahReadingView } from './surah-reading-view';
 import { SurahVerseListView } from './surah-verse-list-view';
@@ -118,7 +119,7 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
     try {
       // Fetch next batch of ayahs from API
       const response = await fetch(
-        `/api/quran/surah/${surah.surahNo}/ayahs?offset=${loadedAyahs.english.length}&limit=${AYAHS_PER_BATCH}`
+        backendUrl(`/api/quran/surah/${surah.surahNo}/ayahs?offset=${loadedAyahs.english.length}&limit=${AYAHS_PER_BATCH}`)
       );
       
       if (response.ok) {

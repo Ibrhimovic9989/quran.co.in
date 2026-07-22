@@ -10,6 +10,7 @@ import { PlayButton } from '@/components/ui/molecules';
 import { cn } from '@/lib/utils/cn';
 import { useToast } from '@/components/ui/toast';
 import type { AudioReciters } from '@/types/quran-api';
+import { backendUrl } from '@/lib/api/backend';
 import { useOptionalSurahPlayback } from './surah-playback-provider';
 
 function isPlaybackAbortError(error: unknown) {
@@ -103,7 +104,7 @@ export function AudioPlayer({
     if (useSharedPlayback) return;
     if (ayahNo && !ayahAudioData) {
       setIsLoadingAudio(true);
-      fetch(`/api/quran/audio/${surahNo}/${ayahNo}`)
+      fetch(backendUrl(`/api/quran/audio/${surahNo}/${ayahNo}`))
         .then((res) => {
           if (!res.ok) {
             throw new Error(`Failed to fetch audio: ${res.status} ${res.statusText}`);

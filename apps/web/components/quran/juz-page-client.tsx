@@ -16,6 +16,7 @@ import { ReciterSelector } from "@/components/ui/molecules";
 import { AyahDisplay } from "./ayah-display";
 import { BookmarksProvider } from "./bookmarks-provider";
 import { cn } from "@/lib/utils/cn";
+import { backendUrl } from "@/lib/api/backend";
 import type { AyahResponse } from "@/types/quran-api";
 
 interface JuzPageClientProps {
@@ -57,7 +58,7 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
 
       try {
         const response = await fetch(
-          `/api/quran/juz/${juzNumber}?offset=${pageOffset}&limit=${PAGE_SIZE}`
+          backendUrl(`/api/quran/juz/${juzNumber}?offset=${pageOffset}&limit=${PAGE_SIZE}`)
         );
         if (!response.ok) {
           throw new Error("Failed to fetch Juz data");

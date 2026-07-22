@@ -1,8 +1,11 @@
 /** @type {import('next').NextConfig} */
+const path = require('path');
+
 const nextConfig = {
   reactStrictMode: true,
   turbopack: {
-    root: __dirname,
+    // Monorepo: the workspace root (lockfile + hoisted node_modules) is two levels up.
+    root: path.join(__dirname, '..', '..'),
   },
   images: {
     remotePatterns: [

@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from 'react';
 import type { AudioReciters } from '@/types/quran-api';
+import { backendUrl } from '@/lib/api/backend';
 
 type PlaybackScope = 'ayah' | 'surah' | null;
 
@@ -103,7 +104,7 @@ export function SurahPlaybackProvider({
       }
 
       try {
-        const response = await fetch(`/api/quran/audio/${surahNo}/${ayahNumber}`);
+        const response = await fetch(backendUrl(`/api/quran/audio/${surahNo}/${ayahNumber}`));
         if (!response.ok) {
           ayahAudioCacheRef.current.set(ayahNumber, null);
           return null;

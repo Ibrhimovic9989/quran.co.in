@@ -15,6 +15,7 @@ import { AudioPlayer } from './audio-player';
 import { TafsirDisplay } from './tafsir-display';
 import { BookmarkButton } from './bookmark-button';
 import { AyahShareButton } from './ayah-share-button';
+import { backendUrl } from '@/lib/api/backend';
 import type { AyahResponse, TafsirResponse } from '@/types/quran-api';
 
 type TranslationLanguage = 'english' | 'bengali' | 'urdu' | 'turkish' | 'uzbek';
@@ -328,7 +329,7 @@ export function AyahDisplay({
                   if (!showTafsir && !tafsir) {
                     try {
                       const response = await fetch(
-                        `/api/quran/tafsir/${ayah.surahNo}/${ayah.ayahNo}`
+                        backendUrl(`/api/quran/tafsir/${ayah.surahNo}/${ayah.ayahNo}`)
                       );
                       if (response.ok) {
                         const data = await response.json();
