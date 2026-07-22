@@ -26,7 +26,21 @@
       "Bash(git mv *)",
       "Bash(rmdir prisma *)",
       "Bash(echo \"prisma removed: $?\")",
-      "Bash(node -e \"const {PrismaClient} = require\\('@prisma/client'\\); console.log\\('prisma client OK:', typeof PrismaClient\\)\")"
+      "Bash(node -e \"const {PrismaClient} = require\\('@prisma/client'\\); console.log\\('prisma client OK:', typeof PrismaClient\\)\")",
+      "Bash(node dist/main.js)",
+      "Bash(curl -s -o /dev/null -w \"surahs: %{http_code} \\(%{time_total}s\\)\\\\n\" http://localhost:3001/api/quran/surahs)",
+      "Bash(curl -s http://localhost:3001/api/quran/surahs)",
+      "Bash(grep -n \"fetch\\(\\\\`/api/quran\\\\|fetch\\('/api/quran\" apps/web/components/quran/surah-display.tsx apps/web/components/quran/juz-page-client.tsx apps/web/components/quran/audio-player.tsx apps/web/components/quran/surah-playback-provider.tsx apps/web/components/quran/ayah-display.tsx)",
+      "Bash(grep -n \"'/api/\\\\|\\\\`/api/\" apps/web/components/quran/surah-display.tsx apps/web/components/quran/juz-page-client.tsx apps/web/components/quran/ayah-display.tsx)",
+      "Bash(git rm *)",
+      "Bash(npx next *)",
+      "Bash(curl -s -o /dev/null -w \"/quran      -> %{http_code} \\(%{time_total}s\\)\\\\n\" http://localhost:3000/quran)",
+      "Bash(curl -s -o /dev/null -w \"/quran/2    -> %{http_code} \\(%{time_total}s\\)\\\\n\" http://localhost:3000/quran/2)",
+      "Bash(curl -s -o /dev/null -w \"/quran/juz/1 -> %{http_code} \\(%{time_total}s\\)\\\\n\" http://localhost:3000/quran/juz/1)",
+      "Bash(curl -s http://localhost:3000/quran)",
+      "Bash(curl -s http://localhost:3000/quran/2)",
+      "Bash(curl -s -D - -o /dev/null -H \"Origin: http://localhost:3000\" http://localhost:3001/api/quran/surahs)",
+      "Bash(node -e \"require.resolve\\('@nestjs/jwt'\\); require.resolve\\('google-auth-library'\\); console.log\\('deps OK'\\)\")"
     ]
   }
 }
