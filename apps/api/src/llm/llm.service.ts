@@ -12,8 +12,12 @@
 //   OPENROUTER_API_KEY   https://openrouter.ai     (sk-or-...)
 //   AZURE_OPENAI_*       legacy Azure deployment
 //
-// Model overrides: NVIDIA_CHAT_MODEL, NVIDIA_CHAT_MODEL_FALLBACK,
-//                  OPENROUTER_CHAT_MODEL, OPENROUTER_CHAT_MODEL_FALLBACK
+// Model lists (comma-separated, tried in order) override the curated defaults:
+//   NVIDIA_CHAT_MODELS, OPENROUTER_CHAT_MODELS
+// NVIDIA free-tier limits are PER MODEL, so every extra model in the list is
+// real extra free capacity. OpenRouter's free quota is account-wide, so its
+// entries add resilience/variety rather than capacity. A model name that
+// doesn't exist just fails once and cools down — safe to experiment.
 //
 // EMBEDDINGS CAVEAT: the pgvector corpus (verse_embeddings/tafsir_embeddings)
 // was built with text-embedding-3-small (1536-dim). Query embeddings MUST come
@@ -34,13 +38,22 @@ export interface ChatProviderConfig {
 const COOLDOWN_MS: Record<string, number> = {
   rate_limit: 5 * 60_000, // 429 — free-tier window exhausted
   auth: 60 * 60_000, // 401/403 — bad key; don't hammer it
+  bad_model: 24 * 60 * 60_000, // 404/400 — model name doesn't exist on this vendor
+  timeout: 5 * 60_000, // request timed out — model is cold/queued, skip it a while
   server: 60_000, // 5xx / network hiccup
 };
+
+/** Per-attempt request timeout — a queued cold model must not hang the chain. */
+function requestTimeoutMs(): number {
+  return parseInt(process.env.LLM_TIMEOUT_MS ?? '20000', 10);
+}
 
 function classifyError(err: unknown): keyof typeof COOLDOWN_MS {
   const status = (err as { status?: number })?.status;
   if (status === 429) return 'rate_limit';
   if (status === 401 || status === 403) return 'auth';
+  if (status === 404 || status === 400) return 'bad_model';
+  if (err instanceof Error && /timed?\s*out/i.test(err.message)) return 'timeout';
   return 'server';
 }
 
@@ -51,25 +64,60 @@ export class LlmService {
 
   // ── Chain construction ──────────────────────────────────────────────────────
 
+  /**
+   * Curated free chat models, best-first. Instruction-tuned only — reasoning
+   * models (R1/thinking variants) are excluded because their chain-of-thought
+   * output would leak into the streamed answer.
+   */
+  // All names verified against each vendor's /v1/models on 2026-07-22.
+  private static readonly NVIDIA_DEFAULT_MODELS = [
+    'nvidia/llama-3.3-nemotron-super-49b-v1', // verified warm + strong
+    'meta/llama-3.3-70b-instruct',
+    'nvidia/llama-3.3-nemotron-super-49b-v1.5',
+    'meta/llama-4-maverick-17b-128e-instruct',
+    'nvidia/llama-3.1-nemotron-70b-instruct',
+    'qwen/qwen3-next-80b-a3b-instruct',
+    'mistralai/mistral-large-2-instruct',
+    'meta/llama-3.1-70b-instruct',
+    'mistralai/mixtral-8x7b-instruct-v0.1',
+    'meta/llama-3.1-8b-instruct', // fast last resort, verified warm
+  ];
+
+  private static readonly OPENROUTER_DEFAULT_MODELS = [
+    'nvidia/nemotron-3-super-120b-a12b:free',
+    'google/gemma-4-31b-it:free',
+    'openai/gpt-oss-20b:free',
+    'google/gemma-4-26b-a4b-it:free',
+    'nvidia/nemotron-3-nano-30b-a3b:free',
+    'nvidia/nemotron-nano-9b-v2:free',
+  ];
+
+  private modelList(envVar: string | undefined, defaults: string[]): string[] {
+    const fromEnv = (envVar ?? '')
+      .split(',')
+      .map((m) => m.trim())
+      .filter(Boolean);
+    return fromEnv.length > 0 ? fromEnv : defaults;
+  }
+
   private chatChain(): ChatProviderConfig[] {
     const chain: ChatProviderConfig[] = [];
 
     if (process.env.NVIDIA_API_KEY) {
-      const primary = process.env.NVIDIA_CHAT_MODEL ?? 'meta/llama-3.3-70b-instruct';
-      const fallback = process.env.NVIDIA_CHAT_MODEL_FALLBACK ?? 'meta/llama-3.1-8b-instruct';
-      chain.push({ id: `nvidia:${primary}`, vendor: 'nvidia', model: primary });
-      if (fallback && fallback !== primary) {
-        // NVIDIA NIM rate limits are per-model, so a second model = extra headroom.
-        chain.push({ id: `nvidia:${fallback}`, vendor: 'nvidia', model: fallback });
+      for (const model of this.modelList(
+        process.env.NVIDIA_CHAT_MODELS,
+        LlmService.NVIDIA_DEFAULT_MODELS,
+      )) {
+        chain.push({ id: `nvidia:${model}`, vendor: 'nvidia', model });
       }
     }
 
     if (process.env.OPENROUTER_API_KEY) {
-      const primary = process.env.OPENROUTER_CHAT_MODEL ?? 'meta-llama/llama-3.3-70b-instruct:free';
-      const fallback = process.env.OPENROUTER_CHAT_MODEL_FALLBACK ?? '';
-      chain.push({ id: `openrouter:${primary}`, vendor: 'openrouter', model: primary });
-      if (fallback && fallback !== primary) {
-        chain.push({ id: `openrouter:${fallback}`, vendor: 'openrouter', model: fallback });
+      for (const model of this.modelList(
+        process.env.OPENROUTER_CHAT_MODELS,
+        LlmService.OPENROUTER_DEFAULT_MODELS,
+      )) {
+        chain.push({ id: `openrouter:${model}`, vendor: 'openrouter', model });
       }
     }
 
@@ -81,14 +129,19 @@ export class LlmService {
   }
 
   private clientFor(provider: ChatProviderConfig): OpenAI {
+    // maxRetries: 0 — the SDK's own retry/backoff would stall the cascade;
+    // our chain IS the retry strategy. timeout skips cold/queued models.
+    const common = { timeout: requestTimeoutMs(), maxRetries: 0 };
     switch (provider.vendor) {
       case 'nvidia':
         return new OpenAI({
+          ...common,
           baseURL: 'https://integrate.api.nvidia.com/v1',
           apiKey: process.env.NVIDIA_API_KEY!,
         });
       case 'openrouter':
         return new OpenAI({
+          ...common,
           baseURL: 'https://openrouter.ai/api/v1',
           apiKey: process.env.OPENROUTER_API_KEY!,
           defaultHeaders: {
@@ -98,6 +151,7 @@ export class LlmService {
         });
       case 'azure':
         return new AzureOpenAI({
+          ...common,
           apiKey: process.env.AZURE_OPENAI_API_KEY!,
           endpoint: process.env.AZURE_OPENAI_ENDPOINT!,
           deployment: process.env.AZURE_OPENAI_CHAT_DEPLOYMENT!,
