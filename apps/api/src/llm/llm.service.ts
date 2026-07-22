@@ -27,6 +27,7 @@
 import { Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
 import OpenAI, { AzureOpenAI } from 'openai';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
+import { embeddingsProvider, NVIDIA_EMBED_MODEL } from '../common/embeddings-config';
 
 export interface ChatProviderConfig {
   /** Unique id used for cooldown tracking + logs, e.g. "nvidia:meta/llama-3.3-70b-instruct" */
@@ -265,13 +266,20 @@ export class LlmService {
     throw lastError ?? new ServiceUnavailableException({ error: 'All LLM providers unavailable' });
   }
 
-  // ── Embeddings (Azure-only until corpus re-embed — see caveat above) ───────
+  // ── Embeddings ──────────────────────────────────────────────────────────────
+  // The query embedding MUST come from the same model as the corpus tables
+  // (see common/embeddings-config.ts). Provider switch: NVIDIA (v2 tables,
+  // free) by default; EMBEDDINGS_PROVIDER=azure for the legacy 1536 corpus.
 
   /** True when a query-embedding provider matching the corpus space exists. */
   hasEmbeddingProvider(): boolean {
-    return Boolean(
-      process.env.AZURE_OPENAI_API_KEY && process.env.AZURE_OPENAI_EMBEDDING_DEPLOYMENT,
-    ) && this.isAvailable('azure:embed');
+    if (embeddingsProvider() === 'nvidia') {
+      return Boolean(process.env.NVIDIA_API_KEY) && this.isAvailable('nvidia:embed');
+    }
+    return (
+      Boolean(process.env.AZURE_OPENAI_API_KEY && process.env.AZURE_OPENAI_EMBEDDING_DEPLOYMENT) &&
+      this.isAvailable('azure:embed')
+    );
   }
 
   /** Embed a query in the corpus space. Throws if no compatible provider. */
@@ -279,6 +287,41 @@ export class LlmService {
     if (!this.hasEmbeddingProvider()) {
       throw new ServiceUnavailableException({ error: 'No embedding provider available' });
     }
+    return embeddingsProvider() === 'nvidia'
+      ? this.embedQueryNvidia(text)
+      : this.embedQueryAzure(text);
+  }
+
+  private async embedQueryNvidia(text: string): Promise<string> {
+    try {
+      const res = await fetch('https://integrate.api.nvidia.com/v1/embeddings', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.NVIDIA_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: NVIDIA_EMBED_MODEL,
+          input: [text],
+          input_type: 'query', // asymmetric retrieval: corpus used 'passage'
+          truncate: 'END',
+        }),
+        signal: AbortSignal.timeout(requestTimeoutMs()),
+      });
+      if (!res.ok) {
+        const err = new Error(`nvidia embed ${res.status}`) as Error & { status?: number };
+        err.status = res.status;
+        throw err;
+      }
+      const json = (await res.json()) as { data: { embedding: number[] }[] };
+      return `[${json.data[0].embedding.join(',')}]`;
+    } catch (err) {
+      this.punish('nvidia:embed', err);
+      throw err;
+    }
+  }
+
+  private async embedQueryAzure(text: string): Promise<string> {
     try {
       const client = new AzureOpenAI({
         apiKey: process.env.AZURE_OPENAI_API_KEY!,

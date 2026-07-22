@@ -4,6 +4,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { LlmService } from '../llm/llm.service';
+import { verseTable, tafsirTable, embExpr, queryVecCast } from '../common/embeddings-config';
 
 export interface SearchResultRow {
   surahNumber: number;
@@ -77,13 +78,13 @@ export class SearchService {
     return this.prisma.$queryRaw<SearchResultRow[]>`
       WITH verse_scores AS (
         SELECT ve."ayahId", ve."surahNumber", ve."ayahNumber",
-               ve.embedding <=> ${vector}::vector AS dist
-        FROM verse_embeddings ve
+               ${embExpr('ve')} <=> ${vector}${queryVecCast()} AS dist
+        FROM ${verseTable()} ve
       ),
       tafsir_scores AS (
         SELECT te."ayahId", te."surahNumber", te."ayahNumber",
-               te.embedding <=> ${vector}::vector AS dist
-        FROM tafsir_embeddings te
+               ${embExpr('te')} <=> ${vector}${queryVecCast()} AS dist
+        FROM ${tafsirTable()} te
       ),
       best_scores AS (
         SELECT "ayahId", "surahNumber", "ayahNumber", MIN(dist) AS dist
@@ -123,7 +124,7 @@ export class SearchService {
     // Prefer tafsir-enriched embedding as source vector; fall back to verse embedding
     const tafsirSource = await this.prisma.$queryRaw<{ embedding: string }[]>`
       SELECT embedding::text
-      FROM tafsir_embeddings
+      FROM ${tafsirTable()}
       WHERE "surahNumber" = ${surah} AND "ayahNumber" = ${ayah}
       LIMIT 1
     `;
@@ -134,7 +135,7 @@ export class SearchService {
     } else {
       const verseSource = await this.prisma.$queryRaw<{ embedding: string }[]>`
         SELECT embedding::text
-        FROM verse_embeddings
+        FROM ${verseTable()}
         WHERE "surahNumber" = ${surah} AND "ayahNumber" = ${ayah}
         LIMIT 1
       `;
@@ -148,14 +149,14 @@ export class SearchService {
     const raw = await this.prisma.$queryRaw<SearchResultRow[]>`
       WITH verse_scores AS (
         SELECT ve."ayahId", ve."surahNumber", ve."ayahNumber",
-               ve.embedding <=> ${vector}::vector AS dist
-        FROM verse_embeddings ve
+               ${embExpr('ve')} <=> ${vector}${queryVecCast()} AS dist
+        FROM ${verseTable()} ve
         WHERE NOT (ve."surahNumber" = ${surah} AND ve."ayahNumber" = ${ayah})
       ),
       tafsir_scores AS (
         SELECT te."ayahId", te."surahNumber", te."ayahNumber",
-               te.embedding <=> ${vector}::vector AS dist
-        FROM tafsir_embeddings te
+               ${embExpr('te')} <=> ${vector}${queryVecCast()} AS dist
+        FROM ${tafsirTable()} te
         WHERE NOT (te."surahNumber" = ${surah} AND te."ayahNumber" = ${ayah})
       ),
       best_scores AS (

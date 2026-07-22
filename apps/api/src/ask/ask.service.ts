@@ -6,6 +6,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { LlmService } from '../llm/llm.service';
+import { verseTable, tafsirTable, embExpr, queryVecCast } from '../common/embeddings-config';
 import { getCanonicalAyahs } from './canonical-context';
 
 // ── System prompts ────────────────────────────────────────────────────────────
@@ -275,13 +276,13 @@ export class AskService {
     return this.prisma.$queryRaw<AyahRow[]>`
       WITH verse_scores AS (
         SELECT ve."ayahId", ve."surahNumber", ve."ayahNumber",
-               ve.embedding <=> ${vector}::vector AS dist
-        FROM verse_embeddings ve
+               ${embExpr('ve')} <=> ${vector}${queryVecCast()} AS dist
+        FROM ${verseTable()} ve
       ),
       tafsir_scores AS (
         SELECT te."ayahId", te."surahNumber", te."ayahNumber",
-               te.embedding <=> ${vector}::vector AS dist
-        FROM tafsir_embeddings te
+               ${embExpr('te')} <=> ${vector}${queryVecCast()} AS dist
+        FROM ${tafsirTable()} te
       ),
       best_scores AS (
         SELECT "ayahId", "surahNumber", "ayahNumber", MIN(dist) AS dist

@@ -5,6 +5,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { verseTable, embExpr, queryVecCast } from '../common/embeddings-config';
 
 interface DailyAyahRow {
   surahNumber: number;
@@ -71,7 +72,7 @@ export class AyahOfTheDayService {
     const result = await this.prisma.$queryRaw<DailyAyahRow[]>(Prisma.sql`
       WITH centroid AS (
         SELECT AVG(ve.embedding) AS vec
-        FROM verse_embeddings ve
+        FROM ${verseTable()} ve
         WHERE (ve."surahNumber", ve."ayahNumber") IN (
           SELECT r."surahNumber", r."ayahNumber"
           FROM reading_history r
@@ -87,12 +88,12 @@ export class AyahOfTheDayService {
         a."translationText",
         s."englishName",
         s."englishNameTranslation"
-      FROM verse_embeddings ve
+      FROM ${verseTable()} ve
       CROSS JOIN centroid
       JOIN ayahs  a ON a.id     = ve."ayahId"
       JOIN surahs s ON s.number = ve."surahNumber" AND s."apiProvider" = 'TEMPORARY_API'
       WHERE ve."surahNumber" != ALL(ARRAY[${Prisma.join(seenSurahsArr)}]::integer[])
-      ORDER BY ve.embedding <=> centroid.vec
+      ORDER BY ${embExpr('ve')} <=> centroid.vec${queryVecCast()}
       LIMIT 1 OFFSET ${pickIndex}
     `);
 
@@ -101,7 +102,10 @@ export class AyahOfTheDayService {
 
   /** Deterministic guest pick: cycle through all ayahs across the year. */
   private async getDaily(): Promise<DailyAyahRow | null> {
-    const totalAyahs = await this.prisma.verseEmbedding.count();
+    const countRows = await this.prisma.$queryRaw<{ count: number }[]>`
+      SELECT COUNT(*)::int AS count FROM ${verseTable()}
+    `;
+    const totalAyahs = countRows[0]?.count ?? 0;
     if (totalAyahs === 0) return null;
     const offset = dayOfYear() % totalAyahs;
 
@@ -113,7 +117,7 @@ export class AyahOfTheDayService {
         a."translationText",
         s."englishName",
         s."englishNameTranslation"
-      FROM verse_embeddings ve
+      FROM ${verseTable()} ve
       JOIN ayahs  a ON a.id     = ve."ayahId"
       JOIN surahs s ON s.number = ve."surahNumber" AND s."apiProvider" = 'TEMPORARY_API'
       ORDER BY ve."surahNumber", ve."ayahNumber"
