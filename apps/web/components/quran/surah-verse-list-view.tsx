@@ -1,10 +1,13 @@
 'use client';
 
 import { AyahDisplay } from './ayah-display';
+import type { WbwWord } from './word-by-word';
 import { useOptionalSurahPlayback } from './surah-playback-provider';
 import type { TafsirResponse } from '@/types/quran-api';
 
 interface SurahVerseListViewProps {
+  focusMode?: boolean;
+  wordsByAyah?: Record<number, WbwWord[]> | null;
   surahNumber: number;
   surahBaseData: {
     surahName: string;
@@ -52,6 +55,8 @@ function BismillahHeader() {
 }
 
 export function SurahVerseListView({
+  focusMode = false,
+  wordsByAyah = null,
   surahNumber,
   surahBaseData,
   loadedAyahs,
@@ -72,7 +77,17 @@ export function SurahVerseListView({
         const tafsir = tafsirs?.get(tafsirKey);
 
         return (
-          <div key={ayahNo} id={`ayah-${surahNumber}-${ayahNo}`}>
+          <div
+            key={ayahNo}
+            id={`ayah-${surahNumber}-${ayahNo}`}
+            className={
+              focusMode &&
+              sharedPlayback?.activeAyahNumber != null &&
+              sharedPlayback.activeAyahNumber !== ayahNo
+                ? 'opacity-25 saturate-50 blur-[0.4px] transition-all duration-700'
+                : 'transition-all duration-700'
+            }
+          >
             <AyahDisplay
               ayah={{
                 ...surahBaseData,
@@ -92,6 +107,7 @@ export function SurahVerseListView({
               selectedReciter={selectedReciter}
               onReciterChange={onReciterChange}
               isActive={sharedPlayback?.activeAyahNumber === ayahNo}
+              words={wordsByAyah?.[ayahNo] ?? null}
               enableSharedPlayback={true}
             />
           </div>

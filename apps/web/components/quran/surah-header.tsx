@@ -7,6 +7,8 @@ import { SurahViewModeToggle, type SurahDisplayMode } from './surah-view-mode-to
 import type { SurahResponse } from '@/types/quran-api';
 import { getRevelationInfo, PERIOD_LABELS, APPROXIMATION_NOTE } from '@/lib/data/revelation-periods';
 import { RevelationLegendModal } from '@/components/ui/revelation-legend-modal';
+import { RepeatControl } from './playback-settings';
+import { Focus, Loader2, WholeWord } from 'lucide-react';
 
 interface SurahHeaderProps {
   surah: SurahResponse;
@@ -14,6 +16,11 @@ interface SurahHeaderProps {
   onModeChange: (mode: SurahDisplayMode) => void;
   selectedReciter: string | null;
   onReciterChange: (reciterId: string) => void;
+  focusMode?: boolean;
+  onFocusToggle?: () => void;
+  wordByWord?: boolean;
+  wordsLoading?: boolean;
+  onWordByWordToggle?: () => void;
 }
 
 export function SurahHeader({
@@ -22,6 +29,11 @@ export function SurahHeader({
   onModeChange,
   selectedReciter,
   onReciterChange,
+  focusMode = false,
+  onFocusToggle,
+  wordByWord = false,
+  wordsLoading = false,
+  onWordByWordToggle,
 }: SurahHeaderProps) {
   const hasAudio = surah.audio && Object.keys(surah.audio).length > 0;
   const revelation = getRevelationInfo(surah.surahNo);
@@ -72,8 +84,36 @@ export function SurahHeader({
 
       {/* ── Controls row: mode toggle + listen ────────────────────────── */}
       <div className="mt-4 flex flex-col items-stretch gap-3 md:mt-5 md:flex-row md:items-center md:justify-between">
-        <div className="flex justify-center md:justify-start">
+        <div className="flex items-center justify-center gap-2 md:justify-start">
           <SurahViewModeToggle mode={mode} onModeChange={onModeChange} />
+          {mode === 'verse' && onFocusToggle && (
+            <button
+              onClick={onFocusToggle}
+              title="Focus mode — dims everything but the ayah being recited"
+              className={
+                focusMode
+                  ? 'flex items-center gap-1.5 rounded-full bg-accent px-3.5 py-2 text-xs font-semibold text-white transition-colors'
+                  : 'flex items-center gap-1.5 rounded-full border border-line bg-surface px-3.5 py-2 text-xs font-semibold text-ink-muted transition-colors hover:text-ink'
+              }
+            >
+              <Focus className="h-3.5 w-3.5" aria-hidden />
+              Focus
+            </button>
+          )}
+          {mode === 'verse' && onWordByWordToggle && (
+            <button
+              onClick={onWordByWordToggle}
+              title="Word by word — tap any word to hear it and see its meaning"
+              className={
+                wordByWord
+                  ? 'flex items-center gap-1.5 rounded-full bg-accent px-3.5 py-2 text-xs font-semibold text-white transition-colors'
+                  : 'flex items-center gap-1.5 rounded-full border border-line bg-surface px-3.5 py-2 text-xs font-semibold text-ink-muted transition-colors hover:text-ink'
+              }
+            >
+              {wordsLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : <WholeWord className="h-3.5 w-3.5" aria-hidden />}
+              Word by Word
+            </button>
+          )}
         </div>
 
         {mode === 'verse' && hasAudio && (
@@ -86,6 +126,7 @@ export function SurahHeader({
               minimal
               className="min-w-[11rem] flex-1 md:max-w-xs md:flex-none"
             />
+            <RepeatControl />
             <AudioPlayer
               audioData={surah.audio}
               surahNo={surah.surahNo}

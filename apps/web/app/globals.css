@@ -41,6 +41,42 @@
   --focus-overlay-bg: #fdf8ee;
 }
 
+/* ── Reading themes — CSS-var overlays (persisted via data-theme) ── */
+
+/* Night: deep emerald-black, warm ivory ink — genuinely dark */
+html[data-theme='night'] {
+  --paper: #0b1210;
+  --surface: #121b17;
+  --surface-warm: #0f1814;
+  --ink: #e8e4d9;
+  --ink-soft: #c2beaf;
+  --muted: #8f8c7e;
+  --line: #223029;
+  --line-soft: #1a2420;
+  --accent: #34b18a;
+  --accent-strong: #4cc39c;
+  --accent-soft: #12352a;
+  --accent-ring: rgba(52, 177, 138, 0.35);
+  --gold: #d9b45c;
+  --gold-soft: #332a18;
+  --gold-text: #d9b45c;
+  color-scheme: dark;
+}
+
+/* Sepia: parchment reading, quran.com-style */
+html[data-theme='sepia'] {
+  --paper: #f3e9d7;
+  --surface: #faf3e3;
+  --surface-warm: #f7efdd;
+  --ink: #433422;
+  --ink-soft: #5d4c36;
+  --muted: #8a7859;
+  --line: #e2d3b8;
+  --line-soft: #ece0c9;
+  --accent-soft: #e4e9d8;
+  --gold-text: #6b5320;
+}
+
 html {
   overflow-x: hidden;
   width: 100%;

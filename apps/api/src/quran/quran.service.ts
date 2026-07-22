@@ -111,6 +111,26 @@ export class QuranService {
   }
 
   /**
+   * Word-by-word layer for a surah, grouped by ayah.
+   * Rows come from quran_words (ingested via scripts/ingest-words.mjs).
+   */
+  async getSurahWords(surahNo: number) {
+    const rows = await this.repository.findWordsBySurah(surahNo);
+    const byAyah: Record<number, unknown[]> = {};
+    for (const w of rows) {
+      (byAyah[w.ayahNumber] ??= []).push({
+        position: w.position,
+        charType: w.charType,
+        arabic: w.textUthmani,
+        translation: w.translation,
+        transliteration: w.transliteration,
+        audioUrl: w.audioUrl,
+      });
+    }
+    return byAyah;
+  }
+
+  /**
    * Paginated ayahs of a surah (skip/take at the DB).
    */
   async getSurahAyahs(

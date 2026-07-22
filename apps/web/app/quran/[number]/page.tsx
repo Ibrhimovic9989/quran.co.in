@@ -110,7 +110,7 @@ export default async function SurahPage({
     const tafsirs = new Map<string, TafsirResponse>();
 
     return (
-      <main className="min-h-screen bg-gradient-to-b from-white via-gray-50/30 to-white">
+      <main className="min-h-screen bg-paper">
         <SurahSchema
           surahNo={surahNo}
           surahName={surah.surahName}

@@ -57,7 +57,7 @@ export function QuranPageClient({ surahs }: QuranPageClientProps) {
 
   return (
     <BookmarksProvider>
-      <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/30 to-white">
+      <div className="min-h-screen bg-paper">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 md:py-8">
           {/* Continue Reading */}
           <ContinueReading />

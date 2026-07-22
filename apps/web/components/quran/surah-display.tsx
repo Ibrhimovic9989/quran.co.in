@@ -18,6 +18,7 @@ import { BookmarksProvider } from './bookmarks-provider';
 import { SurahHeader } from './surah-header';
 import { SurahNavigation } from './surah-navigation';
 import { backendUrl } from '@/lib/api/backend';
+import type { WbwWord } from './word-by-word';
 import { SurahPlaybackProvider } from './surah-playback-provider';
 import { SurahReadingView } from './surah-reading-view';
 import { SurahVerseListView } from './surah-verse-list-view';
@@ -44,6 +45,25 @@ interface LoadedAyahs {
 
 export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
   const searchParams = useSearchParams();
+  const [focusMode, setFocusMode] = useState(false);
+  const [wordByWord, setWordByWord] = useState(false);
+  const [wordsByAyah, setWordsByAyah] = useState<Record<number, WbwWord[]> | null>(null);
+  const [wordsLoading, setWordsLoading] = useState(false);
+
+  const toggleWordByWord = async () => {
+    if (!wordByWord && !wordsByAyah && !wordsLoading) {
+      setWordsLoading(true);
+      try {
+        const res = await fetch(backendUrl(`/api/quran/surah/${surah.surahNo}/words`));
+        if (res.ok) {
+          const data = (await res.json()) as { words: Record<number, WbwWord[]> };
+          setWordsByAyah(data.words);
+        }
+      } catch { /* silent */ }
+      finally { setWordsLoading(false); }
+    }
+    setWordByWord((v) => !v);
+  };
   const targetAyah = searchParams.get('ayah');
   const [displayMode, setDisplayMode] = useState<SurahDisplayMode>(
     searchParams.get('mode') === 'reading' ? 'reading' : 'verse'
@@ -356,6 +376,11 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
               onModeChange={handleModeChange}
               selectedReciter={selectedReciter}
               onReciterChange={handleReciterChange}
+              focusMode={focusMode}
+              onFocusToggle={() => setFocusMode((v) => !v)}
+              wordByWord={wordByWord}
+              wordsLoading={wordsLoading}
+              onWordByWordToggle={toggleWordByWord}
             />
 
             {displayMode === 'reading' ? (
@@ -377,6 +402,8 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
               />
             ) : (
               <SurahVerseListView
+                focusMode={focusMode}
+                wordsByAyah={wordByWord ? wordsByAyah : null}
                 surahNumber={surah.surahNo}
                 surahBaseData={surahBaseData}
                 loadedAyahs={loadedAyahs}

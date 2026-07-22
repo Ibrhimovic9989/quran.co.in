@@ -166,6 +166,12 @@ export default function RootLayout({
             `,
           }}
         />
+        {/* Apply persisted reading theme before paint (no flash) */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('quran-theme');if(t==='night'||t==='sepia'){document.documentElement.setAttribute('data-theme',t)}}catch(e){}`,
+          }}
+        />
       </head>
       <body className={`${inter.className} ${inter.variable} ${lora.variable} ${quranFont.variable} ${amiri.variable} ${notoNaskh.variable}`}>
         <WebSiteSchema />

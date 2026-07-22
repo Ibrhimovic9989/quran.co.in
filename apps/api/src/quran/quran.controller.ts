@@ -118,6 +118,19 @@ export class QuranController {
     }
   }
 
+  @Get('surah/:number/words')
+  @Header('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800')
+  async getSurahWords(@Param('number') number: string) {
+    const surahNo = validSurahNo(number);
+    try {
+      const words = await this.quran.getSurahWords(surahNo);
+      return { words };
+    } catch (error) {
+      this.logger.error(`Error fetching words for surah ${surahNo}`, error as Error);
+      serverError('Failed to fetch words');
+    }
+  }
+
   @Get('surah/:number/ayah/:ayahNumber')
   async getAyah(@Param('number') number: string, @Param('ayahNumber') ayahNumber: string) {
     const surahNo = validSurahNo(number);

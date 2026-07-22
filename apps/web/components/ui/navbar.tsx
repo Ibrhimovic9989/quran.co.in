@@ -23,6 +23,7 @@ import {
 import { useSession, signOut } from "@/components/auth/auth-client";
 import { cn } from "@/lib/utils/cn";
 import { Logo } from "@/components/ui/logo";
+import { ThemeToggle } from "@/components/ui/theme/theme-toggle";
 
 const MOBILE_LABEL_WIDTH = 72;
 
@@ -173,6 +174,9 @@ export function Navbar({ className }: NavbarProps) {
                 );
               })}
 
+              {/* Reading theme (Paper / Sepia / Night) */}
+              <ThemeToggle />
+
               {/* Desktop Sign Out */}
               {status === "authenticated" && (
                 <motion.button
@@ -191,8 +195,9 @@ export function Navbar({ className }: NavbarProps) {
               )}
             </div>
 
-            {/* Mobile: only auth buttons (Profile/SignIn + SignOut) */}
+            {/* Mobile: theme + auth buttons (Profile/SignIn + SignOut) */}
             <div className="flex md:hidden items-center gap-1">
+              <ThemeToggle />
               {filteredAuthItems.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.href);

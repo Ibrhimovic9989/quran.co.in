@@ -16,6 +16,7 @@ import { TafsirDisplay } from './tafsir-display';
 import { BookmarkButton } from './bookmark-button';
 import { AyahShareButton } from './ayah-share-button';
 import { backendUrl } from '@/lib/api/backend';
+import { WordByWordText, type WbwWord } from './word-by-word';
 import type { AyahResponse, TafsirResponse } from '@/types/quran-api';
 
 type TranslationLanguage = 'english' | 'bengali' | 'urdu' | 'turkish' | 'uzbek';
@@ -32,6 +33,7 @@ const languageNames: Record<TranslationLanguage, string> = {
 
 interface AyahDisplayProps {
   ayah: AyahResponse;
+  words?: WbwWord[] | null;
   tafsir?: TafsirResponse;
   showNumber?: boolean;
   className?: string;
@@ -43,6 +45,7 @@ interface AyahDisplayProps {
 
 export function AyahDisplay({
   ayah,
+  words = null,
   tafsir: initialTafsir,
   showNumber = true,
   className,
@@ -246,6 +249,9 @@ export function AyahDisplay({
             </div>
           </div>
 
+          {words && words.length > 0 ? (
+            <WordByWordText words={words} />
+          ) : (
           <p className="text-right font-arabic text-[1.9rem] leading-[2.1] text-ink md:text-[2.5rem] md:leading-[2.2]" dir="rtl" lang="ar">
             {ayah.arabic1}
             <span className="inline-flex items-center justify-center align-middle mx-1.5">
@@ -260,6 +266,7 @@ export function AyahDisplay({
               </span>
             </span>
           </p>
+          )}
 
           {showTranslit && ayah.arabic2 && (
             <p className="text-right text-sm italic leading-7 text-ink-muted md:text-base md:leading-8">

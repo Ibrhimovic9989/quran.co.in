@@ -400,7 +400,7 @@ export default function AskPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-accent-soft/40 via-white to-white">
+    <div className="min-h-screen bg-paper">
       <div className="max-w-3xl mx-auto px-4 py-8 md:py-12 pb-44 md:pb-48">
 
         {/* Header */}
@@ -492,7 +492,7 @@ export default function AskPage() {
                 ) : (
                   <div className="w-full space-y-3">
                     {/* Answer bubble */}
-                    <div className="answer-bubble bg-white border border-gray-100 rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm">
+                    <div className="answer-bubble bg-surface border border-gray-100 rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm">
                       {msg.content ? (
                         <div className="text-sm md:text-base space-y-0.5 msg-content">
                           {renderMarkdown(msg.content)}
@@ -573,10 +573,10 @@ export default function AskPage() {
 
         {/* Input — fixed to viewport so it's always visible.
             On mobile, lift above the bottom tab bar (~3.5rem + safe-area); flush on md+. */}
-        <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] md:bottom-0 left-0 right-0 z-40 px-4 pb-4 pt-2 bg-gradient-to-t from-white via-white/95 to-transparent">
+        <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] md:bottom-0 left-0 right-0 z-40 px-4 pb-4 pt-2 bg-gradient-to-t from-paper via-paper/95 to-transparent">
           <div className="max-w-3xl mx-auto">
           <div className={cn(
-            'bg-white border rounded-2xl shadow-lg overflow-hidden transition-all',
+            'bg-surface border rounded-2xl shadow-lg overflow-hidden transition-all',
             mode === 'focused'
               ? 'border-gray-200 focus-within:border-accent/40 focus-within:ring-2 focus-within:ring-accent-soft'
               : 'border-gray-200 focus-within:border-gold/50 focus-within:ring-2 focus-within:ring-gold-soft'

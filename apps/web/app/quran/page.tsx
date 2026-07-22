@@ -37,7 +37,7 @@ export default async function QuranPage() {
       <main>
         <Suspense
           fallback={
-            <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/30 to-white flex items-center justify-center">
+            <div className="min-h-screen bg-paper flex items-center justify-center">
               <div className="flex flex-col items-center gap-4">
                 <Spinner size="lg" />
                 <LoadingMessage />

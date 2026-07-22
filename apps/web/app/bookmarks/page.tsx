@@ -144,7 +144,7 @@ export default function BookmarksPage() {
 
   return (
     <BookmarksProvider>
-      <main className="min-h-screen bg-gradient-to-b from-white via-gray-50/30 to-white">
+      <main className="min-h-screen bg-paper">
         <Container>
           <div className="py-8 md:py-12 max-w-2xl mx-auto">
             <div className="mb-8">

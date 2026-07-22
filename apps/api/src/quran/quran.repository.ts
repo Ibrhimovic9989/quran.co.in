@@ -130,6 +130,27 @@ export class QuranRepository {
     });
   }
 
+  /** Word-by-word rows for a surah (raw table, no Prisma model needed). */
+  async findWordsBySurah(surahNumber: number) {
+    return this.prisma.$queryRaw<
+      {
+        ayahNumber: number;
+        position: number;
+        charType: string;
+        textUthmani: string;
+        translation: string | null;
+        transliteration: string | null;
+        audioUrl: string | null;
+      }[]
+    >`
+      SELECT "ayahNumber", position, "charType", "textUthmani",
+             translation, transliteration, "audioUrl"
+      FROM quran_words
+      WHERE "surahNumber" = ${surahNumber}
+      ORDER BY "ayahNumber", position
+    `;
+  }
+
   async countAyahsBySurah(
     surahNumber: number,
     apiProvider: ApiProvider = 'TEMPORARY_API',

@@ -128,7 +128,7 @@ export default function ProfilePage() {
   const displayInitials = initials.length === 1 ? initials.toLowerCase() : initials;
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-gray-50/30 to-white">
+    <main className="min-h-screen bg-paper">
       <Container>
         <div className="py-6 md:py-12">
           {/* Header */}

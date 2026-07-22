@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -16,6 +17,10 @@ type PlaybackScope = 'ayah' | 'surah' | null;
 
 interface SurahPlaybackContextValue {
   activeAyahNumber: number | null;
+  repeatCount: number;
+  repeatGap: number;
+  setRepeatCount: (n: number) => void;
+  setRepeatGap: (n: number) => void;
   activeReciterId: string | null;
   isPlaying: boolean;
   playbackScope: PlaybackScope;
@@ -44,6 +49,34 @@ export function SurahPlaybackProvider({
   const [activeReciterId, setActiveReciterId] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackScope, setPlaybackScope] = useState<PlaybackScope>(null);
+
+  // Hifz repeat drills: play each ayah N times with a silence gap between.
+  const [repeatCount, setRepeatCountState] = useState(1);
+  const [repeatGap, setRepeatGapState] = useState(0);
+  const repeatCountRef = useRef(1);
+  const repeatGapRef = useRef(0);
+  const playsOfCurrentRef = useRef(0);
+
+  useEffect(() => {
+    try {
+      const c = parseInt(localStorage.getItem('quran-repeat-count') ?? '1', 10);
+      const g = parseInt(localStorage.getItem('quran-repeat-gap') ?? '0', 10);
+      if (c >= 1) { setRepeatCountState(c); repeatCountRef.current = c; }
+      if (g >= 0) { setRepeatGapState(g); repeatGapRef.current = g; }
+    } catch { /* ignore */ }
+  }, []);
+
+  const setRepeatCount = useCallback((n: number) => {
+    setRepeatCountState(n);
+    repeatCountRef.current = n;
+    try { localStorage.setItem('quran-repeat-count', String(n)); } catch { /* ignore */ }
+  }, []);
+
+  const setRepeatGap = useCallback((n: number) => {
+    setRepeatGapState(n);
+    repeatGapRef.current = n;
+    try { localStorage.setItem('quran-repeat-gap', String(n)); } catch { /* ignore */ }
+  }, []);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const playbackScopeRef = useRef<PlaybackScope>(null);
@@ -136,6 +169,7 @@ export function SurahPlaybackProvider({
 
       const reciter = ayahAudio[reciterId];
       const nextAudio = getSharedAudio();
+      playsOfCurrentRef.current = 0;
 
       nextAudio.pause();
       nextAudio.src = reciter.originalUrl || reciter.url;
@@ -145,6 +179,21 @@ export function SurahPlaybackProvider({
       nextAudio.onpause = () => setIsPlaying(false);
       nextAudio.onerror = () => finishPlayback();
       nextAudio.onended = async () => {
+        // Hifz drill: replay the same ayah until repeatCount is reached
+        playsOfCurrentRef.current += 1;
+        if (playsOfCurrentRef.current < repeatCountRef.current) {
+          const rid = requestIdRef.current;
+          const replay = () => {
+            if (rid !== requestIdRef.current) return;
+            nextAudio.currentTime = 0;
+            nextAudio.play().catch(() => { /* aborted */ });
+          };
+          const gap = repeatGapRef.current;
+          if (gap > 0) setTimeout(replay, gap * 1000); else replay();
+          return;
+        }
+        playsOfCurrentRef.current = 0;
+
         if (playbackScopeRef.current !== 'surah') {
           finishPlayback();
           return;
@@ -229,13 +278,17 @@ export function SurahPlaybackProvider({
   const value = useMemo<SurahPlaybackContextValue>(
     () => ({
       activeAyahNumber,
+      repeatCount,
+      repeatGap,
+      setRepeatCount,
+      setRepeatGap,
       activeReciterId,
       isPlaying,
       playbackScope,
       toggleAyahPlayback,
       toggleSurahPlayback,
     }),
-    [activeAyahNumber, activeReciterId, isPlaying, playbackScope, toggleAyahPlayback, toggleSurahPlayback]
+    [activeAyahNumber, activeReciterId, isPlaying, playbackScope, toggleAyahPlayback, toggleSurahPlayback, repeatCount, repeatGap, setRepeatCount, setRepeatGap]
   );
 
   return <SurahPlaybackContext.Provider value={value}>{children}</SurahPlaybackContext.Provider>;

@@ -6,7 +6,7 @@ import { LoadingMessage } from '@/components/ui/loading-message';
 
 export default function JuzLoading() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/30 to-white">
+    <div className="min-h-screen bg-paper">
       <div className="container mx-auto px-4 py-16">
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8">
           <Spinner size="lg" />

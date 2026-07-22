@@ -96,7 +96,7 @@ export function RevelationOrderView({ surahs, searchQuery = '' }: RevelationOrde
   }, [surahMap, searchQuery]);
 
   return (
-    <section className={cn('w-full py-6 md:py-24 bg-gradient-to-b from-white via-gray-50/30 to-white')}>
+    <section className={cn('w-full py-6 md:py-24 bg-paper')}>
       <Container>
         <div className="max-w-4xl mx-auto text-center mb-6 md:mb-16">
           <Heading level={1} className="text-2xl md:text-5xl font-bold text-gray-900 mb-3 md:mb-6 leading-tight">
