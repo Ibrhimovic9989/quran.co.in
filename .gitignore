@@ -5,13 +5,16 @@ node_modules/
 
 # Testing
 /coverage
+**/coverage
 
 # Next.js
-/.next/
-/out/
+**/.next/
+**/out/
 
-# Production
+# NestJS / builds
+**/dist/
 /build
+**/build/
 
 # Misc
 .DS_Store
@@ -23,18 +26,25 @@ yarn-debug.log*
 yarn-error.log*
 
 # Local env files
+**/.env*.local
+**/.env
 .env*.local
 .env
 
 # Vercel
 .vercel
+**/.vercel
 
 # TypeScript
 *.tsbuildinfo
-next-env.d.ts
+**/next-env.d.ts
 
-# Prisma
-/prisma/migrations
+# Prisma (migrations applied manually to Supabase)
+packages/database/prisma/migrations
+
+# Turbo
+.turbo
+**/.turbo
 
 # IDE
 .vscode/
