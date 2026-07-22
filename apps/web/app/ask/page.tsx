@@ -36,7 +36,7 @@ function LoadingIndicator() {
 
   return (
     <div className="flex flex-col gap-2 py-2">
-      <div className="flex items-center gap-2 text-purple-500">
+      <div className="flex items-center gap-2 text-accent-soft0">
         <Loader2 className="w-4 h-4 animate-spin flex-shrink-0" />
         <span className="text-sm font-medium transition-all duration-300">{LOADING_STEPS[step]}</span>
       </div>
@@ -46,7 +46,7 @@ function LoadingIndicator() {
             key={i}
             className={cn(
               'h-0.5 rounded-full transition-all duration-500',
-              i <= step ? 'bg-purple-400 w-6' : 'bg-gray-200 w-3'
+              i <= step ? 'bg-accent w-6' : 'bg-gray-200 w-3'
             )}
           />
         ))}
@@ -399,16 +399,14 @@ export default function AskPage() {
     }
   };
 
-  const accentClass = mode === 'focused' ? 'purple' : 'emerald';
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50/40 via-white to-white">
+    <div className="min-h-screen bg-gradient-to-b from-accent-soft/40 via-white to-white">
       <div className="max-w-3xl mx-auto px-4 py-8 md:py-12 pb-44 md:pb-48">
 
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-purple-100 mb-4">
-            <Sparkles className="w-6 h-6 text-purple-600" />
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-accent-soft mb-4">
+            <Sparkles className="w-6 h-6 text-accent" />
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Ask the Quran</h1>
           <p className="text-sm md:text-base text-gray-500 max-w-lg mx-auto">
@@ -425,7 +423,7 @@ export default function AskPage() {
               onClick={() => switchMode('focused')}
               className={cn(
                 'inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all',
-                mode === 'focused' ? 'bg-white text-purple-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                mode === 'focused' ? 'bg-white text-accent-strong shadow-sm' : 'text-gray-500 hover:text-gray-700'
               )}
             >
               <Focus className="w-3.5 h-3.5" /> Focused
@@ -434,7 +432,7 @@ export default function AskPage() {
               onClick={() => switchMode('open')}
               className={cn(
                 'inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all',
-                mode === 'open' ? 'bg-white text-purple-700 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                mode === 'open' ? 'bg-white text-accent-strong shadow-sm' : 'text-gray-500 hover:text-gray-700'
               )}
             >
               <Globe className="w-3.5 h-3.5" /> Open Quran
@@ -451,8 +449,8 @@ export default function AskPage() {
               <div className={cn(
                 'text-xs text-center px-3 py-1.5 rounded-full w-fit mx-auto mb-4',
                 mode === 'focused'
-                  ? 'bg-purple-50 text-purple-600 border border-purple-100'
-                  : 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                  ? 'bg-accent-soft text-accent border border-accent-soft'
+                  : 'bg-gold-soft/40 text-gold-text border border-gold-soft'
               )}>
                 {mode === 'focused'
                   ? 'Answers are drawn from semantically related ayahs'
@@ -466,8 +464,8 @@ export default function AskPage() {
                     className={cn(
                       'text-left text-sm px-4 py-3 rounded-xl border bg-white transition-all',
                       mode === 'focused'
-                        ? 'border-gray-200 hover:border-purple-300 hover:bg-purple-50/50 text-gray-600 hover:text-purple-700'
-                        : 'border-gray-200 hover:border-emerald-300 hover:bg-emerald-50/50 text-gray-600 hover:text-emerald-700'
+                        ? 'border-gray-200 hover:border-accent/40 hover:bg-accent-soft/50 text-gray-600 hover:text-accent-strong'
+                        : 'border-gray-200 hover:border-gold/50 hover:bg-gold-soft/40/50 text-gray-600 hover:text-gold-text'
                     )}
                   >
                     {s}
@@ -513,7 +511,7 @@ export default function AskPage() {
                               handleShareAnswer(q, i);
                             }}
                             disabled={sharingIdx === i}
-                            className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-purple-600 transition-colors disabled:opacity-50"
+                            className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-accent transition-colors disabled:opacity-50"
                           >
                             {sharingIdx === i ? (
                               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -541,8 +539,8 @@ export default function AskPage() {
                               className={cn(
                                 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-xs font-medium transition-colors',
                                 mode === 'focused'
-                                  ? 'border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-100'
-                                  : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                                  ? 'border-accent/30 bg-accent-soft text-accent-strong hover:bg-accent-soft'
+                                  : 'border-gold/40 bg-gold-soft/40 text-gold-text hover:bg-gold-soft'
                               )}
                             >
                               {s.englishName} {s.surahNumber}:{s.ayahNumber}
@@ -580,8 +578,8 @@ export default function AskPage() {
           <div className={cn(
             'bg-white border rounded-2xl shadow-lg overflow-hidden transition-all',
             mode === 'focused'
-              ? 'border-gray-200 focus-within:border-purple-300 focus-within:ring-2 focus-within:ring-purple-100'
-              : 'border-gray-200 focus-within:border-emerald-300 focus-within:ring-2 focus-within:ring-emerald-100'
+              ? 'border-gray-200 focus-within:border-accent/40 focus-within:ring-2 focus-within:ring-accent-soft'
+              : 'border-gray-200 focus-within:border-gold/50 focus-within:ring-2 focus-within:ring-gold-soft'
           )}>
             <textarea
               value={input}
@@ -602,7 +600,7 @@ export default function AskPage() {
                 disabled={!input.trim() || loading}
                 className={cn(
                   'inline-flex items-center gap-1.5 disabled:bg-gray-200 disabled:text-gray-400 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors',
-                  mode === 'focused' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-emerald-600 hover:bg-emerald-700'
+                  mode === 'focused' ? 'bg-accent hover:bg-accent-strong' : 'bg-gold-text hover:bg-gold-text'
                 )}
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}

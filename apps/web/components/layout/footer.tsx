@@ -60,16 +60,16 @@ export function Footer({ className }: FooterProps) {
   };
 
   return (
-    <footer className={cn("relative w-full border-t border-gray-200 bg-white text-gray-900 transition-colors duration-300", className)}>
+    <footer className={cn("relative w-full border-t border-line bg-paper text-ink transition-colors duration-300", className)}>
       <Container>
         <div className="py-12 md:py-16">
           <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
             {/* Newsletter Section */}
             <div className="relative">
-              <Heading level={3} className="mb-4 text-2xl font-bold tracking-tight text-gray-900">
+              <Heading level={3} className="mb-4 text-2xl font-bold tracking-tight text-ink">
                 Stay Connected
               </Heading>
-              <Text className="mb-6 text-gray-700">
+              <Text className="mb-6 text-ink-soft">
                 Get updates on new features, translations, and resources delivered to your inbox.
               </Text>
               {isSubscribed ? (
@@ -88,9 +88,9 @@ export function Footer({ className }: FooterProps) {
                     aria-invalid={!!emailError}
                     className={cn(
                       "w-full h-10 px-4 pr-12 rounded-md",
-                      "bg-white border text-gray-900",
+                      "bg-paper border text-ink",
                       emailError ? "border-red-400" : "border-gray-300",
-                      "placeholder:text-gray-400",
+                      "placeholder:text-ink-muted",
                       "focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900",
                       "disabled:opacity-50 disabled:cursor-not-allowed"
                     )}
@@ -100,7 +100,7 @@ export function Footer({ className }: FooterProps) {
                     disabled={isSubmitting}
                     className={cn(
                       "absolute right-1 top-1 h-8 w-8 rounded-full",
-                      "bg-black text-white flex items-center justify-center",
+                      "bg-accent text-white flex items-center justify-center",
                       "transition-transform hover:scale-105",
                       "disabled:opacity-50 disabled:cursor-not-allowed",
                       "focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
@@ -115,12 +115,12 @@ export function Footer({ className }: FooterProps) {
                 </form>
               )}
               {/* Decorative Element */}
-              <div className="absolute -right-4 top-0 h-24 w-24 rounded-full bg-emerald-500/10 blur-2xl" />
+              <div className="absolute -right-4 top-0 h-24 w-24 rounded-full bg-accent/10 blur-2xl" />
             </div>
 
             {/* Quick Links */}
             <div>
-              <Heading level={4} className="mb-4 text-lg font-semibold text-gray-900">
+              <Heading level={4} className="mb-4 text-lg font-semibold text-ink">
                 Quick Links
               </Heading>
               <nav className="space-y-2 text-sm">
@@ -128,7 +128,7 @@ export function Footer({ className }: FooterProps) {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="block text-gray-700 transition-colors hover:text-gray-900"
+                    className="block text-ink-soft transition-colors hover:text-ink"
                   >
                     {link.label}
                   </Link>
@@ -138,7 +138,7 @@ export function Footer({ className }: FooterProps) {
 
             {/* Resources */}
             <div>
-              <Heading level={4} className="mb-4 text-lg font-semibold text-gray-900">
+              <Heading level={4} className="mb-4 text-lg font-semibold text-ink">
                 Resources
               </Heading>
               <nav className="space-y-2 text-sm">
@@ -148,7 +148,7 @@ export function Footer({ className }: FooterProps) {
                     <Link
                       key={resource.href}
                       href={resource.href}
-                      className="flex items-center gap-2 text-gray-700 transition-colors hover:text-gray-900"
+                      className="flex items-center gap-2 text-ink-soft transition-colors hover:text-ink"
                     >
                       <Icon className="h-4 w-4" />
                       {resource.label}
@@ -160,15 +160,15 @@ export function Footer({ className }: FooterProps) {
 
             {/* Contact & Info */}
             <div className="relative">
-              <Heading level={4} className="mb-4 text-lg font-semibold text-gray-900">
+              <Heading level={4} className="mb-4 text-lg font-semibold text-ink">
                 About
               </Heading>
-              <div className="space-y-3 text-sm text-gray-700">
+              <div className="space-y-3 text-sm text-ink-soft">
                 <p>
                   Your gateway to the Holy Quran. Read, listen, and study with authentic translations, 
                   beautiful recitations, and comprehensive commentary.
                 </p>
-                <div className="flex items-center gap-2 text-gray-600">
+                <div className="flex items-center gap-2 text-ink-soft">
                   <Mail className="h-4 w-4" />
                   <span>Free • Complete • Authentic</span>
                 </div>
@@ -177,13 +177,13 @@ export function Footer({ className }: FooterProps) {
           </div>
 
           {/* Rotating reminder */}
-          <div className="mt-10 border-t border-gray-100 pt-6">
+          <div className="mt-10 border-t border-line-soft pt-6">
             <QuranReminder />
           </div>
 
           {/* Bottom Section */}
-          <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-gray-200 pt-8 md:flex-row">
-            <Text className="text-sm text-gray-600 text-center md:text-left">
+          <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-line pt-8 md:flex-row">
+            <Text className="text-sm text-ink-soft text-center md:text-left">
               © {currentYear} Quran.co.in. All rights reserved.
             </Text>
             <nav className="flex flex-wrap items-center justify-center gap-4 text-sm">
@@ -191,13 +191,13 @@ export function Footer({ className }: FooterProps) {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-gray-600 transition-colors hover:text-gray-900"
+                  className="text-ink-soft transition-colors hover:text-ink"
                 >
                   {link.label}
                 </Link>
               ))}
             </nav>
-            <Text className="text-xs text-gray-600 text-center md:text-right max-w-xs">
+            <Text className="text-xs text-ink-soft text-center md:text-right max-w-xs">
               Translations and recitations sourced from trusted Islamic scholars and institutions.
             </Text>
           </div>

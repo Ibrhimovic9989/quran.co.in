@@ -47,7 +47,7 @@ export function renderLine(line: string, key: string): React.ReactNode {
               <Link
                 key={i}
                 href={`/quran/${cite.surahNumber}?ayah=${cite.ayahNumber}`}
-                className="inline-flex items-center gap-0.5 text-purple-600 hover:text-purple-800 hover:underline font-medium transition-colors"
+                className="inline-flex items-center gap-0.5 text-accent hover:text-accent-strong hover:underline font-medium transition-colors"
               >
                 [{cite.label}
                 <ExternalLink className="w-3 h-3 opacity-60" />]
@@ -72,7 +72,7 @@ export function renderMarkdown(text: string): React.ReactNode[] {
     // Section heading: ## Heading
     if (line.startsWith('## ')) {
       nodes.push(
-        <h3 key={`h-${i}`} className="text-base font-semibold text-gray-900 mt-4 mb-1.5 first:mt-0">
+        <h3 key={`h-${i}`} className="font-reading text-base font-semibold text-ink mt-4 mb-1.5 first:mt-0">
           {line.slice(3)}
         </h3>
       );
@@ -89,13 +89,13 @@ export function renderMarkdown(text: string): React.ReactNode[] {
         i++; // consume the TRANSLATION line too
       }
       nodes.push(
-        <div key={`ar-${i}`} className="bg-amber-50/60 border border-amber-100 rounded-xl px-4 py-3 my-2 space-y-2">
+        <div key={`ar-${i}`} className="bg-gold-soft/30 border border-gold/30 rounded-xl px-4 py-3 my-2 space-y-2">
           <p lang="ar" dir="rtl"
             className="font-arabic text-right text-xl leading-[2.2] text-gray-800">
             {arabic}
           </p>
           {translation && (
-            <p className="text-sm text-amber-800/80 italic leading-relaxed border-t border-amber-100 pt-2">
+            <p className="text-sm font-reading text-gold-text italic leading-relaxed border-t border-gold/30 pt-2">
               {translation}
             </p>
           )}
@@ -115,8 +115,8 @@ export function renderMarkdown(text: string): React.ReactNode[] {
       nodes.push(
         <ul key={`ul-${i}`} className="space-y-1.5 my-2 pl-1">
           {items.map((item, j) => (
-            <li key={j} className="flex gap-2 text-gray-700">
-              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-purple-400 flex-shrink-0" />
+            <li key={j} className="flex gap-2 text-ink-soft">
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold flex-shrink-0" />
               <span className="leading-relaxed">{renderLine(item, `li-${j}`)}</span>
             </li>
           ))}
@@ -135,8 +135,8 @@ export function renderMarkdown(text: string): React.ReactNode[] {
       nodes.push(
         <ul key={`ul2-${i}`} className="space-y-1.5 my-2 pl-1">
           {items.map((item, j) => (
-            <li key={j} className="flex gap-2 text-gray-700">
-              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-purple-400 flex-shrink-0" />
+            <li key={j} className="flex gap-2 text-ink-soft">
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gold flex-shrink-0" />
               <span className="leading-relaxed">{renderLine(item, `li2-${j}`)}</span>
             </li>
           ))}
@@ -155,8 +155,8 @@ export function renderMarkdown(text: string): React.ReactNode[] {
       nodes.push(
         <ol key={`ol-${i}`} className="space-y-1.5 my-2 pl-1">
           {items.map((item, j) => (
-            <li key={j} className="flex gap-2.5 text-gray-700">
-              <span className="flex-shrink-0 w-5 h-5 rounded-full bg-purple-100 text-purple-700 text-[11px] font-bold flex items-center justify-center mt-0.5">
+            <li key={j} className="flex gap-2.5 text-ink-soft">
+              <span className="flex-shrink-0 w-5 h-5 rounded-full bg-accent-soft text-accent text-[11px] font-bold flex items-center justify-center mt-0.5">
                 {j + 1}
               </span>
               <span className="leading-relaxed">{renderLine(item, `ol-${j}`)}</span>
@@ -176,7 +176,7 @@ export function renderMarkdown(text: string): React.ReactNode[] {
 
     // Regular paragraph line
     nodes.push(
-      <p key={`p-${i}`} className="leading-relaxed text-gray-800">
+      <p key={`p-${i}`} className="font-reading leading-relaxed text-ink-soft">
         {renderLine(line, `p-${i}`)}
       </p>
     );

@@ -117,34 +117,30 @@ export function SurahList({ surahs, searchQuery = '' }: SurahListProps) {
   return (
     <Container>
       <div className="py-6 md:py-20">
-        {/* Enhanced Header Section - Mobile optimized */}
-        <div className="mb-6 md:mb-16 text-center">
-          <Heading 
-            level={1} 
-            className="mb-3 md:mb-6 text-2xl md:text-6xl font-bold text-gray-900 leading-tight"
+        {/* Header — Arabic first, quiet meta */}
+        <div className="mb-6 md:mb-12 text-center">
+          <p lang="ar" dir="rtl" className="font-arabic text-4xl leading-[1.7] text-ink md:text-6xl">
+            القرآن الكريم
+          </p>
+          <Heading
+            level={1}
+            className="mt-2 font-reading text-lg font-medium text-ink-soft md:mt-3 md:text-2xl"
           >
-            The Holy{' '}
-            <span className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent whitespace-nowrap">
-              Quran
-            </span>
+            The Noble Quran
           </Heading>
-          <Text className="text-gray-700 text-sm md:text-2xl font-medium max-w-2xl mx-auto">
-            {searchQuery 
-              ? `${filteredSurahs.length} of ${surahs.length} Chapters`
-              : `${surahs.length} Chapters • Complete Collection`
-            }
+          <Text className="mt-1 text-xs text-ink-muted md:text-sm">
+            {searchQuery
+              ? `${filteredSurahs.length} of ${surahs.length} sūrahs`
+              : `114 sūrahs · 6,236 āyāt`}
           </Text>
-          <div className="mt-3 md:mt-6 flex flex-col items-center gap-2">
-            <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-gray-600">
-              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-900 rounded-full"></div>
-              <span>Authentic • Complete • Free Access</span>
-            </div>
+          <div className="ayah-divider mx-auto mt-5 max-w-xs md:mt-7" />
+          <div className="mt-3 flex justify-center">
             <RevelationLegendModal />
           </div>
         </div>
 
         {/* Surahs Grid - Mobile optimized */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-4">
           {visibleSurahs.map((surah) => (
             <SurahCard key={surah.surahNo} surah={surah} />
           ))}

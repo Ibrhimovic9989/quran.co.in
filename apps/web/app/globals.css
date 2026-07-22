@@ -3,8 +3,35 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #000000;
+  /* ── Paper & ink — the core reading palette ─────────────────────── */
+  --paper: #faf7f0;          /* warm paper page background */
+  --surface: #ffffff;        /* cards */
+  --surface-warm: #fdfbf6;   /* slightly warm card variant */
+  --ink: #1c2b27;            /* green-black text — never pure black */
+  --ink-soft: #3d4f49;       /* secondary text */
+  --muted: #6b7a74;          /* tertiary text, captions */
+  --line: #e7e0d2;           /* borders, hairlines */
+  --line-soft: #f0ebe0;
+
+  /* ── Emerald — the single action accent ─────────────────────────── */
+  --accent: #0f6b4f;
+  --accent-strong: #0c5940;
+  --accent-soft: #e8f2ee;    /* tint backgrounds */
+  --accent-ring: rgba(15, 107, 79, 0.35);
+
+  /* ── Gold — decorative only (fails contrast as text on paper) ───── */
+  --gold: #c8a24b;
+  --gold-soft: #ecdfc0;
+  --gold-text: #7a5f27;      /* the only gold allowed as text */
+
+  /* ── Night — deep reading surfaces (today page, players) ────────── */
+  --night: #0c1f1a;          /* deep emerald-black */
+  --night-surface: #12312a;
+  --night-ink: #e8e4d9;      /* warm ivory */
+  --night-gold: #d9b45c;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
 
   /* Seasonal theme tokens (default = current look) */
   --mushaf-paper-bg: #fef8ed;
@@ -23,11 +50,12 @@ html {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-ui), system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
   width: 100%;
   position: relative;
   max-width: 100vw;
+  -webkit-font-smoothing: antialiased;
 }
 
 @layer utilities {
@@ -35,19 +63,77 @@ body {
     text-wrap: balance;
   }
 
+  /* THE Quran script — KFGQPC Uthmanic Hafs (Madinah Mushaf hand).
+     Never letter-space Arabic; harakat need tall leading. */
   .font-arabic {
-    font-family: 'Amiri', 'Noto Sans Arabic', 'Arial', sans-serif;
+    font-family: var(--font-quran), var(--font-amiri), 'Noto Naskh Arabic', serif;
+    letter-spacing: 0 !important;
   }
 
-  /* Saudi/Uthmani style — Amiri */
+  /* Uthmani mushaf style — same authentic Hafs script */
   .font-mushaf {
-    font-family: var(--font-amiri), var(--font-scheherazade), 'Amiri', 'Scheherazade New', serif;
+    font-family: var(--font-quran), var(--font-amiri), 'Amiri', serif;
+    letter-spacing: 0 !important;
   }
 
-  /* Indo-Pak style — Noto Naskh Arabic */
+  /* Indo-Pak style — Noto Naskh Arabic (user script toggle) */
   .font-mushaf-indopak {
     font-family: var(--font-noto-naskh), 'Noto Naskh Arabic', 'Amiri', serif;
+    letter-spacing: 0 !important;
   }
+
+  /* Decorative Arabic (surah names in cards, accents) — classical Naskh */
+  .font-arabic-display {
+    font-family: var(--font-amiri), 'Amiri', var(--font-quran), serif;
+    letter-spacing: 0 !important;
+  }
+
+  /* Warm serif for translations & editorial text */
+  .font-reading {
+    font-family: var(--font-reading), 'Lora', Georgia, serif;
+  }
+}
+
+/* ─── Ornament layer — tradition carried quietly ─────────────────── */
+
+/* 8-fold star (girih) texture — whisper opacity, headers only,
+   never behind running Quran text */
+.girih-bg {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cg fill='none' stroke='%230f6b4f' stroke-width='0.75'%3E%3Cpath d='M48 8 L59 37 L88 48 L59 59 L48 88 L37 59 L8 48 L37 37 Z'/%3E%3Cpath d='M48 20 L56 40 L76 48 L56 56 L48 76 L40 56 L20 48 L40 40 Z'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 64px 64px;
+}
+
+/* Gold hairline divider with a small 8-point star at center */
+.ayah-divider {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold-soft) 20%, var(--gold-soft) 80%, transparent);
+}
+.ayah-divider::after {
+  content: '✦';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--gold);
+  font-size: 0.65rem;
+  background: var(--paper);
+  padding: 0 0.6rem;
+  line-height: 1;
+}
+.ayah-divider--on-surface::after {
+  background: var(--surface);
+}
+
+/* Mihrab arch — the one signature shape (surah headers, verse-of-day) */
+.arch-top {
+  border-radius: 50% 50% 1rem 1rem / 18% 18% 1rem 1rem;
+}
+
+/* Verse-end medallion number (inside Arabic flow) */
+.ayah-end {
+  color: var(--gold-text);
+  font-size: 0.75em;
 }
 
 /* ─── Mushaf Page ─────────────────────────────────────────────── */

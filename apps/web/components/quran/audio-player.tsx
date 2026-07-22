@@ -419,7 +419,7 @@ export function AudioPlayer({
           onClick={handlePlay}
           className={cn(
             minimal &&
-              'rounded-full border-stone-200 bg-stone-900 px-3 py-1.5 text-sm text-white hover:bg-stone-800'
+              'rounded-full border-transparent bg-accent px-3 py-1.5 text-sm text-white hover:bg-accent-strong'
           )}
         />
 

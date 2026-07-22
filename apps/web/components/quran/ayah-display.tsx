@@ -197,9 +197,9 @@ export function AyahDisplay({
     <div ref={rootRef} id={`ayah-${ayah.surahNo}-${ayah.ayahNo}`}>
       <Card 
         className={cn(
-          'relative border border-stone-200/80 bg-white/95 shadow-sm backdrop-blur-sm',
+          'relative border border-line bg-surface shadow-card',
           'transition-colors duration-200',
-          isActive && 'border-emerald-300 bg-emerald-50/40 shadow-md ring-1 ring-emerald-200',
+          isActive && 'border-accent/40 bg-accent-soft/40 ring-1 ring-accent/25',
           className
         )}
       >
@@ -207,10 +207,10 @@ export function AyahDisplay({
           <div className="flex items-start justify-between gap-3">
             {showNumber ? (
               <div className="min-w-0">
-                <p className="text-sm font-medium text-stone-500">
+                <p className="text-sm font-semibold text-gold-text">
                   {ayah.surahNo}:{ayah.ayahNo}
                 </p>
-                <p className="truncate text-xs text-stone-400 md:text-sm">
+                <p className="truncate text-xs text-ink-muted md:text-sm">
                   {ayah.surahNameTranslation}
                 </p>
               </div>
@@ -246,15 +246,15 @@ export function AyahDisplay({
             </div>
           </div>
 
-          <p className="text-right font-arabic text-[2rem] font-semibold leading-[2.1] text-stone-900 md:text-[2.6rem] md:leading-[2.3]" dir="rtl" lang="ar">
+          <p className="text-right font-arabic text-[1.9rem] leading-[2.1] text-ink md:text-[2.5rem] md:leading-[2.2]" dir="rtl" lang="ar">
             {ayah.arabic1}
             <span className="inline-flex items-center justify-center align-middle mx-1.5">
               <span className="relative inline-flex items-center justify-center w-7 h-7 md:w-9 md:h-9">
                 <svg viewBox="0 0 32 32" className="absolute inset-0 w-full h-full" aria-hidden="true">
-                  <circle cx="16" cy="16" r="14.5" fill="none" stroke="#9a7c4f" strokeWidth="1" />
-                  <circle cx="16" cy="16" r="11" fill="none" stroke="#9a7c4f" strokeWidth="0.5" opacity="0.5" />
+                  <circle cx="16" cy="16" r="14.5" fill="none" stroke="var(--gold)" strokeWidth="1" />
+                  <circle cx="16" cy="16" r="11" fill="none" stroke="var(--gold)" strokeWidth="0.5" opacity="0.5" />
                 </svg>
-                <span className="relative font-mushaf text-[10px] md:text-[12px] text-amber-900 leading-none select-none">
+                <span className="relative font-mushaf text-[10px] md:text-[12px] text-gold-text leading-none select-none">
                   {ayah.ayahNo.toString().replace(/\d/g, (d) => String.fromCharCode(0x0660 + Number(d)))}
                 </span>
               </span>
@@ -262,7 +262,7 @@ export function AyahDisplay({
           </p>
 
           {showTranslit && ayah.arabic2 && (
-            <p className="text-right text-sm italic leading-7 text-stone-400 md:text-base md:leading-8">
+            <p className="text-right text-sm italic leading-7 text-ink-muted md:text-base md:leading-8">
               {ayah.arabic2}
             </p>
           )}
@@ -277,17 +277,17 @@ export function AyahDisplay({
                     value: lang,
                     label: languageNames[lang],
                   }))}
-                  className="h-9 rounded-full border-stone-200 bg-stone-50 px-3 py-1.5 text-sm text-stone-700 focus:border-stone-400"
+                  className="h-9 rounded-full border-line bg-surface-warm px-3 py-1.5 text-sm text-ink-soft focus:border-accent"
                 />
               </div>
             )}
 
-            <Text className="text-base font-medium leading-8 text-stone-800 md:text-xl md:leading-9">
+            <Text className="font-reading text-base leading-8 text-ink-soft md:text-lg md:leading-9">
               {getCurrentTranslation()}
             </Text>
           </div>
 
-          <div className="border-t border-stone-100 pt-3 space-y-2">
+          <div className="border-t border-line-soft pt-3 space-y-2">
             {hasAudio && !showInlineAudioControl && (
               <AudioPlayer
                 audioData={ayah.audio!}
@@ -314,13 +314,13 @@ export function AyahDisplay({
                   className={cn(
                     'flex flex-col items-center gap-0.5 rounded-xl px-1 py-2 text-xs font-medium transition-colors duration-200',
                     showTranslit
-                      ? 'bg-amber-100 text-amber-700'
-                      : 'text-stone-500 hover:bg-stone-100 hover:text-stone-800'
+                      ? 'bg-gold-soft/50 text-gold-text'
+                      : 'text-ink-muted hover:bg-accent-soft/50 hover:text-ink'
                   )}
                 >
                   <span className="text-sm font-bold">A</span>
                   <span className="leading-none">Translit</span>
-                  <span className="rounded-full bg-violet-100 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide text-violet-500 leading-none">beta</span>
+                  
                 </button>
               ) : <div />}
 
@@ -342,7 +342,7 @@ export function AyahDisplay({
                   }
                   setShowTafsir(!showTafsir);
                 }}
-                className="flex flex-col items-center gap-0.5 rounded-xl px-1 py-2 text-xs font-medium text-stone-500 transition-colors duration-200 hover:bg-stone-100 hover:text-stone-800"
+                className="flex flex-col items-center gap-0.5 rounded-xl px-1 py-2 text-xs font-medium text-ink-muted transition-colors duration-200 hover:bg-accent-soft/50 hover:text-ink"
               >
                 {showTafsir ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                 <span className="leading-none">Tafsir</span>
@@ -354,7 +354,7 @@ export function AyahDisplay({
                   if (!showSimilar) fetchSimilar();
                   setShowSimilar((v) => !v);
                 }}
-                className="flex flex-col items-center gap-0.5 rounded-xl px-1 py-2 text-xs font-medium text-purple-500 transition-colors duration-200 hover:bg-purple-50 hover:text-purple-700"
+                className="flex flex-col items-center gap-0.5 rounded-xl px-1 py-2 text-xs font-medium text-accent transition-colors duration-200 hover:bg-accent-soft hover:text-accent-strong"
               >
                 {similarLoading
                   ? <Loader2 className="h-4 w-4 animate-spin" />
@@ -372,15 +372,15 @@ export function AyahDisplay({
 
           {/* Similar Ayahs Panel */}
           {showSimilar && (
-            <div className="mt-3 rounded-xl border border-purple-100 bg-purple-50/40 overflow-hidden">
-              <p className="px-3 py-2 text-xs font-semibold text-purple-700 border-b border-purple-100">
+            <div className="mt-3 rounded-xl border border-line bg-accent-soft/30 overflow-hidden">
+              <p className="px-3 py-2 text-xs font-semibold text-accent border-b border-line-soft">
                 Verses with similar themes
               </p>
               {similarLoading && (
-                <div className="divide-y divide-purple-50">
+                <div className="divide-y divide-line-soft">
                   {Array.from({ length: 3 }).map((_, i) => (
                     <div key={i} className="px-3 py-3 space-y-1.5 animate-pulse">
-                      <div className="h-3 w-24 bg-purple-100 rounded" />
+                      <div className="h-3 w-24 bg-accent-soft rounded" />
                       <div className="h-3 w-full bg-gray-100 rounded" />
                     </div>
                   ))}
@@ -388,38 +388,38 @@ export function AyahDisplay({
               )}
               {!similarLoading && similarResults.length > 0 && (
                 <>
-                  <ul className="divide-y divide-purple-50/70">
+                  <ul className="divide-y divide-line-soft">
                     {similarResults.map((r) => (
                       <li key={`${r.surahNumber}:${r.ayahNumber}`}>
                         <Link
                           href={`/quran/${r.surahNumber}?ayah=${r.ayahNumber}`}
-                          className="flex flex-col gap-1 px-3 py-3 hover:bg-purple-50 transition-colors group"
+                          className="flex flex-col gap-1 px-3 py-3 hover:bg-accent-soft/50 transition-colors group"
                         >
                           <div className="flex items-center justify-between">
-                            <span className="text-[11px] font-bold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">
+                            <span className="text-[11px] font-bold text-accent bg-accent-soft px-2 py-0.5 rounded-full">
                               {r.surahNumber}:{r.ayahNumber} · {r.englishName}
                             </span>
                             <div className="flex items-center gap-1">
-                              <span className="text-[10px] text-purple-400">{Math.round(r.similarity * 100)}%</span>
-                              <ExternalLink className="w-3 h-3 text-gray-300 group-hover:text-purple-400 transition-colors" />
+                              <span className="text-[10px] text-ink-muted">{Math.round(r.similarity * 100)}%</span>
+                              <ExternalLink className="w-3 h-3 text-gray-300 group-hover:text-accent transition-colors" />
                             </div>
                           </div>
-                          <p lang="ar" dir="rtl" className="font-arabic text-right text-sm leading-relaxed text-gray-700">
+                          <p lang="ar" dir="rtl" className="font-arabic text-right text-base leading-[1.9] text-ink-soft">
                             {r.arabicText}
                           </p>
                           {r.translationText && (
-                            <p className="text-xs text-gray-600 leading-relaxed line-clamp-2">{r.translationText}</p>
+                            <p className="text-xs font-reading text-ink-muted leading-relaxed line-clamp-2">{r.translationText}</p>
                           )}
                         </Link>
                       </li>
                     ))}
                   </ul>
                   {similarHasMore && (
-                    <div className="px-3 py-2 border-t border-purple-100">
+                    <div className="px-3 py-2 border-t border-line-soft">
                       <button
                         onClick={loadMoreSimilar}
                         disabled={similarLoadingMore}
-                        className="w-full text-xs text-purple-600 hover:text-purple-800 font-medium py-1 transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
+                        className="w-full text-xs text-accent hover:text-accent-strong font-medium py-1 transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
                       >
                         {similarLoadingMore
                           ? <><Loader2 className="w-3 h-3 animate-spin" /> Loading…</>

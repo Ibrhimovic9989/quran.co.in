@@ -67,17 +67,17 @@ export function FeaturesShowcase({ className }: FeaturesShowcaseProps) {
         <div className="max-w-4xl mx-auto text-center mb-8 md:mb-12">
           <Heading 
             level={2} 
-            className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 md:mb-4 leading-tight"
+            className="text-2xl md:text-4xl lg:text-5xl font-bold text-ink mb-3 md:mb-4 leading-tight"
           >
             Everything You Need to{' '}
             <span className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent whitespace-nowrap">
               Connect with the Quran
             </span>
           </Heading>
-          <Text className="text-sm md:text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed mb-2 md:mb-3">
+          <Text className="text-sm md:text-lg text-ink-soft max-w-2xl mx-auto leading-relaxed mb-2 md:mb-3">
             Discover powerful features designed to enhance your Quranic study and reflection. The Prophet ﷺ said: <span className="italic">"Whoever recites a letter from the Book of Allah, he will be credited with a good deed, and a good deed gets a ten-fold reward."</span>
           </Text>
-          <Text className="text-xs md:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          <Text className="text-xs md:text-base text-ink-soft max-w-2xl mx-auto leading-relaxed">
             Here, you can read with multiple translations, listen to beautiful recitations, study with scholarly commentary, and track your journey—all in one place.
           </Text>
         </div>
@@ -88,7 +88,7 @@ export function FeaturesShowcase({ className }: FeaturesShowcaseProps) {
             <Card
               key={index}
               className={cn(
-                "relative overflow-hidden border border-gray-200 hover:border-gray-300",
+                "relative overflow-hidden border border-line hover:border-gray-300",
                 "transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
                 `bg-gradient-to-br ${feature.gradient}`
               )}
@@ -98,7 +98,7 @@ export function FeaturesShowcase({ className }: FeaturesShowcaseProps) {
                 <div className={cn(
                   "inline-flex items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-lg md:rounded-2xl",
                   feature.iconBg,
-                  "text-gray-900 shadow-sm"
+                  "text-ink shadow-sm"
                 )}>
                   {feature.icon}
                 </div>
@@ -106,10 +106,10 @@ export function FeaturesShowcase({ className }: FeaturesShowcaseProps) {
 
               {/* Content - Mobile optimized */}
               <div className="space-y-1.5 md:space-y-3">
-                <Heading level={3} className="text-base md:text-xl font-bold text-gray-900">
+                <Heading level={3} className="text-base md:text-xl font-bold text-ink">
                   {feature.title}
                 </Heading>
-                <Text className="text-gray-700 leading-relaxed text-xs md:text-sm">
+                <Text className="text-ink-soft leading-relaxed text-xs md:text-sm">
                   {feature.description}
                 </Text>
               </div>

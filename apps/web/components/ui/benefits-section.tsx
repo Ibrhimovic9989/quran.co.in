@@ -61,20 +61,20 @@ const benefits: Benefit[] = [
 
 export function BenefitsSection({ className }: BenefitsSectionProps) {
   return (
-    <section className={cn("w-full py-8 md:py-16 lg:py-20 bg-white", className)}>
+    <section className={cn("w-full py-8 md:py-16 lg:py-20 bg-paper", className)}>
       <Container>
         {/* Section Header - Mobile optimized */}
         <div className="max-w-4xl mx-auto text-center mb-8 md:mb-12">
           <Heading 
             level={2} 
-            className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 md:mb-4 leading-tight"
+            className="text-2xl md:text-4xl lg:text-5xl font-bold text-ink mb-3 md:mb-4 leading-tight"
           >
             Transform Your Relationship with the{' '}
             <span className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent whitespace-nowrap">
               Quran
             </span>
           </Heading>
-          <Text className="text-sm md:text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed">
+          <Text className="text-sm md:text-lg text-ink-soft max-w-2xl mx-auto leading-relaxed">
             More than just reading—experience a deeper connection that enriches your spiritual life and understanding. Allah says: <span className="italic">"So remember Me; I will remember you."</span> — Al-Baqarah 2:152
           </Text>
         </div>
@@ -85,7 +85,7 @@ export function BenefitsSection({ className }: BenefitsSectionProps) {
             <Card
               key={index}
               className={cn(
-                "relative overflow-hidden border border-gray-200 hover:border-gray-300",
+                "relative overflow-hidden border border-line hover:border-gray-300",
                 "transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
                 `bg-gradient-to-br ${benefit.gradient}`,
                 "group/benefit"
@@ -96,7 +96,7 @@ export function BenefitsSection({ className }: BenefitsSectionProps) {
                 <div className={cn(
                   "inline-flex items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-lg md:rounded-2xl",
                   benefit.iconBg,
-                  "text-gray-900 shadow-sm group-hover/benefit:scale-110 transition-transform duration-300"
+                  "text-ink shadow-sm group-hover/benefit:scale-110 transition-transform duration-300"
                 )}>
                   {benefit.icon}
                 </div>
@@ -104,10 +104,10 @@ export function BenefitsSection({ className }: BenefitsSectionProps) {
 
               {/* Content - Mobile optimized */}
               <div className="space-y-1.5 md:space-y-3">
-                <Heading level={3} className="text-lg md:text-2xl font-bold text-gray-900">
+                <Heading level={3} className="text-lg md:text-2xl font-bold text-ink">
                   {benefit.title}
                 </Heading>
-                <p className="text-xs md:text-base text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: benefit.description }} />
+                <p className="text-xs md:text-base text-ink-soft leading-relaxed" dangerouslySetInnerHTML={{ __html: benefit.description }} />
               </div>
 
               {/* Hover Effect Overlay */}

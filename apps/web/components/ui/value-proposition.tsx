@@ -75,23 +75,23 @@ const features: Feature[] = [
 
 export function ValueProposition({ className }: ValuePropositionProps) {
   return (
-    <section className={cn("w-full py-8 md:py-16 lg:py-20 bg-white", className)}>
+    <section className={cn("w-full py-8 md:py-16 lg:py-20 bg-paper", className)}>
       <Container>
         {/* Section Header - Mobile optimized */}
         <div className="max-w-4xl mx-auto text-center mb-8 md:mb-12">
           <Heading 
             level={2} 
-            className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 md:mb-4 leading-tight"
+            className="text-2xl md:text-4xl lg:text-5xl font-bold text-ink mb-3 md:mb-4 leading-tight"
           >
             Experience the Quran{' '}
             <span className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent whitespace-nowrap">
               Like Never Before
             </span>
           </Heading>
-          <Text className="text-sm md:text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed mb-2 md:mb-3">
+          <Text className="text-sm md:text-lg text-ink-soft max-w-2xl mx-auto leading-relaxed mb-2 md:mb-3">
             We've built a platform that combines authenticity, depth, and modern design to help you connect with the Holy Quran in meaningful ways.
           </Text>
-          <Text className="text-xs md:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed italic">
+          <Text className="text-xs md:text-base text-ink-soft max-w-2xl mx-auto leading-relaxed italic">
             Allah says: <span>"And We send down of the Quran that which is healing and mercy for the believers."</span> — Al-Isra 17:82
           </Text>
         </div>
@@ -121,7 +121,7 @@ const Feature = ({
   return (
     <Card
       className={cn(
-        "relative overflow-hidden border border-gray-200 hover:border-gray-300",
+        "relative overflow-hidden border border-line hover:border-gray-300",
         "transition-all duration-300 hover:shadow-xl group/feature",
         "flex flex-col"
       )}
@@ -136,20 +136,20 @@ const Feature = ({
       )}
       
       {/* Icon - Mobile optimized */}
-      <div className="mb-2.5 md:mb-3 relative z-10 text-gray-600 group-hover/feature:text-gray-900 transition-colors duration-300">
+      <div className="mb-2.5 md:mb-3 relative z-10 text-ink-soft group-hover/feature:text-ink transition-colors duration-300">
         {icon}
       </div>
       
       {/* Title with animated indicator - Mobile optimized */}
       <div className="text-sm md:text-lg font-bold mb-1.5 md:mb-2 relative z-10">
-        <div className="absolute left-0 inset-y-0 h-4 md:h-5 group-hover/feature:h-6 w-0.5 md:w-1 rounded-tr-full rounded-br-full bg-gray-300 group-hover/feature:bg-gray-900 transition-all duration-300 origin-center" />
-        <span className="group-hover/feature:translate-x-2 transition duration-300 inline-block text-gray-900 pl-2.5 md:pl-4">
+        <div className="absolute left-0 inset-y-0 h-4 md:h-5 group-hover/feature:h-6 w-0.5 md:w-1 rounded-tr-full rounded-br-full bg-gray-300 group-hover/feature:bg-night transition-all duration-300 origin-center" />
+        <span className="group-hover/feature:translate-x-2 transition duration-300 inline-block text-ink pl-2.5 md:pl-4">
           {title}
         </span>
       </div>
       
       {/* Description - Mobile optimized */}
-      <p className="text-xs md:text-sm text-gray-600 relative z-10 leading-relaxed">
+      <p className="text-xs md:text-sm text-ink-soft relative z-10 leading-relaxed">
         {description}
       </p>
     </Card>

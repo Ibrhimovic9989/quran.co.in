@@ -24,7 +24,7 @@ export function CTASection({ className }: CTASectionProps) {
           {/* Headline - Mobile optimized */}
           <Heading 
             level={2} 
-            className="text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 mb-3 md:mb-4 leading-tight"
+            className="text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-ink mb-3 md:mb-4 leading-tight"
           >
             Begin Your Journey{' '}
             <span className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent whitespace-nowrap">
@@ -33,10 +33,10 @@ export function CTASection({ className }: CTASectionProps) {
           </Heading>
 
           {/* Subheadline - Mobile optimized */}
-          <Text className="text-sm md:text-lg lg:text-xl text-gray-700 max-w-2xl mx-auto mb-2 md:mb-3 leading-relaxed">
+          <Text className="text-sm md:text-lg lg:text-xl text-ink-soft max-w-2xl mx-auto mb-2 md:mb-3 leading-relaxed">
             Start reading, listening, and studying the Holy Quran now. No sign-up required to explore.
           </Text>
-          <Text className="text-xs md:text-base text-gray-600 max-w-2xl mx-auto mb-6 md:mb-8 italic">
+          <Text className="text-xs md:text-base text-ink-soft max-w-2xl mx-auto mb-6 md:mb-8 italic">
             The Prophet ﷺ said: <span>"Read the Quran, for it will come as an intercessor for its reciters on the Day of Resurrection."</span>
           </Text>
 
@@ -74,21 +74,21 @@ export function CTASection({ className }: CTASectionProps) {
           </div>
 
           {/* Value Reinforcement - Mobile optimized */}
-          <div className="flex flex-wrap items-center justify-center gap-3 md:gap-6 text-xs md:text-sm text-gray-600">
+          <div className="flex flex-wrap items-center justify-center gap-3 md:gap-6 text-xs md:text-sm text-ink-soft">
             <div className="flex items-center gap-1.5 md:gap-2">
-              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-900 rounded-full"></div>
+              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-night rounded-full"></div>
               <span className="font-medium">Free</span>
             </div>
             <div className="flex items-center gap-1.5 md:gap-2">
-              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-900 rounded-full"></div>
+              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-night rounded-full"></div>
               <span className="font-medium">Complete</span>
             </div>
             <div className="flex items-center gap-1.5 md:gap-2">
-              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-900 rounded-full"></div>
+              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-night rounded-full"></div>
               <span className="font-medium">Authentic</span>
             </div>
             <div className="flex items-center gap-1.5 md:gap-2">
-              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-900 rounded-full"></div>
+              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-night rounded-full"></div>
               <span className="font-medium">Accessible</span>
             </div>
           </div>

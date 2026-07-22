@@ -42,7 +42,7 @@ function BismillahHeader() {
       <p
         dir="rtl"
         lang="ar"
-        className="font-arabic text-2xl md:text-4xl text-gray-800 leading-relaxed"
+        className="font-arabic text-3xl md:text-[2.75rem] text-ink leading-[1.9]"
         aria-label="Bismillah ir-Rahman ir-Raheem"
       >
         بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ

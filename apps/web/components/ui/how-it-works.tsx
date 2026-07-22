@@ -72,14 +72,14 @@ export function HowItWorks({ className }: HowItWorksProps) {
         <div className="max-w-4xl mx-auto text-center mb-8 md:mb-12">
           <Heading 
             level={2} 
-            className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 md:mb-4 leading-tight"
+            className="text-2xl md:text-4xl lg:text-5xl font-bold text-ink mb-3 md:mb-4 leading-tight"
           >
             Getting Started is{' '}
             <span className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent whitespace-nowrap">
               Simple
             </span>
           </Heading>
-          <Text className="text-sm md:text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed">
+          <Text className="text-sm md:text-lg text-ink-soft max-w-2xl mx-auto leading-relaxed">
             Start your Quranic journey in just a few simple steps. No complexity, no barriers—just pure learning. As Allah says: <span className="italic">"And We have certainly made the Quran easy for remembrance, so is there any who will remember?"</span> — Al-Qamar 54:17
           </Text>
         </div>
@@ -97,7 +97,7 @@ export function HowItWorks({ className }: HowItWorksProps) {
 
               <Card
                 className={cn(
-                  "relative overflow-hidden border border-gray-200 hover:border-gray-300",
+                  "relative overflow-hidden border border-line hover:border-gray-300",
                   "transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
                   `bg-gradient-to-br ${step.gradient}`,
                   "group/step flex flex-col h-full"
@@ -105,7 +105,7 @@ export function HowItWorks({ className }: HowItWorksProps) {
               >
                 {/* Step Number Badge - Mobile optimized */}
                 <div className="absolute top-2.5 right-2.5 md:top-4 md:right-4">
-                  <div className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 rounded-full bg-white border-2 border-gray-300 text-gray-700 font-bold text-xs md:text-sm shadow-sm">
+                  <div className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 rounded-full bg-paper border-2 border-gray-300 text-ink-soft font-bold text-xs md:text-sm shadow-sm">
                     {step.number}
                   </div>
                 </div>
@@ -115,7 +115,7 @@ export function HowItWorks({ className }: HowItWorksProps) {
                   <div className={cn(
                     "inline-flex items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-lg md:rounded-2xl",
                     step.iconBg,
-                    "text-gray-900 shadow-sm group-hover/step:scale-110 transition-transform duration-300"
+                    "text-ink shadow-sm group-hover/step:scale-110 transition-transform duration-300"
                   )}>
                     {step.icon}
                   </div>
@@ -123,10 +123,10 @@ export function HowItWorks({ className }: HowItWorksProps) {
 
                 {/* Content - Mobile optimized */}
                 <div className="space-y-1.5 md:space-y-3 flex-grow flex flex-col">
-                  <Heading level={3} className="text-base md:text-xl font-bold text-gray-900">
+                  <Heading level={3} className="text-base md:text-xl font-bold text-ink">
                     {step.title}
                   </Heading>
-                  <Text className="text-gray-700 leading-relaxed text-xs md:text-sm flex-grow">
+                  <Text className="text-ink-soft leading-relaxed text-xs md:text-sm flex-grow">
                     {step.description}
                   </Text>
                 </div>

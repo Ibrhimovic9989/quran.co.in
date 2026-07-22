@@ -98,10 +98,10 @@ export function Navbar({ className }: NavbarProps) {
         role="navigation"
         aria-label="Main Navigation"
         className={cn(
-          "bg-white/90 backdrop-blur-md border-b border-gray-200/40",
+          "bg-paper/90 backdrop-blur-md border-b border-line/70",
           "flex items-center justify-center px-3 md:px-4 py-2 md:py-3",
           "sticky top-0 z-50 w-full",
-          "shadow-sm shadow-gray-100/50",
+          "shadow-[0_1px_0_rgba(28,43,39,0.03)]",
           "rounded-b-2xl md:rounded-b-3xl",
           className,
         )}
@@ -137,18 +137,13 @@ export function Navbar({ className }: NavbarProps) {
                       className={cn(
                         "flex items-center px-4 py-2 rounded-full transition-all duration-300 ease-in-out relative h-10 min-w-[44px] min-h-[40px] max-h-[44px] cursor-pointer",
                         active
-                          ? "bg-gray-100/60 text-black gap-2 shadow-sm"
-                          : "bg-transparent text-gray-600 hover:bg-gray-100/60 hover:text-gray-900",
+                          ? "bg-accent-soft text-accent gap-2"
+                          : "bg-transparent text-ink-soft hover:bg-accent-soft/60 hover:text-ink",
                         "focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white rounded-full",
                       )}
                     >
                       <span className="relative inline-flex shrink-0">
                         <Icon size={20} strokeWidth={2} aria-hidden className="w-5 h-5" />
-                        {item.beta && (
-                          <span className="absolute -top-2 -right-3 rounded bg-violet-500 px-1 py-px text-[7px] font-bold text-white leading-none">
-                            beta
-                          </span>
-                        )}
                       </span>
                       <motion.div
                         initial={false}
@@ -167,7 +162,7 @@ export function Navbar({ className }: NavbarProps) {
                         <span
                           className={cn(
                             "font-medium text-xs whitespace-nowrap select-none",
-                            active ? "text-black" : "opacity-0",
+                            active ? "text-accent" : "opacity-0",
                           )}
                         >
                           {item.label}
@@ -210,8 +205,8 @@ export function Navbar({ className }: NavbarProps) {
                     className={cn(
                       "flex items-center justify-center w-9 h-9 rounded-full transition-colors",
                       active
-                        ? "bg-gray-100 text-black"
-                        : "text-gray-500 hover:bg-gray-100 hover:text-gray-900",
+                        ? "bg-accent-soft text-accent"
+                        : "text-ink-muted hover:bg-accent-soft/60 hover:text-ink",
                     )}
                   >
                     <Icon size={18} strokeWidth={2} aria-hidden />
@@ -239,7 +234,7 @@ export function Navbar({ className }: NavbarProps) {
         aria-label="Mobile Navigation"
         className={cn(
           "md:hidden fixed bottom-0 inset-x-0 z-50",
-          "bg-white/95 backdrop-blur-md border-t border-gray-200/60",
+          "bg-paper/95 backdrop-blur-md border-t border-line/70",
           "pb-[env(safe-area-inset-bottom)]",
           "shadow-[0_-2px_10px_rgba(0,0,0,0.06)]",
         )}
@@ -255,7 +250,7 @@ export function Navbar({ className }: NavbarProps) {
                 href={item.href}
                 className={cn(
                   "flex flex-col items-center justify-center gap-0.5 py-1 px-2 rounded-xl transition-colors min-w-[48px]",
-                  active ? "text-black" : "text-gray-400",
+                  active ? "text-accent" : "text-ink-muted",
                 )}
               >
                 <span className="relative">
@@ -265,19 +260,14 @@ export function Navbar({ className }: NavbarProps) {
                     aria-hidden
                     className={cn(
                       "transition-all",
-                      active && "text-black",
+                      active && "text-accent",
                     )}
                   />
-                  {item.beta && (
-                    <span className="absolute -top-1.5 -right-2.5 rounded bg-violet-500 px-0.5 py-px text-[6px] font-bold text-white leading-none">
-                      beta
-                    </span>
-                  )}
                 </span>
                 <span
                   className={cn(
                     "text-[10px] leading-tight font-medium",
-                    active ? "text-black" : "text-gray-400",
+                    active ? "text-accent" : "text-ink-muted",
                   )}
                 >
                   {item.label}
@@ -285,7 +275,7 @@ export function Navbar({ className }: NavbarProps) {
                 {active && (
                   <motion.div
                     layoutId="bottomTabIndicator"
-                    className="absolute -top-px left-1/2 -translate-x-1/2 w-5 h-0.5 rounded-full bg-black"
+                    className="absolute -top-px left-1/2 -translate-x-1/2 w-5 h-0.5 rounded-full bg-accent"
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   />
                 )}

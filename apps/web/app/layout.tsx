@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
-import { Inter, Scheherazade_New, Amiri, Noto_Naskh_Arabic } from 'next/font/google';
+import { Inter, Lora, Amiri, Noto_Naskh_Arabic } from 'next/font/google';
+import localFont from 'next/font/local';
 import { WebSiteSchema } from '@/components/seo/json-ld';
 import { AuthProvider } from '@/components/auth/auth-provider';
 import { Navbar } from '@/components/layout/navbar';
@@ -14,16 +15,34 @@ import { SWRegister } from '@/components/ui/sw-register';
 import { Suspense } from 'react';
 import '@/app/globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
-
-const scheherazade = Scheherazade_New({
-  subsets: ['arabic'],
-  weight: ['400', '700'],
-  variable: '--font-scheherazade',
+// UI font — quiet, neutral chrome
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-ui',
   display: 'swap',
 });
 
-// Amiri — Saudi/Uthmani Quranic script
+// Reading font — warm serif for translations and editorial text
+const lora = Lora({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  style: ['normal', 'italic'],
+  variable: '--font-reading',
+  display: 'swap',
+});
+
+// THE Quran font — KFGQPC Uthmanic Script Hafs, the digitized hand of the
+// Madinah Mushaf (Uthman Taha). Self-hosted; the script Muslims recognize
+// as "the Quran". adjustFontFallback off: metric overrides corrupt Arabic.
+const quranFont = localFont({
+  src: '../fonts/UthmanicHafs1Ver18.woff2',
+  variable: '--font-quran',
+  display: 'swap',
+  preload: true,
+  adjustFontFallback: false,
+});
+
+// Amiri — classical Naskh, decorative Arabic fallback (surah names, accents)
 const amiri = Amiri({
   subsets: ['arabic'],
   weight: ['400', '700'],
@@ -31,7 +50,7 @@ const amiri = Amiri({
   display: 'swap',
 });
 
-// Noto Naskh Arabic — Indo-Pak rounded Naskh style
+// Noto Naskh Arabic — Indo-Pak rounded Naskh style (user script toggle)
 const notoNaskh = Noto_Naskh_Arabic({
   subsets: ['arabic'],
   weight: ['400', '700'],
@@ -148,7 +167,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} ${scheherazade.variable} ${amiri.variable} ${notoNaskh.variable}`}>
+      <body className={`${inter.className} ${inter.variable} ${lora.variable} ${quranFont.variable} ${amiri.variable} ${notoNaskh.variable}`}>
         <WebSiteSchema />
         <SeasonalThemeApplier />
         <SWRegister />

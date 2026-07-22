@@ -40,8 +40,8 @@ export function PageLoader({ className }: PageLoaderProps) {
 
     // Track when component mounted to ensure minimum display time
     const mountTime = Date.now();
-    const DISPLAY_TIME = 3000; // 3 seconds display before fade starts
-    const FADE_OUT_TIME = 1500; // 1.5 seconds fade = 4.5 seconds total
+    const DISPLAY_TIME = 900; // brief branded flash
+    const FADE_OUT_TIME = 500;
 
     // Function to start fade-out after display time
     const startFadeOut = () => {
@@ -83,8 +83,8 @@ export function PageLoader({ className }: PageLoaderProps) {
     <div
       className={cn(
         'fixed inset-0 z-50 flex items-center justify-center',
-        'bg-white',
-        'transition-opacity duration-[1500ms] ease-in-out',
+        'bg-paper',
+        'transition-opacity duration-[500ms] ease-in-out',
         isLoading ? 'opacity-100' : 'opacity-0 pointer-events-none',
         className
       )}
@@ -129,16 +129,13 @@ export function PageLoader({ className }: PageLoaderProps) {
           <div
             className={cn(
               'text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-arabic',
-              'text-gray-900 font-semibold',
+              'text-ink',
               'text-center leading-relaxed',
               'animate-fade-in',
               'drop-shadow-sm'
             )}
             dir="rtl"
-            style={{
-              fontFamily: '"Amiri", "Noto Sans Arabic", "Arial", serif',
-              letterSpacing: '0.05em',
-            }}
+            lang="ar"
           >
             بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
           </div>
@@ -146,16 +143,16 @@ export function PageLoader({ className }: PageLoaderProps) {
 
         {/* Decorative Divider */}
         <div className="mb-4 md:mb-6 flex items-center gap-3 animate-fade-in-delay">
-          <div className="w-8 md:w-12 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
-          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-400 rounded-full" />
-          <div className="w-8 md:w-12 h-px bg-gradient-to-l from-transparent via-gray-300 to-transparent" />
+          <div className="w-8 md:w-12 h-px bg-gradient-to-r from-transparent via-gold-soft to-transparent" />
+          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gold rounded-full" />
+          <div className="w-8 md:w-12 h-px bg-gradient-to-l from-transparent via-gold-soft to-transparent" />
         </div>
 
         {/* English Translation */}
         <div className="mb-6 md:mb-8">
           <p
             className={cn(
-              'text-xs sm:text-sm md:text-base text-gray-600',
+              'font-reading text-xs sm:text-sm md:text-base text-ink-muted',
               'text-center max-w-sm md:max-w-md px-4',
               'font-light italic leading-relaxed',
               'animate-fade-in-delay'
@@ -167,13 +164,13 @@ export function PageLoader({ className }: PageLoaderProps) {
 
         {/* Elegant Loading Indicator */}
         <div className="flex items-center gap-2 md:gap-2.5 animate-fade-in-delay-2">
-          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-400 rounded-full animate-pulse" />
+          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gold rounded-full animate-pulse" />
           <div
-            className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-400 rounded-full animate-pulse"
+            className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gold rounded-full animate-pulse"
             style={{ animationDelay: '0.2s' }}
           />
           <div
-            className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-400 rounded-full animate-pulse"
+            className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gold rounded-full animate-pulse"
             style={{ animationDelay: '0.4s' }}
           />
         </div>

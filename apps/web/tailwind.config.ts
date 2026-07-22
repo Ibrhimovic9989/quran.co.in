@@ -13,10 +13,38 @@ const config: Config = {
       colors: {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
-        // Design tokens integration
+        // ── World-class reading palette (paper & ink & emerald & gold) ──
+        paper: 'var(--paper)',
+        'surface-warm': 'var(--surface-warm)',
+        ink: {
+          DEFAULT: 'var(--ink)',
+          soft: 'var(--ink-soft)',
+          muted: 'var(--muted)',
+        },
+        line: {
+          DEFAULT: 'var(--line)',
+          soft: 'var(--line-soft)',
+        },
+        accent: {
+          DEFAULT: 'var(--accent)',
+          strong: 'var(--accent-strong)',
+          soft: 'var(--accent-soft)',
+        },
+        gold: {
+          DEFAULT: 'var(--gold)',
+          soft: 'var(--gold-soft)',
+          text: 'var(--gold-text)',
+        },
+        night: {
+          DEFAULT: 'var(--night)',
+          surface: 'var(--night-surface)',
+          ink: 'var(--night-ink)',
+          gold: 'var(--night-gold)',
+        },
+        // Design tokens integration (legacy)
         primary: tokens.colors.primary,
         secondary: tokens.colors.secondary,
-        surface: tokens.colors.surface,
+        surface: 'var(--surface)',
         'surface-elevated': tokens.colors.surfaceElevated,
         text: tokens.colors.text,
         border: tokens.colors.border,
@@ -25,7 +53,10 @@ const config: Config = {
       spacing: tokens.spacing,
       fontFamily: {
         sans: [...tokens.typography.fontFamily.sans],
-        arabic: [...tokens.typography.fontFamily.arabic],
+        arabic: ['var(--font-quran)', 'var(--font-amiri)', 'Noto Naskh Arabic', 'serif'],
+        'arabic-display': ['var(--font-amiri)', 'var(--font-quran)', 'serif'],
+        reading: ['var(--font-reading)', 'Lora', 'Georgia', 'serif'],
+        ui: ['var(--font-ui)', 'Inter', 'system-ui', 'sans-serif'],
         mono: [...tokens.typography.fontFamily.mono],
       },
       fontSize: tokens.typography.fontSize,
@@ -41,7 +72,11 @@ const config: Config = {
         relaxed: tokens.typography.lineHeight.relaxed.toString(),
       },
       borderRadius: tokens.borderRadius,
-      boxShadow: tokens.shadows,
+      boxShadow: {
+        ...tokens.shadows,
+        card: '0 1px 2px rgb(28 43 39 / 0.05), 0 8px 24px rgb(28 43 39 / 0.06)',
+        'card-hover': '0 2px 4px rgb(28 43 39 / 0.06), 0 12px 32px rgb(28 43 39 / 0.10)',
+      },
       transitionDuration: tokens.transitions,
       screens: tokens.breakpoints,
       animation: {
