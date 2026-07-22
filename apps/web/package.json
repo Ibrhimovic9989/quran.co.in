@@ -5,13 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "db:index": "dotenv -e .env.local -- tsx scripts/add-indexes.ts",
-    "sync:quran": "dotenv -e .env.local -- tsx scripts/sync-quran.ts",
-    "update:translations": "dotenv -e .env.local -- tsx scripts/update-translations.ts"
+    "start": "next start"
   },
   "dependencies": {
-    "@prisma/client": "^6.1.0",
     "@splinetool/react-spline": "^4.1.0",
     "@splinetool/runtime": "^1.12.67",
     "@tabler/icons-react": "^3.38.0",
@@ -21,7 +17,6 @@
     "html-to-image": "^1.11.13",
     "lucide-react": "^0.577.0",
     "next": "^16.1.6",
-    "openai": "^6.32.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-markdown": "^10.1.0",
@@ -29,15 +24,13 @@
     "rehype-sanitize": "^6.0.0",
     "remark-breaks": "^4.0.0",
     "tailwind-merge": "^2.6.1",
-    "three": "^0.183.2",
-    "tsx": "^4.21.0"
+    "three": "^0.183.2"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10.4.0",
-    "dotenv-cli": "^11.0.0",
     "eslint": "^9.0.0",
     "eslint-config-next": "^16.1.6",
     "postcss": "^8.4.0",

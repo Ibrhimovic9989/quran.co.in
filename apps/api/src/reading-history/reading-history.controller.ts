@@ -17,6 +17,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import type { JwtUser } from '../auth/auth.service';
 import { ReadingHistoryRepository } from './reading-history.repository';
+import { RecordReadingDto } from './dto/record-reading.dto';
 
 @Controller('reading-history')
 @UseGuards(JwtAuthGuard)
@@ -37,10 +38,7 @@ export class ReadingHistoryController {
   }
 
   @Post()
-  async record(
-    @CurrentUser() user: JwtUser,
-    @Body() body: { surahNumber?: number; ayahNumber?: number },
-  ) {
+  async record(@CurrentUser() user: JwtUser, @Body() body: RecordReadingDto) {
     const { surahNumber, ayahNumber } = body ?? {};
     if (!surahNumber) {
       throw new BadRequestException({ error: 'surahNumber is required' });

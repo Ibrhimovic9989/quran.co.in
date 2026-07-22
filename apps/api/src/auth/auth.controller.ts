@@ -23,6 +23,7 @@ import { AuthService, type JwtUser } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { CurrentUser } from './current-user.decorator';
 import { UserRepository } from '../users/user.repository';
+import { GoogleMobileDto } from './dto/google-mobile.dto';
 
 const ACCESS_COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7d — matches token TTL
 const REFRESH_COOKIE_MAX_AGE = 30 * 24 * 60 * 60 * 1000; // 30d
@@ -105,7 +106,7 @@ export class AuthController {
 
   /** Flutter/native: exchange a Google ID token for API tokens (JSON, no cookies). */
   @Post('google/mobile')
-  async googleMobile(@Body() body: { idToken?: string }) {
+  async googleMobile(@Body() body: GoogleMobileDto) {
     if (!body?.idToken) throw new UnauthorizedException({ error: 'idToken is required' });
     const { user, accessToken, refreshToken } = await this.auth.loginWithGoogleIdToken(body.idToken);
     return { user: publicUser(user), accessToken, refreshToken };

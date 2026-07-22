@@ -8,6 +8,7 @@
 import { Body, Controller, Logger, Post, Req, Res } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { AskService, type HistoryMessage } from './ask.service';
+import { AskRequestDto } from './dto/ask-request.dto';
 import { enforceRateLimit } from '../common/rate-limit';
 
 // Input limits — cap attacker-controlled payload to bound token cost.
@@ -18,12 +19,6 @@ const MAX_HISTORY_CONTENT_LENGTH = 4000;
 const ASK_RATE_LIMIT = 15; // requests per minute per IP
 const ASK_RATE_WINDOW_MS = 60_000;
 
-interface AskBody {
-  question?: string;
-  mode?: 'focused' | 'open';
-  history?: HistoryMessage[];
-}
-
 @Controller('quran')
 export class AskController {
   private readonly logger = new Logger(AskController.name);
@@ -31,7 +26,7 @@ export class AskController {
   constructor(private readonly ask: AskService) {}
 
   @Post('ask')
-  async askQuestion(@Req() req: Request, @Res() res: Response, @Body() body: AskBody) {
+  async askQuestion(@Req() req: Request, @Res() res: Response, @Body() body: AskRequestDto) {
     // Rate limit per client IP before doing any expensive work.
     enforceRateLimit(req, res, 'ask', ASK_RATE_LIMIT, ASK_RATE_WINDOW_MS);
 

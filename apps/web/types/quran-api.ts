@@ -33,6 +33,9 @@ export interface AyahResponse extends SurahInfo {
   uzbek?: string;
 }
 
+/** A surah list entry as returned by GET /api/quran/surahs. */
+export type SurahListItem = SurahInfo & { surahNo: number };
+
 export interface SurahResponse extends SurahInfo {
   surahNo: number;
   audio: AudioReciters;

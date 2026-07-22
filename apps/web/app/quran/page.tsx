@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 };
 import { QuranPageClient } from '@/components/quran/quran-page-client';
 import { backendUrl } from '@/lib/api/backend';
-import type { SurahListItem } from '@/lib/services/quran-surah-list-cache';
+import type { SurahListItem } from '@/types/quran-api';
 import { Spinner } from '@/components/ui/atoms';
 import { LoadingMessage } from '@/components/ui/loading-message';
 

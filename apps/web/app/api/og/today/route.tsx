@@ -1,15 +1,13 @@
 // Dynamic OG image for /today — renders Arabic + English translation
-// GET: fetches daily ayah via Prisma (for crawlers / meta tags)
+// GET: fetches the daily ayah from the backend API (for crawlers / meta tags)
 // POST: uses provided data (for "Share as Image" button — matches what user sees)
 
 import { ImageResponse } from 'next/og';
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { backendUrl } from '@/lib/api/backend';
 
 export const runtime = 'nodejs';
 export const revalidate = 3600;
-
-const prisma = new PrismaClient();
 
 // Google Fonts CDN — Amiri Regular (Arabic Quran font)
 const AMIRI_FONT_URL =
@@ -32,48 +30,35 @@ interface AyahData {
 }
 
 async function getDailyAyah(): Promise<AyahData | null> {
-  const start = new Date(new Date().getFullYear(), 0, 0);
-  const dayOfYear = Math.floor(
-    (Date.now() - start.getTime()) / (1000 * 60 * 60 * 24)
-  );
-  const totalAyahs = await prisma.verseEmbedding.count();
-  const offset = dayOfYear % totalAyahs;
-
-  const rows = await prisma.$queryRaw<
-    {
-      surahNumber: number;
-      ayahNumber: number;
-      arabicText: string;
-      translationText: string | null;
-      englishName: string;
-      englishNameTranslation: string | null;
-    }[]
-  >`
-    SELECT
-      ve."surahNumber",
-      ve."ayahNumber",
-      a."arabicText",
-      a."translationText",
-      s."englishName",
-      s."englishNameTranslation"
-    FROM verse_embeddings ve
-    JOIN ayahs  a ON a.id     = ve."ayahId"
-    JOIN surahs s ON s.number = ve."surahNumber" AND s."apiProvider" = 'TEMPORARY_API'
-    ORDER BY ve."surahNumber", ve."ayahNumber"
-    LIMIT 1 OFFSET ${offset}
-  `;
-
-  const r = rows[0];
-  if (!r) return null;
-  return {
-    surahNumber: r.surahNumber,
-    ayahNumber: r.ayahNumber,
-    arabicText: r.arabicText,
-    translation: r.translationText ?? '',
-    surahName: r.englishNameTranslation
-      ? `${r.englishName} (${r.englishNameTranslation})`
-      : r.englishName,
-  };
+  try {
+    const res = await fetch(backendUrl('/api/quran/ayah-of-the-day'), {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as {
+      ayah: {
+        surahNumber: number;
+        ayahNumber: number;
+        arabicText: string;
+        translationText: string | null;
+        englishName: string;
+        englishNameTranslation: string | null;
+      } | null;
+    };
+    const r = data.ayah;
+    if (!r) return null;
+    return {
+      surahNumber: r.surahNumber,
+      ayahNumber: r.ayahNumber,
+      arabicText: r.arabicText,
+      translation: r.translationText ?? '',
+      surahName: r.englishNameTranslation
+        ? `${r.englishName} (${r.englishNameTranslation})`
+        : r.englishName,
+    };
+  } catch {
+    return null;
+  }
 }
 
 function renderCard(ayah: AyahData, fontData: ArrayBuffer) {

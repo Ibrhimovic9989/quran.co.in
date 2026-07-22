@@ -21,6 +21,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import type { JwtUser } from '../auth/auth.service';
 import { BookmarkRepository } from './bookmark.repository';
+import { CreateBookmarkDto } from './dto/create-bookmark.dto';
 
 @Controller('bookmarks')
 @UseGuards(JwtAuthGuard)
@@ -41,10 +42,7 @@ export class BookmarksController {
   }
 
   @Post()
-  async create(
-    @CurrentUser() user: JwtUser,
-    @Body() body: { surahNumber?: number; ayahNumber?: number; note?: string },
-  ) {
+  async create(@CurrentUser() user: JwtUser, @Body() body: CreateBookmarkDto) {
     const { surahNumber, ayahNumber, note } = body ?? {};
     if (!surahNumber) {
       throw new BadRequestException({ error: 'surahNumber is required' });
