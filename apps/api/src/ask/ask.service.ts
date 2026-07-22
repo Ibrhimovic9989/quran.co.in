@@ -3,9 +3,9 @@
 // canonical guaranteed ayahs, hybrid pgvector retrieval, and the Azure OpenAI
 // streaming chat completion.
 
-import { Injectable } from '@nestjs/common';
-import { AzureOpenAI } from 'openai';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { LlmService } from '../llm/llm.service';
 import { getCanonicalAyahs } from './canonical-context';
 
 // ── System prompts ────────────────────────────────────────────────────────────
@@ -200,25 +200,12 @@ export interface HistoryMessage {
 
 @Injectable()
 export class AskService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(AskService.name);
 
-  private getEmbedClient(): AzureOpenAI {
-    return new AzureOpenAI({
-      apiKey: process.env.AZURE_OPENAI_API_KEY!,
-      endpoint: process.env.AZURE_OPENAI_ENDPOINT!,
-      deployment: process.env.AZURE_OPENAI_EMBEDDING_DEPLOYMENT!,
-      apiVersion: process.env.AZURE_OPENAI_API_VERSION ?? '2023-05-15',
-    });
-  }
-
-  private getChatClient(): AzureOpenAI {
-    return new AzureOpenAI({
-      apiKey: process.env.AZURE_OPENAI_API_KEY!,
-      endpoint: process.env.AZURE_OPENAI_ENDPOINT!,
-      deployment: process.env.AZURE_OPENAI_CHAT_DEPLOYMENT!,
-      apiVersion: process.env.AZURE_OPENAI_CHAT_API_VERSION ?? '2024-04-01-preview',
-    });
-  }
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly llm: LlmService,
+  ) {}
 
   private async findAyah(surah: number, ayah: number): Promise<AyahRow | null> {
     const found = await this.prisma.ayah.findFirst({
@@ -255,14 +242,37 @@ export class AskService {
       await Promise.all(canonicalRefs.map(({ surah, ayah }) => this.findAyah(surah, ayah)))
     ).filter((r): r is AyahRow => r !== null);
 
-    // 2. Semantic search for related ayahs
-    const embRes = await this.getEmbedClient().embeddings.create({
-      input: [q],
-      model: 'text-embedding-3-small',
-    });
-    const vector = `[${embRes.data[0].embedding.join(',')}]`;
+    // 2. Semantic search for related ayahs.
+    // Resilient: if no embedding provider is available (see LlmService caveat),
+    // proceed with direct + canonical context only instead of failing the ask.
+    let semanticRows: AyahRow[] = [];
+    try {
+      const vector = await this.llm.embedQuery(q);
+      semanticRows = await this.querySemantic(vector);
+    } catch (err) {
+      this.logger.warn(`semantic retrieval unavailable, continuing without it: ${String(err)}`);
+    }
 
-    const semanticRows = await this.prisma.$queryRaw<AyahRow[]>`
+    // 3. Merge: direct → canonical → semantic (all deduplicated)
+    const seen = new Set<string>();
+    const rows: AyahRow[] = [];
+    const addRow = (r: AyahRow) => {
+      const key = `${r.surahNumber}:${r.ayahNumber}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        rows.push(r);
+      }
+    };
+
+    if (directAyah) addRow(directAyah);
+    for (const r of canonicalAyahs) addRow(r);
+    for (const r of semanticRows) addRow(r);
+
+    return rows;
+  }
+
+  private async querySemantic(vector: string): Promise<AyahRow[]> {
+    return this.prisma.$queryRaw<AyahRow[]>`
       WITH verse_scores AS (
         SELECT ve."ayahId", ve."surahNumber", ve."ayahNumber",
                ve.embedding <=> ${vector}::vector AS dist
@@ -290,32 +300,24 @@ export class AskService {
       ORDER BY b.dist
       LIMIT 8
     `;
-
-    // 3. Merge: direct → canonical → semantic (all deduplicated)
-    const seen = new Set<string>();
-    const rows: AyahRow[] = [];
-    const addRow = (r: AyahRow) => {
-      const key = `${r.surahNumber}:${r.ayahNumber}`;
-      if (!seen.has(key)) {
-        seen.add(key);
-        rows.push(r);
-      }
-    };
-
-    if (directAyah) addRow(directAyah);
-    for (const r of canonicalAyahs) addRow(r);
-    for (const r of semanticRows) addRow(r);
-
-    return rows;
   }
 
-  /** Open the streaming chat completion for the given context + history. */
+  /**
+   * Open the streaming chat completion for the given context + history,
+   * served by the first available provider in the fallback chain.
+   *
+   * When retrieval produced no context (e.g. embeddings down and no direct or
+   * canonical match), fall back to the OPEN prompt so the model answers from
+   * its own knowledge instead of citing nonexistent "retrieved" ayahs.
+   */
   async createChatStream(
     q: string,
     mode: 'focused' | 'open',
     rows: AyahRow[],
     history: HistoryMessage[],
   ) {
+    const hasContext = rows.length > 0;
+
     const context = rows
       .map(
         (r) =>
@@ -327,17 +329,17 @@ export class AskService {
 
     const label =
       mode === 'open' ? 'Context Ayahs (retrieved by system)' : 'Retrieved Ayahs (system-fetched context)';
-    const userMessage = `Question: ${q}\n\n${label}:\n\n${context}`;
+    const userMessage = hasContext ? `Question: ${q}\n\n${label}:\n\n${context}` : `Question: ${q}`;
 
-    return this.getChatClient().chat.completions.create({
-      model: 'gpt-5.2-chat',
-      messages: [
-        { role: 'system', content: mode === 'open' ? OPEN_PROMPT : FOCUSED_PROMPT },
+    const systemPrompt = hasContext && mode === 'focused' ? FOCUSED_PROMPT : OPEN_PROMPT;
+
+    return this.llm.chatStream(
+      [
+        { role: 'system', content: systemPrompt },
         ...history.map((m) => ({ role: m.role, content: m.content })),
         { role: 'user', content: userMessage },
       ],
-      stream: true,
-      max_completion_tokens: 1024,
-    });
+      1024,
+    );
   }
 }

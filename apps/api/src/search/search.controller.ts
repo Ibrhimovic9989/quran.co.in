@@ -47,12 +47,22 @@ export class SearchController {
 
     if (q.length < 3) return { results: [] };
 
-    // Rate limit per IP before spending an OpenAI embedding call.
+    // Rate limit per IP before spending an embedding call.
     enforceRateLimit(req, res, 'search', SEARCH_RATE_LIMIT, WINDOW_MS);
 
+    // Vector search when an embedding provider is up; otherwise (or on
+    // embedding failure) degrade to Postgres full-text keyword search.
     try {
-      const vector = await this.search.embedQuery(q);
-      const results = await this.search.semanticSearch(vector, limit);
+      if (this.search.canVectorSearch()) {
+        try {
+          const vector = await this.search.embedQuery(q);
+          const results = await this.search.semanticSearch(vector, limit);
+          return { results };
+        } catch (embedError) {
+          this.logger.warn(`vector search unavailable, keyword fallback: ${String(embedError)}`);
+        }
+      }
+      const results = await this.search.keywordSearch(q, limit);
       return { results };
     } catch (error) {
       if (error instanceof HttpException) throw error;

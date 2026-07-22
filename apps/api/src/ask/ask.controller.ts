@@ -62,12 +62,9 @@ export class AskController {
     const q = question.trim();
 
     try {
+      // May be empty when embeddings are unavailable — the chat falls back to
+      // answering without retrieved context rather than failing.
       const rows = await this.ask.retrieveContext(q);
-
-      if (!rows.length) {
-        res.status(404).json({ error: 'No relevant ayahs found' });
-        return;
-      }
 
       const stream = await this.ask.createChatStream(q, mode, rows, safeHistory);
 

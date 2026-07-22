@@ -2,8 +2,8 @@
 // Ported from apps/web/app/api/search/{semantic,similar}/route.ts.
 
 import { Injectable } from '@nestjs/common';
-import { AzureOpenAI } from 'openai';
 import { PrismaService } from '../prisma/prisma.service';
+import { LlmService } from '../llm/llm.service';
 
 export interface SearchResultRow {
   surahNumber: number;
@@ -17,24 +17,56 @@ export interface SearchResultRow {
 
 @Injectable()
 export class SearchService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly llm: LlmService,
+  ) {}
 
-  private getEmbedClient(): AzureOpenAI {
-    return new AzureOpenAI({
-      apiKey: process.env.AZURE_OPENAI_API_KEY!,
-      endpoint: process.env.AZURE_OPENAI_ENDPOINT!,
-      deployment: process.env.AZURE_OPENAI_EMBEDDING_DEPLOYMENT!,
-      apiVersion: process.env.AZURE_OPENAI_API_VERSION ?? '2023-05-15',
-    });
+  /** True when vector search is possible (embedding provider up). */
+  canVectorSearch(): boolean {
+    return this.llm.hasEmbeddingProvider();
   }
 
-  /** Embed the free-text query with Azure OpenAI. */
+  /** Embed the free-text query in the corpus embedding space. */
   async embedQuery(q: string): Promise<string> {
-    const embRes = await this.getEmbedClient().embeddings.create({
-      input: [q],
-      model: 'text-embedding-3-small',
-    });
-    return `[${embRes.data[0].embedding.join(',')}]`;
+    return this.llm.embedQuery(q);
+  }
+
+  /**
+   * Keyword fallback when no embedding provider is available: Postgres
+   * full-text search over the English translations. Same response shape as
+   * the vector path (ts_rank scaled into a 0..0.99 pseudo-similarity).
+   */
+  async keywordSearch(q: string, limit: number): Promise<SearchResultRow[]> {
+    // websearch_to_tsquery ANDs terms by default, which is too strict for a
+    // recall-oriented fallback — OR the words instead (ts_rank still ranks
+    // multi-term matches higher).
+    const orQuery = q
+      .split(/\s+/)
+      .filter(Boolean)
+      .join(' OR ');
+
+    return this.prisma.$queryRaw<SearchResultRow[]>`
+      SELECT
+        a."surahNumber",
+        a."number" AS "ayahNumber",
+        a."arabicText",
+        a."translationText",
+        s."englishName",
+        s."englishNameTranslation",
+        ROUND(LEAST(
+          ts_rank(
+            to_tsvector('english', coalesce(a."translationText", '')),
+            websearch_to_tsquery('english', ${orQuery})
+          ) * 10, 0.99)::numeric, 4) AS similarity
+      FROM ayahs a
+      JOIN surahs s ON s.number = a."surahNumber" AND s."apiProvider" = 'TEMPORARY_API'
+      WHERE a."apiProvider" = 'TEMPORARY_API'
+        AND to_tsvector('english', coalesce(a."translationText", ''))
+            @@ websearch_to_tsquery('english', ${orQuery})
+      ORDER BY similarity DESC
+      LIMIT ${limit}
+    `;
   }
 
   /**
