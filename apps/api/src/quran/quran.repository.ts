@@ -151,6 +151,35 @@ export class QuranRepository {
     `;
   }
 
+  /** All words on one Madinah mushaf page (1–604), in reading order. */
+  async findWordsByPage(pageNumber: number) {
+    return this.prisma.$queryRaw<
+      {
+        surahNumber: number;
+        ayahNumber: number;
+        position: number;
+        charType: string;
+        textUthmani: string;
+        lineNumber: number | null;
+      }[]
+    >`
+      SELECT "surahNumber", "ayahNumber", position, "charType", "textUthmani", "lineNumber"
+      FROM quran_words
+      WHERE "pageNumber" = ${pageNumber}
+      ORDER BY "lineNumber", "surahNumber", "ayahNumber", position
+    `;
+  }
+
+  /** The mushaf page on which a surah begins. */
+  async findSurahStartPage(surahNumber: number): Promise<number | null> {
+    const rows = await this.prisma.$queryRaw<{ page: number | null }[]>`
+      SELECT MIN("pageNumber")::int AS page
+      FROM quran_words
+      WHERE "surahNumber" = ${surahNumber}
+    `;
+    return rows[0]?.page ?? null;
+  }
+
   async countAyahsBySurah(
     surahNumber: number,
     apiProvider: ApiProvider = 'TEMPORARY_API',

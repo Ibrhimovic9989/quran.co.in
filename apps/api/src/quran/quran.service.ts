@@ -131,6 +131,28 @@ export class QuranService {
   }
 
   /**
+   * One Madinah mushaf page: words in reading order + names of the surahs
+   * that appear on it (for headband rendering).
+   */
+  async getMushafPage(pageNo: number) {
+    const words = await this.repository.findWordsByPage(pageNo);
+    const surahNos = [...new Set(words.map((w) => w.surahNumber))];
+    const surahs = await Promise.all(
+      surahNos.map(async (n) => {
+        const s = await this.repository.findSurahByNumber(n, 'TEMPORARY_API');
+        return s
+          ? { number: n, arabicName: s.arabicName, englishName: s.englishName }
+          : { number: n, arabicName: `سورة ${n}`, englishName: `Surah ${n}` };
+      }),
+    );
+    return { page: pageNo, words, surahs };
+  }
+
+  async getSurahStartPage(surahNo: number): Promise<number | null> {
+    return this.repository.findSurahStartPage(surahNo);
+  }
+
+  /**
    * Paginated ayahs of a surah (skip/take at the DB).
    */
   async getSurahAyahs(

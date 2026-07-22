@@ -27,6 +27,7 @@ import type { SurahResponse, TafsirResponse } from '@/types/quran-api';
 
 interface SurahDisplayProps {
   surah: SurahResponse;
+  mushafPage?: number | null;
   tafsirs?: Map<string, TafsirResponse>; // Map of "surahNo_ayahNo" to tafsir
 }
 
@@ -43,7 +44,7 @@ interface LoadedAyahs {
   uzbek: string[];
 }
 
-export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
+export function SurahDisplay({ surah, mushafPage = null, tafsirs }: SurahDisplayProps) {
   const searchParams = useSearchParams();
   const [focusMode, setFocusMode] = useState(false);
   const [wordByWord, setWordByWord] = useState(false);
@@ -381,6 +382,7 @@ export function SurahDisplay({ surah, tafsirs }: SurahDisplayProps) {
               wordByWord={wordByWord}
               wordsLoading={wordsLoading}
               onWordByWordToggle={toggleWordByWord}
+              mushafPage={mushafPage}
             />
 
             {displayMode === 'reading' ? (

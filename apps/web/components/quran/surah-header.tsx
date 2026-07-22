@@ -8,7 +8,8 @@ import type { SurahResponse } from '@/types/quran-api';
 import { getRevelationInfo, PERIOD_LABELS, APPROXIMATION_NOTE } from '@/lib/data/revelation-periods';
 import { RevelationLegendModal } from '@/components/ui/revelation-legend-modal';
 import { RepeatControl } from './playback-settings';
-import { Focus, Loader2, WholeWord } from 'lucide-react';
+import { Focus, Loader2, WholeWord, BookOpen } from 'lucide-react';
+import Link from 'next/link';
 
 interface SurahHeaderProps {
   surah: SurahResponse;
@@ -21,6 +22,7 @@ interface SurahHeaderProps {
   wordByWord?: boolean;
   wordsLoading?: boolean;
   onWordByWordToggle?: () => void;
+  mushafPage?: number | null;
 }
 
 export function SurahHeader({
@@ -34,6 +36,7 @@ export function SurahHeader({
   wordByWord = false,
   wordsLoading = false,
   onWordByWordToggle,
+  mushafPage = null,
 }: SurahHeaderProps) {
   const hasAudio = surah.audio && Object.keys(surah.audio).length > 0;
   const revelation = getRevelationInfo(surah.surahNo);
@@ -113,6 +116,16 @@ export function SurahHeader({
               {wordsLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : <WholeWord className="h-3.5 w-3.5" aria-hidden />}
               Word by Word
             </button>
+          )}
+          {mushafPage != null && (
+            <Link
+              href={`/mushaf/${mushafPage}`}
+              title="Open this sūrah in the page-faithful Madinah mushaf"
+              className="flex items-center gap-1.5 rounded-full border border-gold/50 bg-gold-soft/30 px-3.5 py-2 text-xs font-semibold text-gold-text transition-colors hover:bg-gold-soft/60"
+            >
+              <BookOpen className="h-3.5 w-3.5" aria-hidden />
+              Mushaf
+            </Link>
           )}
         </div>
 

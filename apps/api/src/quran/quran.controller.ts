@@ -118,6 +118,36 @@ export class QuranController {
     }
   }
 
+  @Get('page/:pageNo')
+  @Header('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800')
+  async getMushafPage(@Param('pageNo') pageNoRaw: string) {
+    const pageNo = parseInt(pageNoRaw, 10);
+    if (Number.isNaN(pageNo) || pageNo < 1 || pageNo > 604) {
+      badRequest('Invalid page number. Must be between 1 and 604.');
+    }
+    try {
+      return await this.quran.getMushafPage(pageNo);
+    } catch (error) {
+      this.logger.error(`Error fetching mushaf page ${pageNo}`, error as Error);
+      serverError('Failed to fetch page');
+    }
+  }
+
+  @Get('surah/:number/page')
+  @Header('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800')
+  async getSurahStartPage(@Param('number') number: string) {
+    const surahNo = validSurahNo(number);
+    try {
+      const page = await this.quran.getSurahStartPage(surahNo);
+      if (page === null) notFound({ error: 'Page not found for surah' });
+      return { page };
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      this.logger.error(`Error resolving page for surah ${surahNo}`, error as Error);
+      serverError('Failed to resolve page');
+    }
+  }
+
   @Get('surah/:number/words')
   @Header('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800')
   async getSurahWords(@Param('number') number: string) {

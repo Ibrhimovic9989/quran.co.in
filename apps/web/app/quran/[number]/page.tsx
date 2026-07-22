@@ -10,6 +10,20 @@ import type { SurahResponse, TafsirResponse } from '@/types/quran-api';
 
 const BASE_URL = 'https://quran.co.in';
 
+// Resolve the Madinah mushaf page a surah begins on (for the Mushaf button).
+async function fetchSurahStartPage(surahNo: number): Promise<number | null> {
+  try {
+    const res = await fetch(backendUrl(`/api/quran/surah/${surahNo}/page`), {
+      next: { revalidate: 86400 },
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { page: number };
+    return data.page;
+  } catch {
+    return null;
+  }
+}
+
 // Fetch a surah from the dedicated backend (apps/api), cached for an hour.
 async function fetchSurah(surahNo: number): Promise<SurahResponse | null> {
   try {
@@ -91,7 +105,7 @@ export default async function SurahPage({
   }
 
   try {
-    const surah = await fetchSurah(surahNo);
+    const [surah, mushafPage] = await Promise.all([fetchSurah(surahNo), fetchSurahStartPage(surahNo)]);
 
     if (!surah) {
       return (
@@ -119,7 +133,7 @@ export default async function SurahPage({
           totalAyahs={surah.totalAyah}
           revelationPlace={surah.revelationPlace}
         />
-        <SurahDisplay surah={surah} tafsirs={tafsirs} />
+        <SurahDisplay surah={surah} tafsirs={tafsirs} mushafPage={mushafPage} />
       </main>
     );
   } catch (error) {
