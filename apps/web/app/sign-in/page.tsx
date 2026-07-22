@@ -9,7 +9,7 @@ import { QuranGraphic } from '@/components/ui/quran-graphic';
 import { Heading, Text } from '@/components/ui/typography';
 import { Card } from '@/components/ui/card';
 import { ShimmerButton } from '@/components/ui/atoms';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn, useSession } from '@/components/auth/auth-client';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 

@@ -4,7 +4,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/components/auth/auth-client';
 import { SignInButton, SignOutButton, UserProfile } from '@/components/auth';
 
 export function NavbarClient() {

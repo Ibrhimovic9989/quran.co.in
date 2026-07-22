@@ -3,7 +3,7 @@
 
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/components/auth/auth-client';
 import Image from 'next/image';
 
 export function UserProfile() {

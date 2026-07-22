@@ -1,10 +1,5 @@
 // Auth Provider Component
-// Wraps app with NextAuth SessionProvider
+// Re-exports the backend-driven AuthProvider (NextAuth removed) so the
+// app/layout.tsx mount point is unchanged.
 
-'use client';
-
-import { SessionProvider } from 'next-auth/react';
-
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  return <SessionProvider>{children}</SessionProvider>;
-}
+export { AuthProvider } from './auth-client';

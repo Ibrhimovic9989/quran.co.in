@@ -6,6 +6,7 @@ import { toPng } from 'html-to-image';
 import { Container } from '@/components/ui/container';
 import { BookOpen, Copy, Check, Share2, RefreshCw, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
+import { backendUrl } from '@/lib/api/backend';
 
 interface DailyAyah {
   surahNumber: number;
@@ -73,7 +74,7 @@ export default function TodayPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/quran/ayah-of-the-day', { cache: 'no-store' });
+      const res = await fetch(backendUrl('/api/quran/ayah-of-the-day'), { cache: 'no-store', credentials: 'include' });
       if (res.ok) {
         const data = await res.json();
         setAyah(data.ayah);

@@ -3,7 +3,7 @@
 
 'use client';
 
-import { signIn } from 'next-auth/react';
+import { signIn } from '@/components/auth/auth-client';
 
 interface SignInButtonProps {
   className?: string;

@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Sparkles, ExternalLink, RefreshCw } from 'lucide-react';
-import { useSession } from 'next-auth/react';
+import { backendUrl } from '@/lib/api/backend';
+import { useSession } from '@/components/auth/auth-client';
 import { cn } from '@/lib/utils/cn';
 
 interface AyahData {
@@ -29,7 +30,7 @@ export function AyahOfTheDay({ className }: { className?: string }) {
   useEffect(() => {
     if (status === 'loading') return;
     setLoading(true);
-    fetch('/api/quran/ayah-of-the-day', { cache: 'no-store' })
+    fetch(backendUrl('/api/quran/ayah-of-the-day'), { cache: 'no-store', credentials: 'include' })
       .then((r) => r.json())
       .then(setData)
       .catch(() => {})

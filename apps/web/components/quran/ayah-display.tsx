@@ -4,7 +4,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/components/auth/auth-client';
 import { ChevronDown, ChevronRight, Sparkles, Loader2, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
@@ -122,8 +122,9 @@ export function AyahDisplay({
           timer = window.setTimeout(() => {
             if (hasTrackedRef.current) return;
             hasTrackedRef.current = true;
-            fetch('/api/reading-history', {
+            fetch(backendUrl('/api/reading-history'), {
               method: 'POST',
+              credentials: 'include',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 surahNumber: ayah.surahNo,

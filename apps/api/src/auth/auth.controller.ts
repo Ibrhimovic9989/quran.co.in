@@ -1,0 +1,142 @@
+// Auth endpoints.
+//   GET  /api/auth/google          → redirect to Google consent (web)
+//   GET  /api/auth/google/callback → set cookies, redirect back to web
+//   POST /api/auth/google/mobile   → { user, accessToken, refreshToken } (Flutter)
+//   POST /api/auth/refresh         → rotate tokens (cookie or body)
+//   POST /api/auth/logout          → clear cookies
+//   GET  /api/auth/me              → current user (guarded)
+
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Req,
+  Res,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
+import type { Request, Response } from 'express';
+import type { User } from '@prisma/client';
+import { AuthService, type JwtUser } from './auth.service';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { CurrentUser } from './current-user.decorator';
+import { UserRepository } from '../users/user.repository';
+
+const ACCESS_COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7d — matches token TTL
+const REFRESH_COOKIE_MAX_AGE = 30 * 24 * 60 * 60 * 1000; // 30d
+
+function webUrl(): string {
+  return (process.env.WEB_URL ?? 'http://localhost:3000').replace(/\/$/, '');
+}
+
+/** Only allow same-site path redirects (no scheme, no protocol-relative). */
+function safeRedirectPath(raw: string | undefined): string {
+  if (!raw) return '/';
+  if (!raw.startsWith('/') || raw.startsWith('//') || raw.includes('://')) return '/';
+  return raw;
+}
+
+function publicUser(user: User) {
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    imageUrl: user.imageUrl,
+    createdAt: user.createdAt,
+  };
+}
+
+@Controller('auth')
+export class AuthController {
+  constructor(
+    private readonly auth: AuthService,
+    private readonly users: UserRepository,
+  ) {}
+
+  private cookieOptions(maxAge: number, path = '/') {
+    const isProd = process.env.NODE_ENV === 'production';
+    return {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: 'lax' as const,
+      domain: process.env.COOKIE_DOMAIN || undefined, // e.g. .quran.co.in in prod
+      maxAge,
+      path,
+    };
+  }
+
+  private setAuthCookies(res: Response, accessToken: string, refreshToken: string) {
+    res.cookie('access_token', accessToken, this.cookieOptions(ACCESS_COOKIE_MAX_AGE));
+    res.cookie('refresh_token', refreshToken, this.cookieOptions(REFRESH_COOKIE_MAX_AGE, '/api/auth'));
+  }
+
+  private clearAuthCookies(res: Response) {
+    res.cookie('access_token', '', this.cookieOptions(0));
+    res.cookie('refresh_token', '', this.cookieOptions(0, '/api/auth'));
+  }
+
+  @Get('google')
+  google(@Query('redirect') redirect: string | undefined, @Res() res: Response) {
+    const state = encodeURIComponent(safeRedirectPath(redirect));
+    res.redirect(this.auth.getGoogleAuthUrl(state));
+  }
+
+  @Get('google/callback')
+  async googleCallback(
+    @Query('code') code: string | undefined,
+    @Query('state') state: string | undefined,
+    @Res() res: Response,
+  ) {
+    if (!code) {
+      res.redirect(`${webUrl()}/sign-in?error=oauth`);
+      return;
+    }
+    try {
+      const { accessToken, refreshToken } = await this.auth.handleGoogleCallback(code);
+      this.setAuthCookies(res, accessToken, refreshToken);
+      res.redirect(`${webUrl()}${safeRedirectPath(decodeURIComponent(state ?? '/'))}`);
+    } catch (err) {
+      console.error('[auth] google callback failed:', err);
+      res.redirect(`${webUrl()}/sign-in?error=oauth`);
+    }
+  }
+
+  /** Flutter/native: exchange a Google ID token for API tokens (JSON, no cookies). */
+  @Post('google/mobile')
+  async googleMobile(@Body() body: { idToken?: string }) {
+    if (!body?.idToken) throw new UnauthorizedException({ error: 'idToken is required' });
+    const { user, accessToken, refreshToken } = await this.auth.loginWithGoogleIdToken(body.idToken);
+    return { user: publicUser(user), accessToken, refreshToken };
+  }
+
+  /** Refresh: web sends the cookie automatically; mobile passes it in the body. */
+  @Post('refresh')
+  async refresh(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+    @Body() body?: { refreshToken?: string },
+  ) {
+    const token =
+      (req as Request & { cookies?: Record<string, string> }).cookies?.refresh_token ??
+      body?.refreshToken;
+    const { user, accessToken, refreshToken } = await this.auth.refresh(token);
+    this.setAuthCookies(res, accessToken, refreshToken);
+    return { user: publicUser(user), accessToken, refreshToken };
+  }
+
+  @Post('logout')
+  logout(@Res({ passthrough: true }) res: Response) {
+    this.clearAuthCookies(res);
+    return { success: true };
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async me(@CurrentUser() jwtUser: JwtUser) {
+    const user = await this.users.findById(jwtUser.userId);
+    if (!user) throw new UnauthorizedException({ error: 'Unauthorized' });
+    return { user: publicUser(user) };
+  }
+}

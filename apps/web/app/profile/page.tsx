@@ -3,7 +3,8 @@
 
 'use client';
 
-import { useSession, signOut } from 'next-auth/react';
+import { backendUrl } from '@/lib/api/backend';
+import { useSession, signOut } from '@/components/auth/auth-client';
 import { useRouter } from 'next/navigation';
 import { Container } from '@/components/ui/container';
 import { Heading, Text } from '@/components/ui/typography';
@@ -38,7 +39,7 @@ export default function ProfilePage() {
   useEffect(() => {
     if (status === 'authenticated' && session?.user?.email) {
       setLoadingUserData(true);
-      fetch('/api/user/me')
+      fetch(backendUrl('/api/user/me'), { credentials: 'include' })
         .then((res) => res.json())
         .then((data) => {
           if (data.error) {

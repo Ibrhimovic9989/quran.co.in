@@ -11,8 +11,13 @@ import {
   Logger,
   Param,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { QuranService } from './quran.service';
+import { AyahOfTheDayService } from './ayah-of-the-day.service';
+import { OptionalJwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CurrentUser } from '../auth/current-user.decorator';
+import type { JwtUser } from '../auth/auth.service';
 
 function parseIntOr(value: string | undefined, fallback: number): number {
   const n = parseInt(value ?? '', 10);
@@ -51,7 +56,22 @@ function validAyahNo(raw: string): number {
 export class QuranController {
   private readonly logger = new Logger(QuranController.name);
 
-  constructor(private readonly quran: QuranService) {}
+  constructor(
+    private readonly quran: QuranService,
+    private readonly ayahOfTheDay: AyahOfTheDayService,
+  ) {}
+
+  @Get('ayah-of-the-day')
+  @UseGuards(OptionalJwtAuthGuard)
+  @Header('Cache-Control', 'no-store, max-age=0')
+  async getAyahOfTheDay(@CurrentUser() user: JwtUser | undefined) {
+    try {
+      return await this.ayahOfTheDay.getForUser(user?.userId ?? null);
+    } catch (error) {
+      this.logger.error('Error fetching ayah of the day', error as Error);
+      serverError('Failed to get ayah');
+    }
+  }
 
   @Get('surahs')
   @Header('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=7200')

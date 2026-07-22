@@ -4,7 +4,8 @@
 'use client';
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/components/auth/auth-client';
+import { backendUrl } from '@/lib/api/backend';
 
 type BookmarkDto = {
   id: string;
@@ -49,7 +50,7 @@ export function BookmarksProvider({ children }: { children: React.ReactNode }) {
     if (status !== 'authenticated' || !session?.user) return;
     setIsLoading(true);
     try {
-      const res = await fetch('/api/bookmarks', { cache: 'no-store' });
+      const res = await fetch(backendUrl('/api/bookmarks'), { cache: 'no-store', credentials: 'include' });
       if (!res.ok) return;
       const data = (await res.json()) as { bookmarks?: BookmarkDto[] };
       setBookmarks(Array.isArray(data.bookmarks) ? data.bookmarks : []);
@@ -98,8 +99,9 @@ export function BookmarksProvider({ children }: { children: React.ReactNode }) {
         setBookmarks((prev) => prev.filter((b) => toBookmarkKey(b.surahNumber, b.ayahNumber) !== key));
 
         try {
-          const res = await fetch(`/api/bookmarks/${surahNumber}${ayahNumber ? `/${ayahNumber}` : ''}`, {
+          const res = await fetch(backendUrl(`/api/bookmarks/${surahNumber}${ayahNumber ? `/${ayahNumber}` : ''}`), {
             method: 'DELETE',
+            credentials: 'include',
           });
           if (!res.ok) {
             setBookmarks(previousBookmarks);
@@ -126,8 +128,9 @@ export function BookmarksProvider({ children }: { children: React.ReactNode }) {
       });
 
       try {
-        const res = await fetch('/api/bookmarks', {
+        const res = await fetch(backendUrl('/api/bookmarks'), {
           method: 'POST',
+          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ surahNumber, ayahNumber }),
         });

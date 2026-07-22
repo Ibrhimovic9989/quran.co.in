@@ -3,7 +3,7 @@
 
 'use client';
 
-import { signOut } from 'next-auth/react';
+import { signOut } from '@/components/auth/auth-client';
 
 interface SignOutButtonProps {
   className?: string;

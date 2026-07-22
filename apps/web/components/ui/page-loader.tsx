@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/components/auth/auth-client';
 import { cn } from '@/lib/utils/cn';
 
 interface PageLoaderProps {

@@ -20,7 +20,7 @@ import {
   Compass,
   Sun,
 } from "lucide-react";
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signOut } from "@/components/auth/auth-client";
 import { cn } from "@/lib/utils/cn";
 import { Logo } from "@/components/ui/logo";
 
