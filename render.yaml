@@ -7,7 +7,9 @@ services:
     runtime: node
     plan: starter
     rootDir: .
-    buildCommand: npm install --ignore-scripts && npm run db:generate && npm run build:api
+    # --include=dev: NODE_ENV=production would otherwise skip devDependencies
+    # (the Nest CLI needed by the build lives there)
+    buildCommand: npm install --include=dev --ignore-scripts && npm run db:generate && npm run build:api
     startCommand: node apps/api/dist/main.js
     healthCheckPath: /api/quran/surahs
     envVars:
