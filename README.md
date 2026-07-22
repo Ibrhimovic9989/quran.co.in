@@ -117,7 +117,7 @@ quran.co.in/
 
 ### Users Table
 - `id` - UUID (Primary Key)
-- `clerk_id` - String (Unique, from Clerk)
+- `clerkId` - String (Unique) — stores the NextAuth user id (column name retained for back-compat)
 - `email` - String (Unique)
 - `name` - String
 - `image_url` - String (Optional)

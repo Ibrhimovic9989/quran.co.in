@@ -150,7 +150,7 @@ model Surah {
 
 ### Indexes
 
-- **User Lookups**: Indexed on `clerkId` and `email`
+- **User Lookups**: Indexed on `authProviderId` (physical column `clerkId`) and `email`
 - **Quran Queries**: Indexed on `(surahNumber, number)` and `apiProvider`
 - **User Interactions**: Indexed on `userId` and `(surahNumber, ayahNumber)`
 - **Reading History**: Indexed on `userId` and `readAt` for time-based queries

@@ -15,8 +15,8 @@ export async function GET(
     const { number } = await params;
     const { searchParams } = new URL(request.url);
     const surahNo = parseInt(number, 10);
-    const offset = parseInt(searchParams.get('offset') || '0', 10);
-    const limit = parseInt(searchParams.get('limit') || '20', 10);
+    const offset = Math.max(parseInt(searchParams.get('offset') || '0', 10) || 0, 0);
+    const limit = Math.min(Math.max(parseInt(searchParams.get('limit') || '20', 10) || 20, 1), 300);
 
     if (isNaN(surahNo) || surahNo < 1 || surahNo > 114) {
       return NextResponse.json(
@@ -26,17 +26,15 @@ export async function GET(
     }
 
     const repository = new QuranRepository();
-    
-    // Fetch ayahs with offset and limit
-    const ayahs = await repository.findAyahsBySurah(
-      surahNo,
-      'TEMPORARY_API',
-      limit + offset // Fetch up to limit + offset
-    );
 
-    // Slice to get the requested range
-    const paginatedAyahs = ayahs.slice(offset, offset + limit);
-    const hasMore = ayahs.length > offset + limit;
+    // Read only the requested page from the DB (skip+take) instead of fetching
+    // offset+limit rows and slicing in JS.
+    const [paginatedAyahs, total] = await Promise.all([
+      repository.findAyahsBySurah(surahNo, 'TEMPORARY_API', limit, offset),
+      repository.countAyahsBySurah(surahNo, 'TEMPORARY_API'),
+    ]);
+
+    const hasMore = offset + paginatedAyahs.length < total;
 
     return NextResponse.json(
       { ayahs: paginatedAyahs, hasMore },

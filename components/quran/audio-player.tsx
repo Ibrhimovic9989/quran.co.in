@@ -150,7 +150,10 @@ export function AudioPlayer({
         }
       }, 10000);
       
-      audio.addEventListener('ended', () => {
+      // Named handler so the SAME reference is used for add + remove.
+      // (Previously an inline arrow was passed to removeEventListener, so it
+      //  never matched — orphaned 'ended' listeners stacked on every re-run.)
+      const handleEnded = () => {
         setIsPlaying(false);
         // Clear saved position when audio ends
         if (!ayahNo && selectedReciter) {
@@ -159,14 +162,16 @@ export function AudioPlayer({
             localStorage.removeItem(storageKey);
           }
         }
-      });
-      
+      };
+
+      audio.addEventListener('ended', handleEnded);
+
       // Save position on pause
       audio.addEventListener('pause', savePosition);
-      
+
       return () => {
         clearInterval(interval);
-        audio.removeEventListener('ended', () => setIsPlaying(false));
+        audio.removeEventListener('ended', handleEnded);
         audio.removeEventListener('pause', savePosition);
       };
     }

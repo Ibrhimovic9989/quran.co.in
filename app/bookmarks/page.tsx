@@ -17,11 +17,15 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 function BookmarksList() {
   const { bookmarks, isLoading, toggle } = useBookmarks();
-  const { info } = useToast();
+  const { info, error: toastError } = useToast();
 
-  const handleRemove = (surahNumber: number, ayahNumber?: number) => {
-    toggle({ surahNumber, ayahNumber });
-    info('Removed. May Allah bless your recitation.');
+  const handleRemove = async (surahNumber: number, ayahNumber?: number) => {
+    const ok = await toggle({ surahNumber, ayahNumber });
+    if (ok) {
+      info('Removed. May Allah bless your recitation.');
+    } else {
+      toastError('Failed to remove bookmark. Please try again.');
+    }
   };
 
   if (isLoading) {

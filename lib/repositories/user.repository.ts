@@ -6,11 +6,11 @@ import type { User, UserCreateInput, UserUpdateInput } from '@/types/user';
 
 export class UserRepository {
   /**
-   * Find user by Clerk ID
+   * Find user by auth-provider ID (NextAuth user id)
    */
-  async findByClerkId(clerkId: string): Promise<User | null> {
+  async findByAuthProviderId(authProviderId: string): Promise<User | null> {
     const user = await prisma.user.findUnique({
-      where: { clerkId },
+      where: { authProviderId },
     });
     if (!user) return null;
     return {
@@ -53,7 +53,7 @@ export class UserRepository {
   async create(data: UserCreateInput): Promise<User> {
     const user = await prisma.user.create({
       data: {
-        clerkId: data.clerkId,
+        authProviderId: data.authProviderId,
         email: data.email,
         name: data.name,
         imageUrl: data.imageUrl,
@@ -83,11 +83,11 @@ export class UserRepository {
   }
 
   /**
-   * Update user by Clerk ID
+   * Update user by auth-provider ID (NextAuth user id)
    */
-  async updateByClerkId(clerkId: string, data: UserUpdateInput): Promise<User> {
+  async updateByAuthProviderId(authProviderId: string, data: UserUpdateInput): Promise<User> {
     const user = await prisma.user.update({
-      where: { clerkId },
+      where: { authProviderId },
       data: {
         name: data.name,
         imageUrl: data.imageUrl,
@@ -109,11 +109,11 @@ export class UserRepository {
   }
 
   /**
-   * Check if user exists by Clerk ID
+   * Check if user exists by auth-provider ID (NextAuth user id)
    */
-  async existsByClerkId(clerkId: string): Promise<boolean> {
+  async existsByAuthProviderId(authProviderId: string): Promise<boolean> {
     const user = await prisma.user.findUnique({
-      where: { clerkId },
+      where: { authProviderId },
       select: { id: true },
     });
     return user !== null;

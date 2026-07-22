@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { auth } from '@/app/api/auth/[...nextauth]/route';
-
-const prisma = new PrismaClient();
 
 // Prevent Vercel/Next.js from caching this route
 export const dynamic = 'force-dynamic';

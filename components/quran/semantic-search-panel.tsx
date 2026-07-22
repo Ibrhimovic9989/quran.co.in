@@ -126,7 +126,7 @@ export function SemanticSearchPanel({ query, className }: SemanticSearchPanelPro
           {results.map((r) => (
             <li key={`${r.surahNumber}:${r.ayahNumber}`}>
               <Link
-                href={`/quran/${r.surahNumber}`}
+                href={`/quran/${r.surahNumber}?ayah=${r.ayahNumber}`}
                 className="flex flex-col gap-1.5 px-4 py-3.5 hover:bg-purple-50/60 transition-colors group"
               >
                 {/* Meta row */}

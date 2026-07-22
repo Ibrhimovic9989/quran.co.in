@@ -128,7 +128,7 @@ The codebase uses a repository pattern for data access:
 import { UserRepository, QuranRepository } from '@/lib/repositories';
 
 const userRepo = new UserRepository();
-const user = await userRepo.findByClerkId('clerk_123');
+const user = await userRepo.findByAuthProviderId('nextauth_user_id');
 
 const quranRepo = new QuranRepository();
 const surah = await quranRepo.findSurahByNumber(1, 'TEMPORARY_API');

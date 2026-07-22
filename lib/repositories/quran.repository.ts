@@ -4,14 +4,37 @@
 import { prisma } from '@/lib/prisma';
 import type { ApiProvider, Prisma } from '@prisma/client';
 
+// Shared input shapes — also consumed by the surah mappers so the field mapping
+// lives in exactly one place.
+export interface UpsertSurahInput {
+  number: number;
+  name: string;
+  englishName: string;
+  arabicName: string;
+  englishNameTranslation: string;
+  numberOfAyahs: number;
+  revelationType: 'MECCAN' | 'MEDINAN';
+  apiProvider: ApiProvider;
+  metadata?: Prisma.JsonValue;
+}
+
+export interface UpsertAyahInput {
+  surahId: string;
+  surahNumber: number;
+  number: number;
+  apiProvider: ApiProvider;
+  arabicText: string;
+  translationText: string;
+  transliteration?: string;
+  audioUrl?: string;
+  metadata?: Prisma.JsonValue;
+}
+
 export class QuranRepository {
   /**
    * Find surah by number and provider (optimized query)
    */
-  async findSurahByNumber(
-    number: number,
-    apiProvider: ApiProvider
-  ): Promise<any | null> {
+  async findSurahByNumber(number: number, apiProvider: ApiProvider) {
     return prisma.surah.findFirst({
       where: {
         number,
@@ -35,11 +58,12 @@ export class QuranRepository {
   /**
    * Find all surahs (optimized query - minimal fields)
    */
-  async findAllSurahs(apiProvider?: ApiProvider): Promise<any[]> {
+  async findAllSurahs(apiProvider?: ApiProvider) {
     return prisma.surah.findMany({
       where: apiProvider ? { apiProvider } : undefined,
       orderBy: { number: 'asc' },
       select: {
+        id: true, // needed by the sync service to set Ayah.surahId
         number: true,
         name: true,
         englishName: true,
@@ -57,17 +81,7 @@ export class QuranRepository {
   /**
    * Upsert surah
    */
-  async upsertSurah(data: {
-    number: number;
-    name: string;
-    englishName: string;
-    arabicName: string;
-    englishNameTranslation: string;
-    numberOfAyahs: number;
-    revelationType: 'MECCAN' | 'MEDINAN';
-    apiProvider: ApiProvider;
-    metadata?: Prisma.JsonValue;
-  }): Promise<any> {
+  async upsertSurah(data: UpsertSurahInput) {
     return prisma.surah.upsert({
       where: {
         number_apiProvider: {
@@ -82,7 +96,7 @@ export class QuranRepository {
         englishNameTranslation: data.englishNameTranslation,
         numberOfAyahs: data.numberOfAyahs,
         revelationType: data.revelationType,
-        metadata: data.metadata as any,
+        metadata: data.metadata as Prisma.InputJsonValue,
       },
       create: {
         number: data.number,
@@ -93,7 +107,7 @@ export class QuranRepository {
         numberOfAyahs: data.numberOfAyahs,
         revelationType: data.revelationType,
         apiProvider: data.apiProvider,
-        metadata: data.metadata as any,
+        metadata: data.metadata as Prisma.InputJsonValue,
       },
     });
   }
@@ -101,16 +115,11 @@ export class QuranRepository {
   /**
    * Update surah
    */
-  async updateSurah(
-    id: string,
-    data: {
-      metadata?: Prisma.JsonValue;
-    }
-  ): Promise<any> {
+  async updateSurah(id: string, data: { metadata?: Prisma.JsonValue }) {
     return prisma.surah.update({
       where: { id },
       data: {
-        metadata: data.metadata as any,
+        metadata: data.metadata as Prisma.InputJsonValue,
       },
     });
   }
@@ -118,11 +127,7 @@ export class QuranRepository {
   /**
    * Find ayah by surah number, ayah number, and provider
    */
-  async findAyah(
-    surahNumber: number,
-    ayahNumber: number,
-    apiProvider: ApiProvider
-  ): Promise<any | null> {
+  async findAyah(surahNumber: number, ayahNumber: number, apiProvider: ApiProvider) {
     return prisma.ayah.findFirst({
       where: {
         surahNumber,
@@ -133,25 +138,15 @@ export class QuranRepository {
   }
 
   /**
-   * Find ayah by number (alias for compatibility)
-   */
-  async findAyahByNumber(
-    surahNumber: number,
-    ayahNumber: number,
-    apiProvider: ApiProvider = 'TEMPORARY_API'
-  ): Promise<any | null> {
-    return this.findAyah(surahNumber, ayahNumber, apiProvider);
-  }
-
-  /**
    * Find ayahs by surah number (optimized query)
    * NETFLIX-STYLE: Only fetch what's needed initially
    */
   async findAyahsBySurah(
     surahNumber: number,
     apiProvider: ApiProvider = 'TEMPORARY_API',
-    limit?: number // Only fetch first N ayahs for fast initial load
-  ): Promise<any[]> {
+    limit?: number, // Only fetch first N ayahs for fast initial load
+    offset?: number // Skip this many ayahs (for pagination)
+  ) {
     return prisma.ayah.findMany({
       where: {
         surahNumber,
@@ -159,6 +154,7 @@ export class QuranRepository {
       },
       orderBy: { number: 'asc' },
       take: limit, // Limit results for fast initial load
+      skip: offset, // Read only the requested page instead of re-scanning from row 1
       select: {
         number: true,
         arabicText: true,
@@ -189,17 +185,7 @@ export class QuranRepository {
    * Upsert ayah
    * Merges metadata to preserve existing translations/tafsir
    */
-  async upsertAyah(data: {
-    surahId: string;
-    surahNumber: number;
-    number: number;
-    apiProvider: ApiProvider;
-    arabicText: string;
-    translationText: string;
-    transliteration?: string;
-    audioUrl?: string;
-    metadata?: Prisma.JsonValue;
-  }): Promise<any> {
+  async upsertAyah(data: UpsertAyahInput) {
     // First, try to find existing ayah to merge metadata
     const existing = await prisma.ayah.findUnique({
       where: {
@@ -232,7 +218,7 @@ export class QuranRepository {
         translationText: data.translationText,
         transliteration: data.transliteration,
         audioUrl: data.audioUrl,
-        metadata: mergedMetadata as any,
+        metadata: mergedMetadata as Prisma.InputJsonValue,
       },
       create: {
         surahId: data.surahId,
@@ -243,7 +229,7 @@ export class QuranRepository {
         translationText: data.translationText,
         transliteration: data.transliteration,
         audioUrl: data.audioUrl,
-        metadata: mergedMetadata as any,
+        metadata: mergedMetadata as Prisma.InputJsonValue,
       },
     });
   }
@@ -251,16 +237,11 @@ export class QuranRepository {
   /**
    * Update ayah
    */
-  async updateAyah(
-    id: string,
-    data: {
-      metadata?: Prisma.JsonValue;
-    }
-  ): Promise<any> {
+  async updateAyah(id: string, data: { metadata?: Prisma.JsonValue }) {
     return prisma.ayah.update({
       where: { id },
       data: {
-        metadata: data.metadata as any,
+        metadata: data.metadata as Prisma.InputJsonValue,
       },
     });
   }

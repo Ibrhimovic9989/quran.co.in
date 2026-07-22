@@ -1,42 +1,20 @@
 import { unstable_cache } from 'next/cache';
 import type { ApiProvider } from '@prisma/client';
 import { QuranApiClient } from '@/lib/api/quran-api-client';
+import { getApiBaseUrl } from '@/lib/api/api-base-url';
 import { QuranRepository } from '@/lib/repositories';
 import type { SurahInfo } from '@/types/quran-api';
+import {
+  mapApiSurahToUpsert,
+  mapApiSurahToListItem,
+  mapDbSurahToListItem,
+  type SurahListItem,
+} from '@/lib/services/quran-mappers';
 
-export type SurahListItem = SurahInfo & { surahNo: number };
+// Re-export for existing consumers that import the type from this module.
+export type { SurahListItem };
 
 const SURAH_LIST_REVALIDATE_SECONDS = 60 * 60;
-
-function getApiBaseUrl(provider: ApiProvider): string {
-  switch (provider) {
-    case 'QURAN_COM':
-      return process.env.QURAN_COM_API_URL || 'https://quranapi.pages.dev';
-    case 'CUSTOM':
-    case 'TEMPORARY_API':
-    default:
-      return 'https://quranapi.pages.dev';
-  }
-}
-
-function mapDbSurahsToList(dbSurahs: any[]): SurahListItem[] {
-  return dbSurahs.map((surah) => ({
-    surahName: surah.name,
-    surahNameArabic: surah.arabicName,
-    surahNameArabicLong: (surah.metadata as any)?.surahNameArabicLong || surah.arabicName,
-    surahNameTranslation: surah.englishNameTranslation || surah.englishName,
-    revelationPlace: (surah.revelationType === 'MECCAN' ? 'Mecca' : 'Madina') as 'Mecca' | 'Madina',
-    totalAyah: surah.numberOfAyahs,
-    surahNo: surah.number,
-  }));
-}
-
-function mapApiSurahsToList(apiSurahs: SurahInfo[]): SurahListItem[] {
-  return apiSurahs.map((surah, index) => ({
-    ...surah,
-    surahNo: index + 1,
-  }));
-}
 
 async function syncSurahsToDatabase(
   repository: QuranRepository,
@@ -44,21 +22,7 @@ async function syncSurahsToDatabase(
   apiProvider: ApiProvider
 ): Promise<void> {
   for (let index = 0; index < surahs.length; index += 1) {
-    const surah = surahs[index];
-
-    await repository.upsertSurah({
-      number: index + 1,
-      name: surah.surahName,
-      englishName: surah.surahNameTranslation,
-      arabicName: surah.surahNameArabic,
-      englishNameTranslation: surah.surahNameTranslation,
-      numberOfAyahs: surah.totalAyah,
-      revelationType: surah.revelationPlace === 'Mecca' ? 'MECCAN' : 'MEDINAN',
-      apiProvider,
-      metadata: {
-        surahNameArabicLong: surah.surahNameArabicLong,
-      } as any,
-    });
+    await repository.upsertSurah(mapApiSurahToUpsert(surahs[index], index + 1, apiProvider));
   }
 }
 
@@ -67,7 +31,7 @@ async function loadSurahList(apiProvider: ApiProvider): Promise<SurahListItem[]>
   const dbSurahs = await repository.findAllSurahs(apiProvider);
 
   if (dbSurahs.length > 0) {
-    return mapDbSurahsToList(dbSurahs);
+    return dbSurahs.map(mapDbSurahToListItem);
   }
 
   const apiClient = new QuranApiClient(getApiBaseUrl(apiProvider));
@@ -75,7 +39,7 @@ async function loadSurahList(apiProvider: ApiProvider): Promise<SurahListItem[]>
 
   syncSurahsToDatabase(repository, apiSurahs, apiProvider).catch(console.error);
 
-  return mapApiSurahsToList(apiSurahs);
+  return apiSurahs.map(mapApiSurahToListItem);
 }
 
 const surahListLoaders: Record<ApiProvider, () => Promise<SurahListItem[]>> = {

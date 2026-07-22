@@ -1,9 +1,17 @@
 import { NextRequest } from 'next/server';
 import { AzureOpenAI } from 'openai';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { getCanonicalAyahs } from '@/lib/data/canonical-context';
+import { rateLimit, clientIp, tooManyRequests } from '@/lib/utils/rate-limit';
 
-const prisma = new PrismaClient();
+// Input limits — cap attacker-controlled payload to bound token cost / injection surface.
+const MAX_QUESTION_LENGTH = 1000;
+const MAX_HISTORY_MESSAGES = 20;
+const MAX_HISTORY_CONTENT_LENGTH = 4000;
+
+// Rate limit: this route fires an embedding + a streaming chat completion per call.
+const ASK_RATE_LIMIT = 15;          // requests
+const ASK_RATE_WINDOW_MS = 60_000;  // per minute per IP
 
 function getEmbedClient() {
   return new AzureOpenAI({
@@ -215,15 +223,34 @@ interface HistoryMessage {
 }
 
 export async function POST(req: NextRequest) {
+  // Rate limit per client IP before doing any expensive work.
+  const limit = rateLimit(`ask:${clientIp(req)}`, ASK_RATE_LIMIT, ASK_RATE_WINDOW_MS);
+  if (!limit.ok) return tooManyRequests(limit);
+
   const { question, mode = 'focused', history = [] } = await req.json() as {
     question?: string;
     mode?: 'focused' | 'open';
     history?: HistoryMessage[];
   };
 
-  if (!question || question.trim().length < 3) {
+  if (!question || typeof question !== 'string' || question.trim().length < 3) {
     return new Response(JSON.stringify({ error: 'Question is required' }), { status: 400 });
   }
+
+  if (question.length > MAX_QUESTION_LENGTH) {
+    return new Response(JSON.stringify({ error: 'Question is too long' }), { status: 400 });
+  }
+
+  if (mode !== 'focused' && mode !== 'open') {
+    return new Response(JSON.stringify({ error: 'Invalid mode' }), { status: 400 });
+  }
+
+  // Sanitize client-supplied history: validate role, cap count and per-message length.
+  const safeHistory: HistoryMessage[] = (Array.isArray(history) ? history : [])
+    .filter((m): m is HistoryMessage =>
+      !!m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
+    .slice(-MAX_HISTORY_MESSAGES)
+    .map((m) => ({ role: m.role, content: m.content.slice(0, MAX_HISTORY_CONTENT_LENGTH) }));
 
   const q = question.trim();
 
@@ -352,8 +379,8 @@ export async function POST(req: NextRequest) {
     const userMessage = `Question: ${q}\n\n${label}:\n\n${context}`;
 
     // 5. Build full message history for context continuity
-    // Keep last 10 turns (20 messages) to stay within token limits
-    const recentHistory = history.slice(-20);
+    // Already validated + capped to the last MAX_HISTORY_MESSAGES messages above.
+    const recentHistory = safeHistory;
 
     const stream = await getChatClient().chat.completions.create({
       model: 'gpt-5.2-chat',

@@ -34,17 +34,16 @@ export function BookmarkButton({ surahNumber, ayahNumber, className, iconOnly = 
       return;
     }
 
-    try {
-      const wasBookmarked = bookmarked;
-      toggle({ surahNumber, ayahNumber });
-      if (wasBookmarked) {
-        info('Removed from bookmarks.');
-      } else {
-        success('Saved. May this verse be a source of guidance for you.');
-      }
-    } catch (err) {
-      console.error('Error toggling bookmark:', err);
+    const wasBookmarked = bookmarked;
+    const ok = await toggle({ surahNumber, ayahNumber });
+    if (!ok) {
       toastError('Failed to update bookmark. Please try again.');
+      return;
+    }
+    if (wasBookmarked) {
+      info('Removed from bookmarks.');
+    } else {
+      success('Saved. May this verse be a source of guidance for you.');
     }
   };
 
@@ -64,7 +63,7 @@ export function BookmarkButton({ surahNumber, ayahNumber, className, iconOnly = 
         if (bookmarkSurah === surahNumber && bookmarkAyah === (ayahNumber || undefined)) {
           const saveBookmark = async () => {
             try {
-              toggle({ surahNumber, ayahNumber });
+              await toggle({ surahNumber, ayahNumber });
               // Ensure list is fresh for Continue Reading card etc.
               await refresh();
               // Clean up URL

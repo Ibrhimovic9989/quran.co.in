@@ -34,7 +34,9 @@ enum RevelationType {
 
 model User {
   id        String   @id @default(uuid())
-  clerkId   String   @unique // NextAuth user ID
+  // NextAuth user id. Physical column stays "clerkId" (@map) to avoid a data
+  // migration — the app uses NextAuth, not Clerk; the old name was misleading.
+  authProviderId String @unique @map("clerkId")
   email     String   @unique
   name      String
   imageUrl  String?
@@ -51,7 +53,7 @@ model User {
   notes     Note[]
   readingHistory ReadingHistory[]
 
-  @@index([clerkId])
+  @@index([authProviderId])
   @@index([email])
   @@map("users")
 }

@@ -43,7 +43,7 @@ const nextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), web-share=(), window-management=(), local-fonts=(), idle-detection=(), usb=(), bluetooth=(), serial=(), hid=(), payment=(), interest-cohort=()',
+            value: 'camera=(), microphone=(), geolocation=(), web-share=(self), window-management=(), local-fonts=(), idle-detection=(), usb=(), bluetooth=(), serial=(), hid=(), payment=(), interest-cohort=()',
           },
         ],
       },

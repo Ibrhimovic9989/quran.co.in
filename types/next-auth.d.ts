@@ -8,7 +8,7 @@ declare module 'next-auth' {
   interface Session {
     user: {
       id?: string;
-      clerkId?: string;
+      authProviderId?: string;
       email?: string | null;
       name?: string | null;
       image?: string | null;
@@ -21,6 +21,6 @@ declare module 'next-auth/jwt' {
     id?: string;
     email?: string;
     dbUserId?: string;
-    dbUserClerkId?: string;
+    dbUserAuthProviderId?: string;
   }
 }

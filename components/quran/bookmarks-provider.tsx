@@ -30,7 +30,8 @@ type BookmarksContextValue = {
   latestBookmark: BookmarkDto | null;
   isBookmarked: (surahNumber: number, ayahNumber?: number) => boolean;
   refresh: () => Promise<void>;
-  toggle: (input: { surahNumber: number; ayahNumber?: number }) => void;
+  // Resolves true when the change was persisted, false if it failed (and was reverted).
+  toggle: (input: { surahNumber: number; ayahNumber?: number }) => Promise<boolean>;
 };
 
 const BookmarksContext = createContext<BookmarksContextValue | null>(null);
@@ -38,7 +39,10 @@ const BookmarksContext = createContext<BookmarksContextValue | null>(null);
 export function BookmarksProvider({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const [bookmarks, setBookmarks] = useState<BookmarkDto[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  // Start in the loading state when the session is already authenticated at mount,
+  // so consumers (e.g. the bookmarks page) show a skeleton instead of flashing the
+  // "No bookmarks yet" empty state before the first fetch resolves.
+  const [isLoading, setIsLoading] = useState(status === 'authenticated');
   const fetchedOnceRef = useRef(false);
 
   const refresh = useCallback(async () => {
@@ -83,8 +87,8 @@ export function BookmarksProvider({ children }: { children: React.ReactNode }) {
   );
 
   const toggle = useCallback(
-    ({ surahNumber, ayahNumber }: { surahNumber: number; ayahNumber?: number }) => {
-      if (status !== 'authenticated' || !session?.user) return;
+    async ({ surahNumber, ayahNumber }: { surahNumber: number; ayahNumber?: number }): Promise<boolean> => {
+      if (status !== 'authenticated' || !session?.user) return false;
 
       const key = toBookmarkKey(surahNumber, ayahNumber ?? null);
       const currentlyBookmarked = bookmarksSet.has(key);
@@ -93,16 +97,19 @@ export function BookmarksProvider({ children }: { children: React.ReactNode }) {
         const previousBookmarks = bookmarks;
         setBookmarks((prev) => prev.filter((b) => toBookmarkKey(b.surahNumber, b.ayahNumber) !== key));
 
-        fetch(`/api/bookmarks/${surahNumber}${ayahNumber ? `/${ayahNumber}` : ''}`, {
-          method: 'DELETE',
-        }).then((res) => {
+        try {
+          const res = await fetch(`/api/bookmarks/${surahNumber}${ayahNumber ? `/${ayahNumber}` : ''}`, {
+            method: 'DELETE',
+          });
           if (!res.ok) {
             setBookmarks(previousBookmarks);
+            return false;
           }
-        }).catch(() => {
+          return true;
+        } catch {
           setBookmarks(previousBookmarks);
-        });
-        return;
+          return false;
+        }
       }
 
       const previousBookmarks = bookmarks;
@@ -118,21 +125,24 @@ export function BookmarksProvider({ children }: { children: React.ReactNode }) {
         return [created, ...withoutSameSurah];
       });
 
-      fetch('/api/bookmarks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ surahNumber, ayahNumber }),
-      }).then((res) => {
+      try {
+        const res = await fetch('/api/bookmarks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ surahNumber, ayahNumber }),
+        });
         if (!res.ok) {
           setBookmarks(previousBookmarks);
-          return;
+          return false;
         }
 
         // Refresh in background to hydrate surah relation for Continue Reading.
         refresh().catch(() => {});
-      }).catch(() => {
+        return true;
+      } catch {
         setBookmarks(previousBookmarks);
-      });
+        return false;
+      }
     },
     [bookmarks, bookmarksSet, refresh, session?.user, status]
   );

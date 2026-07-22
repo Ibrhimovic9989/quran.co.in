@@ -7,7 +7,21 @@
 import ReactMarkdown from 'react-markdown';
 import remarkBreaks from 'remark-breaks';
 import rehypeRaw from 'rehype-raw';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import { cn } from '@/lib/utils/cn';
+
+// Sanitization schema: tafsir content comes from an external source, so raw HTML
+// is stripped of scripts/handlers/iframes/etc. We only re-permit the harmless
+// presentational <div class="tafsir-*"> wrappers this component itself emits.
+const tafsirSchema = {
+  ...defaultSchema,
+  tagNames: [...(defaultSchema.tagNames ?? []), 'div', 'span'],
+  attributes: {
+    ...defaultSchema.attributes,
+    div: [...(defaultSchema.attributes?.div ?? []), 'className', 'class'],
+    span: [...(defaultSchema.attributes?.span ?? []), 'className', 'class'],
+  },
+};
 
 interface TafsirContentProps {
   content: string;
@@ -83,22 +97,17 @@ export function TafsirContent({ content, className }: TafsirContentProps) {
     <div className={cn('tafsir-content', className)}>
       <ReactMarkdown
         remarkPlugins={[remarkBreaks]}
-        rehypePlugins={[rehypeRaw]}
+        // rehypeRaw parses the tafsir-* wrappers into real nodes; rehypeSanitize
+        // then strips anything unsafe from the (external) tafsir HTML.
+        rehypePlugins={[rehypeRaw, [rehypeSanitize, tafsirSchema]]}
         components={{
-          // Style paragraphs - with better spacing and HTML support
-          p: ({ children }) => {
-            // Check if paragraph contains HTML (our processed quotes/blocks)
-            const childrenStr = String(children);
-            if (childrenStr.includes('<div class="tafsir-')) {
-              // Render HTML directly for processed content
-              return <div className="mb-4 last:mb-0" dangerouslySetInnerHTML={{ __html: childrenStr }} />;
-            }
-            return (
-              <p className="mb-4 leading-relaxed text-gray-700 last:mb-0">
-                {children}
-              </p>
-            );
-          },
+          // Style paragraphs. The tafsir-* wrapper divs are top-level blocks
+          // rendered directly by rehypeRaw, so paragraphs are plain text here.
+          p: ({ children }) => (
+            <p className="mb-4 leading-relaxed text-gray-700 last:mb-0">
+              {children}
+            </p>
+          ),
           // Style headings
           h2: ({ children }) => (
             <h2 className="text-black text-xl font-semibold mt-6 mb-3 first:mt-0">

@@ -1,17 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
+import { rateLimit, clientIp, tooManyRequests } from '@/lib/utils/rate-limit';
 
-const prisma = new PrismaClient();
+const MAX_OFFSET = 200; // bound fan-out: fetchLimit = (limit + offset) * 4
+const SIMILAR_RATE_LIMIT = 40;         // requests
+const SIMILAR_RATE_WINDOW_MS = 60_000; // per minute per IP
 
 export async function GET(req: NextRequest) {
   const surah  = parseInt(req.nextUrl.searchParams.get('surah') ?? '0');
   const ayah   = parseInt(req.nextUrl.searchParams.get('ayah')  ?? '0');
-  const limit  = Math.min(parseInt(req.nextUrl.searchParams.get('limit')  ?? '5'), 20);
-  const offset = Math.max(parseInt(req.nextUrl.searchParams.get('offset') ?? '0'), 0);
+  const limit  = Math.min(Math.max(parseInt(req.nextUrl.searchParams.get('limit')  ?? '5') || 5, 1), 20);
+  const offset = Math.min(Math.max(parseInt(req.nextUrl.searchParams.get('offset') ?? '0') || 0, 0), MAX_OFFSET);
 
   if (!surah || !ayah) {
     return NextResponse.json({ error: 'surah and ayah params required' }, { status: 400 });
   }
+
+  const rl = rateLimit(`similar:${clientIp(req)}`, SIMILAR_RATE_LIMIT, SIMILAR_RATE_WINDOW_MS);
+  if (!rl.ok) return tooManyRequests(rl);
 
   try {
     // Prefer tafsir-enriched embedding as source vector; fall back to verse embedding

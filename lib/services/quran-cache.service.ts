@@ -3,9 +3,11 @@
 
 import { QuranRepository } from '@/lib/repositories';
 import { QuranApiClient } from '@/lib/api/quran-api-client';
+import { DEFAULT_QURAN_API_BASE_URL } from '@/lib/api/api-base-url';
 import type { ApiProvider } from '@prisma/client';
 import type { SurahResponse } from '@/types/quran-api';
 import { getCachedSurahList, type SurahListItem } from '@/lib/services/quran-surah-list-cache';
+import { mapApiSurahToUpsert, mapDbSurahToResponse, buildAyahMetadata } from '@/lib/services/quran-mappers';
 
 export class QuranCacheService {
   private repository: QuranRepository;
@@ -13,7 +15,7 @@ export class QuranCacheService {
 
   constructor() {
     this.repository = new QuranRepository();
-    this.apiClient = new QuranApiClient('https://quranapi.pages.dev');
+    this.apiClient = new QuranApiClient(DEFAULT_QURAN_API_BASE_URL);
   }
 
   /**
@@ -58,24 +60,8 @@ export class QuranCacheService {
       if (dbAyahs.length > 0) {
         // Build response from database (fast - <200ms for first 20 ayahs)
         const buildStartTime = Date.now();
-        const result: SurahResponse = {
-          surahName: dbSurah.name,
-          surahNameArabic: dbSurah.arabicName,
-          surahNameArabicLong: (dbSurah.metadata as any)?.surahNameArabicLong || dbSurah.arabicName,
-          surahNameTranslation: dbSurah.englishNameTranslation || dbSurah.englishName,
-          revelationPlace: (dbSurah.revelationType === 'MECCAN' ? 'Mecca' : 'Madina') as 'Mecca' | 'Madina',
-          totalAyah: dbSurah.numberOfAyahs,
-          surahNo: dbSurah.number,
-          audio: (dbSurah.metadata as any)?.audio || {},
-          english: dbAyahs.map(a => a.translationText || ''),
-          arabic1: dbAyahs.map(a => a.arabicText),
-          arabic2: dbAyahs.map(a => a.transliteration || a.arabicText),
-          bengali: dbAyahs.map(a => (a.metadata as any)?.bengali || null),
-          urdu: dbAyahs.map(a => (a.metadata as any)?.urdu || null),
-          turkish: dbAyahs.map(a => (a.metadata as any)?.turkish || null),
-          uzbek: dbAyahs.map(a => (a.metadata as any)?.uzbek || null),
-        };
-        
+        const result = mapDbSurahToResponse(dbSurah, dbAyahs);
+
         const totalTime = Date.now() - startTime;
         if (totalTime > 200) {
           console.warn(`Slow surah query (${surahNo}): ${totalTime}ms (surah: ${surahQueryTime}ms, ayahs: ${ayahsQueryTime}ms, build: ${Date.now() - buildStartTime}ms, count: ${dbAyahs.length})`);
@@ -106,20 +92,9 @@ export class QuranCacheService {
     surah: SurahResponse,
     apiProvider: ApiProvider
   ): Promise<void> {
-    const dbSurah = await this.repository.upsertSurah({
-      number: surah.surahNo,
-      name: surah.surahName,
-      englishName: surah.surahNameTranslation,
-      arabicName: surah.surahNameArabic,
-      englishNameTranslation: surah.surahNameTranslation,
-      numberOfAyahs: surah.totalAyah,
-      revelationType: surah.revelationPlace === 'Mecca' ? 'MECCAN' : 'MEDINAN',
-      apiProvider,
-      metadata: {
-        surahNameArabicLong: surah.surahNameArabicLong,
-        audio: surah.audio,
-      } as any,
-    });
+    const dbSurah = await this.repository.upsertSurah(
+      mapApiSurahToUpsert(surah, surah.surahNo, apiProvider, { audio: surah.audio })
+    );
 
     // Sync all ayahs in batches for better performance
     const batchSize = 50;
@@ -128,22 +103,6 @@ export class QuranCacheService {
       await Promise.all(
         batch.map((_, batchIndex) => {
           const ayahIndex = i + batchIndex;
-          // Build metadata with all translations
-          const metadata: Record<string, any> = {};
-          
-          if (surah.bengali?.[ayahIndex]) {
-            metadata.bengali = surah.bengali[ayahIndex];
-          }
-          if (surah.urdu?.[ayahIndex]) {
-            metadata.urdu = surah.urdu[ayahIndex];
-          }
-          if (surah.turkish?.[ayahIndex]) {
-            metadata.turkish = surah.turkish[ayahIndex];
-          }
-          if (surah.uzbek?.[ayahIndex]) {
-            metadata.uzbek = surah.uzbek[ayahIndex];
-          }
-          
           return this.repository.upsertAyah({
             surahId: dbSurah.id,
             surahNumber: surah.surahNo,
@@ -152,7 +111,7 @@ export class QuranCacheService {
             arabicText: surah.arabic1[ayahIndex],
             translationText: surah.english[ayahIndex],
             transliteration: surah.arabic2[ayahIndex],
-            metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
+            metadata: buildAyahMetadata(surah, ayahIndex),
           });
         })
       );

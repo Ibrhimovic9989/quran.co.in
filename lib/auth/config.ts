@@ -24,16 +24,16 @@ export const authOptions: NextAuthConfig = {
           if (!existingUser) {
             // Create user in our database
             await userRepo.create({
-              clerkId: user.id || '', // Using NextAuth ID as identifier
+              authProviderId: user.id || '', // NextAuth user id
               email: user.email,
               name: user.name || user.email.split('@')[0],
               imageUrl: user.image || undefined,
             });
           } else {
-            // Update user if exists - try by clerkId first, then by id
+            // Update user if exists - try by auth-provider id first, then by id
             try {
               if (user.id) {
-                await userRepo.updateByClerkId(user.id, {
+                await userRepo.updateByAuthProviderId(user.id, {
                   name: user.name || existingUser.name,
                   imageUrl: user.image || existingUser.imageUrl,
                 });
@@ -64,7 +64,7 @@ export const authOptions: NextAuthConfig = {
             const dbUser = await userRepo.findByEmail(user.email);
             if (dbUser) {
               token.dbUserId = dbUser.id;
-              token.dbUserClerkId = dbUser.clerkId;
+              token.dbUserAuthProviderId = dbUser.authProviderId;
             }
           }
         } catch (error) {
@@ -74,10 +74,11 @@ export const authOptions: NextAuthConfig = {
       return token;
     },
     async session({ session, token }) {
-      // Add database user IDs from token (no DB query needed)
+      // Add database user IDs from token (no DB query needed).
+      // Typed via the next-auth module augmentation in types/next-auth.d.ts.
       if (session.user && token.dbUserId) {
-        (session.user as any).id = token.dbUserId;
-        (session.user as any).clerkId = token.dbUserClerkId;
+        session.user.id = token.dbUserId;
+        session.user.authProviderId = token.dbUserAuthProviderId;
       }
       return session;
     },

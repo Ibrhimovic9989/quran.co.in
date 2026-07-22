@@ -3,9 +3,11 @@
 // Supports multiple API providers
 
 import { QuranApiClient } from '@/lib/api/quran-api-client';
+import { getApiBaseUrl } from '@/lib/api/api-base-url';
 import { QuranRepository } from '@/lib/repositories';
 import type { ApiProvider } from '@prisma/client';
 import type { SurahInfo, AyahResponse, SurahResponse } from '@/types/quran-api';
+import { mapApiSurahToUpsert, buildAyahMetadata } from '@/lib/services/quran-mappers';
 
 export class QuranService {
   private apiClient: QuranApiClient;
@@ -13,24 +15,8 @@ export class QuranService {
 
   constructor(apiProvider: ApiProvider = 'TEMPORARY_API') {
     // Initialize API client based on provider
-    const baseUrl = this.getApiBaseUrl(apiProvider);
-    this.apiClient = new QuranApiClient(baseUrl);
+    this.apiClient = new QuranApiClient(getApiBaseUrl(apiProvider));
     this.repository = new QuranRepository();
-  }
-
-  /**
-   * Get API base URL based on provider
-   */
-  private getApiBaseUrl(provider: ApiProvider): string {
-    switch (provider) {
-      case 'TEMPORARY_API':
-        // Use quranapi.pages.dev (not api.quran.com)
-        return 'https://quranapi.pages.dev';
-      case 'QURAN_COM':
-        return process.env.QURAN_COM_API_URL || '';
-      default:
-        return 'https://quranapi.pages.dev';
-    }
   }
 
   /**
@@ -38,23 +24,10 @@ export class QuranService {
    */
   async getAllSurahs(apiProvider: ApiProvider = 'TEMPORARY_API'): Promise<SurahInfo[]> {
     const surahs = await this.apiClient.getSurahs();
-    
+
     // Sync to database
     for (let i = 0; i < surahs.length; i++) {
-      const surah = surahs[i];
-      await this.repository.upsertSurah({
-        number: i + 1,
-        name: surah.surahName,
-        englishName: surah.surahNameTranslation,
-        arabicName: surah.surahNameArabic,
-        englishNameTranslation: surah.surahNameTranslation,
-        numberOfAyahs: surah.totalAyah,
-        revelationType: surah.revelationPlace === 'Mecca' ? 'MECCAN' : 'MEDINAN',
-        apiProvider,
-        metadata: {
-          surahNameArabicLong: surah.surahNameArabicLong,
-        } as any,
-      });
+      await this.repository.upsertSurah(mapApiSurahToUpsert(surahs[i], i + 1, apiProvider));
     }
 
     return surahs;
@@ -101,22 +74,11 @@ export class QuranService {
     apiProvider: ApiProvider = 'TEMPORARY_API'
   ): Promise<SurahResponse> {
     const surah = await this.apiClient.getSurah(surahNo);
-    
+
     // Sync to database
-    const dbSurah = await this.repository.upsertSurah({
-      number: surahNo,
-      name: surah.surahName,
-      englishName: surah.surahNameTranslation,
-      arabicName: surah.surahNameArabic,
-      englishNameTranslation: surah.surahNameTranslation,
-      numberOfAyahs: surah.totalAyah,
-      revelationType: surah.revelationPlace === 'Mecca' ? 'MECCAN' : 'MEDINAN',
-      apiProvider,
-      metadata: {
-        surahNameArabicLong: surah.surahNameArabicLong,
-        audio: surah.audio,
-      } as any,
-    });
+    const dbSurah = await this.repository.upsertSurah(
+      mapApiSurahToUpsert(surah, surahNo, apiProvider, { audio: surah.audio })
+    );
 
     // Sync all ayahs
     for (let i = 0; i < surah.english.length; i++) {
@@ -128,14 +90,7 @@ export class QuranService {
         arabicText: surah.arabic1[i],
         translationText: surah.english[i],
         transliteration: surah.arabic2[i],
-        metadata: (() => {
-          const meta: Record<string, any> = {};
-          if (surah.bengali?.[i]) meta.bengali = surah.bengali[i];
-          if (surah.urdu?.[i]) meta.urdu = surah.urdu[i];
-          if (surah.turkish?.[i]) meta.turkish = surah.turkish[i];
-          if (surah.uzbek?.[i]) meta.uzbek = surah.uzbek[i];
-          return Object.keys(meta).length > 0 ? meta : undefined;
-        })(),
+        metadata: buildAyahMetadata(surah, i),
       });
     }
 

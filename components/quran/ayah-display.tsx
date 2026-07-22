@@ -390,7 +390,7 @@ export function AyahDisplay({
                     {similarResults.map((r) => (
                       <li key={`${r.surahNumber}:${r.ayahNumber}`}>
                         <Link
-                          href={`/quran/${r.surahNumber}`}
+                          href={`/quran/${r.surahNumber}?ayah=${r.ayahNumber}`}
                           className="flex flex-col gap-1 px-3 py-3 hover:bg-purple-50 transition-colors group"
                         >
                           <div className="flex items-center justify-between">

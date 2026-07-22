@@ -2,7 +2,7 @@
 
 export interface User {
   id: string;
-  clerkId: string;
+  authProviderId: string;
   email: string;
   name: string;
   imageUrl?: string;
@@ -11,7 +11,7 @@ export interface User {
 }
 
 export interface UserCreateInput {
-  clerkId: string;
+  authProviderId: string;
   email: string;
   name: string;
   imageUrl?: string;

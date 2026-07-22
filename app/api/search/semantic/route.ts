@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AzureOpenAI } from 'openai';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
+import { rateLimit, clientIp, tooManyRequests } from '@/lib/utils/rate-limit';
 
-const prisma = new PrismaClient();
+const MAX_QUERY_LENGTH = 200;
+const SEARCH_RATE_LIMIT = 30;         // requests
+const SEARCH_RATE_WINDOW_MS = 60_000; // per minute per IP
 
 function getOpenAI() {
   return new AzureOpenAI({
@@ -14,12 +17,16 @@ function getOpenAI() {
 }
 
 export async function GET(req: NextRequest) {
-  const q     = req.nextUrl.searchParams.get('q')?.trim() ?? '';
-  const limit = Math.min(parseInt(req.nextUrl.searchParams.get('limit') ?? '8'), 20);
+  const q     = req.nextUrl.searchParams.get('q')?.trim().slice(0, MAX_QUERY_LENGTH) ?? '';
+  const limit = Math.min(Math.max(parseInt(req.nextUrl.searchParams.get('limit') ?? '8') || 8, 1), 20);
 
   if (q.length < 3) {
     return NextResponse.json({ results: [] });
   }
+
+  // Rate limit per IP before spending an OpenAI embedding call.
+  const rl = rateLimit(`search:${clientIp(req)}`, SEARCH_RATE_LIMIT, SEARCH_RATE_WINDOW_MS);
+  if (!rl.ok) return tooManyRequests(rl);
 
   try {
     // 1. Embed the query
