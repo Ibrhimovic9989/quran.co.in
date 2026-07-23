@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../core/api.dart';
 import '../core/library.dart';
 import '../core/theme.dart';
+import '../data/revelation_order.dart';
 import '../models.dart';
 import 'juz_screen.dart';
 import 'search_screen.dart';
@@ -23,7 +24,7 @@ class _SurahListScreenState extends State<SurahListScreen> {
   List<SurahInfo>? _surahs;
   String? _error;
   String _query = '';
-  int _tab = 0; // 0 = Surahs, 1 = Juz
+  int _tab = 0; // 0 = Surahs, 1 = Juz, 2 = Revelation order
 
   @override
   void initState() {
@@ -80,15 +81,23 @@ class _SurahListScreenState extends State<SurahListScreen> {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
                         child: SegmentedButton<int>(
+                          showSelectedIcon: false,
                           segments: const [
                             ButtonSegment(value: 0, label: Text('Sūrahs')),
                             ButtonSegment(value: 1, label: Text('Juz')),
+                            ButtonSegment(value: 2, label: Text('Revealed')),
                           ],
                           selected: {_tab},
                           onSelectionChanged: (s) => setState(() => _tab = s.first),
                         ),
                       ),
-                      Expanded(child: _tab == 0 ? _surahList(p, dark) : const JuzListScreen()),
+                      Expanded(
+                        child: switch (_tab) {
+                          1 => const JuzListScreen(),
+                          2 => _revelationList(p, dark),
+                          _ => _surahList(p, dark),
+                        },
+                      ),
                     ],
                   ),
       ),
@@ -150,18 +159,7 @@ class _SurahListScreenState extends State<SurahListScreen> {
         .toList();
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-          child: TextField(
-            onChanged: (v) => setState(() => _query = v),
-            decoration: InputDecoration(
-              hintText: 'Search sūrah…',
-              prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(24)),
-              isDense: true,
-            ),
-          ),
-        ),
+        _searchField('Search sūrah…'),
         Expanded(
           child: ListView.builder(
             itemCount: surahs.length,
@@ -179,6 +177,76 @@ class _SurahListScreenState extends State<SurahListScreen> {
                   subtitle: Text('${s.translation} · ${s.totalAyah} āyāt',
                       style: TextStyle(fontSize: 12, color: p.muted)),
                   trailing: Text(s.arabicName,
+                      textDirection: TextDirection.rtl, style: quranStyle(size: 22, height: 1.5)),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _searchField(String hint) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      child: TextField(
+        onChanged: (v) => setState(() => _query = v),
+        decoration: InputDecoration(
+          hintText: hint,
+          prefixIcon: const Icon(Icons.search),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(24)),
+          isDense: true,
+        ),
+      ),
+    );
+  }
+
+  // Surahs in the chronological order they were revealed (Tanzil ordering).
+  Widget _revelationList(QPalette p, bool dark) {
+    final byNo = {for (final s in _surahs!) s.surahNo: s};
+    final q = _query.toLowerCase();
+    final entries = <({int order, SurahInfo info, bool meccan})>[];
+    for (var i = 0; i < revelationOrderSurahs.length; i++) {
+      final info = byNo[revelationOrderSurahs[i]];
+      if (info == null) continue;
+      final order = i + 1;
+      if (_query.isNotEmpty &&
+          !info.name.toLowerCase().contains(q) &&
+          !info.translation.toLowerCase().contains(q) &&
+          info.surahNo.toString() != _query &&
+          order.toString() != _query) {
+        continue;
+      }
+      entries.add((order: order, info: info, meccan: i < meccanCount));
+    }
+    return Column(
+      children: [
+        _searchField('Search by name or order…'),
+        Expanded(
+          child: ListView.builder(
+            itemCount: entries.length,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            itemBuilder: (context, i) {
+              final e = entries[i];
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 4),
+                child: ListTile(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => SurahScreen(surahNo: e.info.surahNo)),
+                  ),
+                  leading: _Medallion(number: e.info.surahNo, dark: dark),
+                  title: Text(e.info.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                  subtitle: Row(
+                    children: [
+                      Text('Revealed #${e.order}',
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.w600, color: p.accent)),
+                      Text('  ·  ${e.meccan ? 'Meccan' : 'Medinan'}',
+                          style: TextStyle(fontSize: 12, color: p.muted)),
+                    ],
+                  ),
+                  trailing: Text(e.info.arabicName,
                       textDirection: TextDirection.rtl, style: quranStyle(size: 22, height: 1.5)),
                 ),
               );
