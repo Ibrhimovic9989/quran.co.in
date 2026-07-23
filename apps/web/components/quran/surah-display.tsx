@@ -19,6 +19,7 @@ import { SurahHeader } from './surah-header';
 import { SurahNavigation } from './surah-navigation';
 import { backendUrl } from '@/lib/api/backend';
 import type { WbwWord } from './word-by-word';
+import type { TajweedRun } from '@/lib/data/tajweed-rules';
 import { SurahPlaybackProvider } from './surah-playback-provider';
 import { SurahReadingView } from './surah-reading-view';
 import { SurahVerseListView } from './surah-verse-list-view';
@@ -51,6 +52,10 @@ export function SurahDisplay({ surah, mushafPage = null, tafsirs }: SurahDisplay
   const [wordsByAyah, setWordsByAyah] = useState<Record<number, WbwWord[]> | null>(null);
   const [wordsLoading, setWordsLoading] = useState(false);
 
+  const [tajweed, setTajweed] = useState(false);
+  const [tajweedByAyah, setTajweedByAyah] = useState<Record<number, TajweedRun[]> | null>(null);
+  const [tajweedLoading, setTajweedLoading] = useState(false);
+
   const toggleWordByWord = async () => {
     if (!wordByWord && !wordsByAyah && !wordsLoading) {
       setWordsLoading(true);
@@ -64,6 +69,23 @@ export function SurahDisplay({ surah, mushafPage = null, tafsirs }: SurahDisplay
       finally { setWordsLoading(false); }
     }
     setWordByWord((v) => !v);
+    if (!wordByWord) setTajweed(false); // the two Arabic views are mutually exclusive
+  };
+
+  const toggleTajweed = async () => {
+    if (!tajweed && !tajweedByAyah && !tajweedLoading) {
+      setTajweedLoading(true);
+      try {
+        const res = await fetch(backendUrl(`/api/quran/surah/${surah.surahNo}/tajweed`));
+        if (res.ok) {
+          const data = (await res.json()) as { tajweed: Record<number, TajweedRun[]> };
+          setTajweedByAyah(data.tajweed);
+        }
+      } catch { /* silent */ }
+      finally { setTajweedLoading(false); }
+    }
+    setTajweed((v) => !v);
+    if (!tajweed) setWordByWord(false);
   };
   const targetAyah = searchParams.get('ayah');
   const [displayMode, setDisplayMode] = useState<SurahDisplayMode>(
@@ -382,6 +404,9 @@ export function SurahDisplay({ surah, mushafPage = null, tafsirs }: SurahDisplay
               wordByWord={wordByWord}
               wordsLoading={wordsLoading}
               onWordByWordToggle={toggleWordByWord}
+              tajweed={tajweed}
+              tajweedLoading={tajweedLoading}
+              onTajweedToggle={toggleTajweed}
               mushafPage={mushafPage}
             />
 
@@ -406,6 +431,7 @@ export function SurahDisplay({ surah, mushafPage = null, tafsirs }: SurahDisplay
               <SurahVerseListView
                 focusMode={focusMode}
                 wordsByAyah={wordByWord ? wordsByAyah : null}
+                tajweedByAyah={tajweed ? tajweedByAyah : null}
                 surahNumber={surah.surahNo}
                 surahBaseData={surahBaseData}
                 loadedAyahs={loadedAyahs}

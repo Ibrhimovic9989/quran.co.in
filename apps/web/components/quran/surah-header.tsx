@@ -8,7 +8,8 @@ import type { SurahResponse } from '@/types/quran-api';
 import { getRevelationInfo, PERIOD_LABELS, APPROXIMATION_NOTE } from '@/lib/data/revelation-periods';
 import { RevelationLegendModal } from '@/components/ui/revelation-legend-modal';
 import { RepeatControl } from './playback-settings';
-import { Focus, Loader2, WholeWord, BookOpen } from 'lucide-react';
+import { Focus, Loader2, WholeWord, BookOpen, Palette } from 'lucide-react';
+import { TajweedLegendButton } from './tajweed-text';
 import Link from 'next/link';
 
 interface SurahHeaderProps {
@@ -22,6 +23,9 @@ interface SurahHeaderProps {
   wordByWord?: boolean;
   wordsLoading?: boolean;
   onWordByWordToggle?: () => void;
+  tajweed?: boolean;
+  tajweedLoading?: boolean;
+  onTajweedToggle?: () => void;
   mushafPage?: number | null;
 }
 
@@ -36,6 +40,9 @@ export function SurahHeader({
   wordByWord = false,
   wordsLoading = false,
   onWordByWordToggle,
+  tajweed = false,
+  tajweedLoading = false,
+  onTajweedToggle,
   mushafPage = null,
 }: SurahHeaderProps) {
   const hasAudio = surah.audio && Object.keys(surah.audio).length > 0;
@@ -117,6 +124,21 @@ export function SurahHeader({
               Word by Word
             </button>
           )}
+          {mode === 'verse' && onTajweedToggle && (
+            <button
+              onClick={onTajweedToggle}
+              title="Tajwīd colors — tap any colored letter to learn its rule"
+              className={
+                tajweed
+                  ? 'flex items-center gap-1.5 rounded-full bg-accent px-3.5 py-2 text-xs font-semibold text-white transition-colors'
+                  : 'flex items-center gap-1.5 rounded-full border border-line bg-surface px-3.5 py-2 text-xs font-semibold text-ink-muted transition-colors hover:text-ink'
+              }
+            >
+              {tajweedLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : <Palette className="h-3.5 w-3.5" aria-hidden />}
+              Tajwīd
+            </button>
+          )}
+          {mode === 'verse' && tajweed && <TajweedLegendButton />}
           {mushafPage != null && (
             <Link
               href={`/mushaf/${mushafPage}`}

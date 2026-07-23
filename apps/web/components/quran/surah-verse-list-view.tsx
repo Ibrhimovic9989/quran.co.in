@@ -4,10 +4,12 @@ import { AyahDisplay } from './ayah-display';
 import type { WbwWord } from './word-by-word';
 import { useOptionalSurahPlayback } from './surah-playback-provider';
 import type { TafsirResponse } from '@/types/quran-api';
+import type { TajweedRun } from '@/lib/data/tajweed-rules';
 
 interface SurahVerseListViewProps {
   focusMode?: boolean;
   wordsByAyah?: Record<number, WbwWord[]> | null;
+  tajweedByAyah?: Record<number, TajweedRun[]> | null;
   surahNumber: number;
   surahBaseData: {
     surahName: string;
@@ -57,6 +59,7 @@ function BismillahHeader() {
 export function SurahVerseListView({
   focusMode = false,
   wordsByAyah = null,
+  tajweedByAyah = null,
   surahNumber,
   surahBaseData,
   loadedAyahs,
@@ -108,6 +111,7 @@ export function SurahVerseListView({
               onReciterChange={onReciterChange}
               isActive={sharedPlayback?.activeAyahNumber === ayahNo}
               words={wordsByAyah?.[ayahNo] ?? null}
+              tajweedRuns={tajweedByAyah?.[ayahNo] ?? null}
               enableSharedPlayback={true}
             />
           </div>

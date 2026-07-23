@@ -28,6 +28,41 @@ import type {
 
 const SURAH_LIST_TTL_MS = 60 * 60 * 1000; // 1 hour, mirrors the old unstable_cache revalidate
 
+/** Arabic combining marks (ḥarakāt, superscript alif, hamza/madda marks,
+ *  Quranic annotation signs) that must never open a run — a leading combiner
+ *  would detach from its base letter (which lives in the previous run) and
+ *  render on a dotted-circle placeholder. */
+function isCombining(cp: number): boolean {
+  return (
+    (cp >= 0x064b && cp <= 0x065f) ||
+    cp === 0x0670 ||
+    (cp >= 0x06d6 && cp <= 0x06ed) ||
+    cp === 0x0640 // tatweel — a shaping joiner, keep it with the base too
+  );
+}
+
+/** Move each run's leading combining marks onto the end of the previous run so
+ *  every colored run begins with a base letter. Keeps ḥarakāt attached to their
+ *  base while still coloring the letter itself. */
+function shiftLeadingCombiners(
+  runs: [string, string | null][],
+): { t: string; r: string | null }[] {
+  const out = runs.map(([t, r]) => ({ t, r }));
+  for (let i = 1; i < out.length; i++) {
+    let t = out[i].t;
+    let shift = '';
+    while (t.length && isCombining(t.codePointAt(0)!)) {
+      shift += t[0];
+      t = t.slice(1);
+    }
+    if (shift) {
+      out[i - 1].t += shift;
+      out[i].t = t;
+    }
+  }
+  return out.filter((run) => run.t.length > 0);
+}
+
 export interface JuzAyahsResult {
   juzNumber: number;
   totalAyahs: number;
@@ -139,7 +174,7 @@ export class QuranService {
     const rows = await this.repository.findTajweedBySurah(surahNo);
     const byAyah: Record<number, { t: string; r: string | null }[]> = {};
     for (const row of rows) {
-      byAyah[row.ayahNumber] = row.runs.map(([t, r]) => ({ t, r }));
+      byAyah[row.ayahNumber] = shiftLeadingCombiners(row.runs);
     }
     return byAyah;
   }

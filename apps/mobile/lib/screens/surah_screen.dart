@@ -11,6 +11,7 @@ import '../core/library.dart';
 import '../core/settings.dart';
 import '../core/theme.dart';
 import '../models.dart';
+import '../widgets/tajweed_text.dart';
 import '../widgets/verse_actions.dart';
 import 'mushaf_screen.dart';
 
@@ -36,6 +37,9 @@ class _SurahScreenState extends State<SurahScreen> {
 
   bool _wordByWord = false;
   Map<int, List<WordUnit>>? _words;
+
+  bool _tajweed = false;
+  Map<int, List<TajweedRun>>? _tajweedRuns;
 
   final _scroll = ScrollController();
 
@@ -156,6 +160,23 @@ class _SurahScreenState extends State<SurahScreen> {
     }
   }
 
+  Future<void> _loadTajweed() async {
+    if (_tajweedRuns != null) return;
+    try {
+      final data = await Api.instance.getJson('/api/quran/surah/${widget.surahNo}/tajweed')
+          as Map<String, dynamic>;
+      final raw = data['tajweed'] as Map<String, dynamic>? ?? {};
+      final map = <int, List<TajweedRun>>{};
+      raw.forEach((k, v) {
+        map[int.parse(k)] =
+            (v as List).map((e) => TajweedRun.fromJson(e as Map<String, dynamic>)).toList();
+      });
+      if (mounted) setState(() => _tajweedRuns = map);
+    } catch (_) {
+      if (mounted) setState(() => _tajweed = false);
+    }
+  }
+
   Future<String?> _resolveAudio(int ayahNo) async {
     try {
       final data = await Api.instance
@@ -266,8 +287,19 @@ class _SurahScreenState extends State<SurahScreen> {
           PopupMenuButton<String>(
             onSelected: (v) {
               switch (v) {
+                case 'tajweed':
+                  setState(() {
+                    _tajweed = !_tajweed;
+                    if (_tajweed) _wordByWord = false;
+                  });
+                  if (_tajweed) _loadTajweed();
+                case 'legend':
+                  showTajweedLegendSheet(context);
                 case 'wbw':
-                  setState(() => _wordByWord = !_wordByWord);
+                  setState(() {
+                    _wordByWord = !_wordByWord;
+                    if (_wordByWord) _tajweed = false;
+                  });
                   if (_wordByWord) _loadWords();
                 case 'translit':
                   Settings.instance.setTransliteration(!Settings.instance.showTransliteration);
@@ -278,6 +310,10 @@ class _SurahScreenState extends State<SurahScreen> {
               }
             },
             itemBuilder: (context) => [
+              CheckedPopupMenuItem(
+                  value: 'tajweed', checked: _tajweed, child: const Text('Tajwīd colors')),
+              if (_tajweed)
+                const PopupMenuItem(value: 'legend', child: Text('Tajwīd legend')),
               CheckedPopupMenuItem(
                   value: 'wbw', checked: _wordByWord, child: const Text('Word by word')),
               CheckedPopupMenuItem(
@@ -398,10 +434,12 @@ class _SurahScreenState extends State<SurahScreen> {
             else ...[
               Align(
                 alignment: Alignment.centerRight,
-                child: Text(a.arabic,
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.right,
-                    style: quranStyle(size: 26, height: 2.0)),
+                child: (_tajweed && _tajweedRuns?[a.number] != null)
+                    ? TajweedAyah(runs: _tajweedRuns![a.number]!)
+                    : Text(a.arabic,
+                        textDirection: TextDirection.rtl,
+                        textAlign: TextAlign.right,
+                        style: quranStyle(size: 26, height: 2.0)),
               ),
               if (Settings.instance.showTransliteration &&
                   a.transliteration != null &&
