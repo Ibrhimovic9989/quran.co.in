@@ -1,19 +1,14 @@
-// Ask the Quran — native chat over the API's SSE stream.
+// Ask the Quran — native chat over the API's SSE stream, with persistent
+// conversation history (a drawer of past chats, new-chat, restore, delete).
 
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../core/api.dart';
+import '../core/chat_store.dart';
 import '../core/theme.dart';
 import '../models.dart';
 import 'surah_screen.dart';
-
-class _Message {
-  final String role; // user | assistant
-  String content;
-  List<AskSource> sources = const [];
-  _Message(this.role, this.content);
-}
 
 class AskScreen extends StatefulWidget {
   const AskScreen({super.key});
@@ -23,7 +18,10 @@ class AskScreen extends StatefulWidget {
 }
 
 class _AskScreenState extends State<AskScreen> {
-  final List<_Message> _messages = [];
+  final List<ChatMessage> _messages = [];
+  String? _convoId;
+  String? _title;
+
   final _input = TextEditingController();
   final _scroll = ScrollController();
   bool _loading = false;
@@ -43,6 +41,38 @@ class _AskScreenState extends State<AskScreen> {
     super.dispose();
   }
 
+  int get _nowMs => DateTime.now().millisecondsSinceEpoch;
+
+  void _newChat() {
+    setState(() {
+      _messages.clear();
+      _convoId = null;
+      _title = null;
+    });
+  }
+
+  void _openConversation(Conversation c) {
+    setState(() {
+      _convoId = c.id;
+      _title = c.title;
+      _messages
+        ..clear()
+        ..addAll(c.messages.map((m) => ChatMessage(m.role, m.content, sources: m.sources)));
+    });
+  }
+
+  void _persist() {
+    if (_convoId == null || _messages.isEmpty) return;
+    ChatStore.instance.save(Conversation(
+      id: _convoId!,
+      title: _title ?? 'Conversation',
+      updatedAt: _nowMs,
+      messages: _messages
+          .map((m) => ChatMessage(m.role, m.content, sources: m.sources))
+          .toList(),
+    ));
+  }
+
   Future<void> _ask(String question) async {
     final q = question.trim();
     if (q.isEmpty || _loading) return;
@@ -53,13 +83,23 @@ class _AskScreenState extends State<AskScreen> {
         .toList(growable: false);
 
     setState(() {
-      _messages.add(_Message('user', q));
-      _messages.add(_Message('assistant', ''));
+      if (_convoId == null) {
+        _convoId = '$_nowMs';
+        _title = q.length > 48 ? '${q.substring(0, 48)}…' : q;
+      }
+      _messages.add(ChatMessage('user', q));
+      _messages.add(ChatMessage('assistant', ''));
       _loading = true;
     });
 
     try {
-      await for (final event in Api.instance.askStream(question: q, mode: _mode, history: history)) {
+      // Inactivity guard: a free-tier model can occasionally hang. 75s tolerates
+      // a Render cold start before the first frame; once tokens flow they're
+      // far faster, so this only trips on a genuinely stuck stream.
+      final stream = Api.instance
+          .askStream(question: q, mode: _mode, history: history)
+          .timeout(const Duration(seconds: 75));
+      await for (final event in stream) {
         if (!mounted) return;
         setState(() {
           final last = _messages.last;
@@ -79,12 +119,14 @@ class _AskScreenState extends State<AskScreen> {
     } catch (_) {
       if (mounted) {
         setState(() {
-          _messages.last.content =
-              _messages.last.content.isEmpty ? 'Something went wrong — please try again.' : _messages.last.content;
+          _messages.last.content = _messages.last.content.isEmpty
+              ? 'Something went wrong — please try again.'
+              : _messages.last.content;
         });
       }
     } finally {
       if (mounted) setState(() => _loading = false);
+      _persist();
     }
   }
 
@@ -92,9 +134,19 @@ class _AskScreenState extends State<AskScreen> {
   Widget build(BuildContext context) {
     final dark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
+      drawer: _HistoryDrawer(
+        currentId: _convoId,
+        onNew: _newChat,
+        onOpen: _openConversation,
+      ),
       appBar: AppBar(
         title: const Text('Ask the Quran'),
         actions: [
+          IconButton(
+            tooltip: 'New chat',
+            icon: const Icon(Icons.add_comment_outlined),
+            onPressed: _messages.isEmpty ? null : _newChat,
+          ),
           PopupMenuButton<String>(
             tooltip: 'Answer mode',
             initialValue: _mode,
@@ -207,8 +259,8 @@ class _AskScreenState extends State<AskScreen> {
                                           ),
                                           onPressed: () => Navigator.of(context).push(
                                             MaterialPageRoute(
-                                              builder: (_) =>
-                                                  SurahScreen(surahNo: s.surahNumber),
+                                              builder: (_) => SurahScreen(
+                                                  surahNo: s.surahNumber, initialAyah: s.ayahNumber),
                                             ),
                                           ),
                                         ),
@@ -228,9 +280,8 @@ class _AskScreenState extends State<AskScreen> {
                                           .map((s) => '${s.surahNumber}:${s.ayahNumber}')
                                           .join(', ');
                                       Share.share(cites.isEmpty
-                                            ? m.content
-                                            : '${m.content}\n\nSources: $cites\n— quran.co.in',
-                                      );
+                                          ? m.content
+                                          : '${m.content}\n\nSources: $cites\n— quran.co.in');
                                     },
                                   ),
                                 ),
@@ -268,6 +319,98 @@ class _AskScreenState extends State<AskScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _HistoryDrawer extends StatelessWidget {
+  final String? currentId;
+  final VoidCallback onNew;
+  final void Function(Conversation) onOpen;
+  const _HistoryDrawer({required this.currentId, required this.onNew, required this.onOpen});
+
+  String _ago(int ms) {
+    final d = DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(ms));
+    if (d.inMinutes < 1) return 'just now';
+    if (d.inMinutes < 60) return '${d.inMinutes}m ago';
+    if (d.inHours < 24) return '${d.inHours}h ago';
+    if (d.inDays < 7) return '${d.inDays}d ago';
+    return '${(d.inDays / 7).floor()}w ago';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final p = QPalette.of(context);
+    return Drawer(
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Row(
+                children: [
+                  Text('History',
+                      style: TextStyle(
+                          fontSize: 12, letterSpacing: 2, fontWeight: FontWeight.w700, color: p.gold)),
+                  const Spacer(),
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      onNew();
+                    },
+                    icon: const Icon(Icons.add, size: 18),
+                    label: const Text('New'),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1),
+            Expanded(
+              child: ValueListenableBuilder<List<Conversation>>(
+                valueListenable: ChatStore.instance.conversations,
+                builder: (context, convos, _) {
+                  if (convos.isEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text('No past conversations yet.',
+                            style: TextStyle(color: p.muted), textAlign: TextAlign.center),
+                      ),
+                    );
+                  }
+                  return ListView.builder(
+                    itemCount: convos.length,
+                    itemBuilder: (context, i) {
+                      final c = convos[i];
+                      final selected = c.id == currentId;
+                      return ListTile(
+                        selected: selected,
+                        selectedTileColor: p.accent.withValues(alpha: 0.08),
+                        leading: Icon(Icons.chat_bubble_outline, size: 20, color: p.muted),
+                        title: Text(c.title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                        subtitle: Text('${_ago(c.updatedAt)} · ${c.messages.length ~/ 2} Q',
+                            style: TextStyle(fontSize: 11, color: p.muted)),
+                        trailing: IconButton(
+                          icon: Icon(Icons.close, size: 18, color: p.muted),
+                          onPressed: () => ChatStore.instance.delete(c.id),
+                        ),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          onOpen(c);
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
