@@ -16,6 +16,8 @@ dependencies:
   flutter_web_auth_2: ^4.1.0
   just_audio: ^0.9.46
   google_fonts: ^6.2.1
+  shared_preferences: ^2.3.0
+  share_plus: ^10.1.0
 
 dev_dependencies:
   flutter_test:

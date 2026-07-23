@@ -1,6 +1,7 @@
 // Ask the Quran — native chat over the API's SSE stream.
 
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../core/api.dart';
 import '../core/theme.dart';
@@ -26,6 +27,7 @@ class _AskScreenState extends State<AskScreen> {
   final _input = TextEditingController();
   final _scroll = ScrollController();
   bool _loading = false;
+  String _mode = 'focused'; // focused = grounded only; open = broader answer
 
   static const _suggestions = [
     'What does the Quran say about patience?',
@@ -57,7 +59,7 @@ class _AskScreenState extends State<AskScreen> {
     });
 
     try {
-      await for (final event in Api.instance.askStream(question: q, history: history)) {
+      await for (final event in Api.instance.askStream(question: q, mode: _mode, history: history)) {
         if (!mounted) return;
         setState(() {
           final last = _messages.last;
@@ -90,7 +92,39 @@ class _AskScreenState extends State<AskScreen> {
   Widget build(BuildContext context) {
     final dark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      appBar: AppBar(title: const Text('Ask the Quran')),
+      appBar: AppBar(
+        title: const Text('Ask the Quran'),
+        actions: [
+          PopupMenuButton<String>(
+            tooltip: 'Answer mode',
+            initialValue: _mode,
+            onSelected: (v) => setState(() => _mode = v),
+            icon: Icon(_mode == 'focused' ? Icons.center_focus_strong : Icons.public),
+            itemBuilder: (context) => const [
+              PopupMenuItem(
+                value: 'focused',
+                child: ListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.center_focus_strong),
+                  title: Text('Focused'),
+                  subtitle: Text('Grounded strictly in the cited ayāt'),
+                ),
+              ),
+              PopupMenuItem(
+                value: 'open',
+                child: ListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(Icons.public),
+                  title: Text('Open'),
+                  subtitle: Text('Broader answer with context'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Expanded(
@@ -182,6 +216,24 @@ class _AskScreenState extends State<AskScreen> {
                                       .toList(),
                                 ),
                               ],
+                              if (!isUser && m.content.isNotEmpty && !_loading)
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: IconButton(
+                                    visualDensity: VisualDensity.compact,
+                                    tooltip: 'Share',
+                                    icon: const Icon(Icons.share_outlined, size: 18),
+                                    onPressed: () {
+                                      final cites = m.sources
+                                          .map((s) => '${s.surahNumber}:${s.ayahNumber}')
+                                          .join(', ');
+                                      Share.share(cites.isEmpty
+                                            ? m.content
+                                            : '${m.content}\n\nSources: $cites\n— quran.co.in',
+                                      );
+                                    },
+                                  ),
+                                ),
                             ],
                           ),
                         ),

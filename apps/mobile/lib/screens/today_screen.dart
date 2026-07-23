@@ -1,6 +1,7 @@
 // Verse of the day — the deep-emerald + gold card, matching the web /today.
 
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../core/api.dart';
 import '../core/theme.dart';
@@ -94,14 +95,32 @@ class _TodayScreenState extends State<TodayScreen> {
                       ),
                     ],
                     const SizedBox(height: 18),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => SurahScreen(surahNo: a.surahNumber)),
-                      ),
-                      child: Text(
-                        '${a.englishName} · ${a.surahNumber}:${a.ayahNumber} →',
-                        style: const TextStyle(color: QColors.nightGold),
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (_) => SurahScreen(
+                                    surahNo: a.surahNumber, initialAyah: a.ayahNumber)),
+                          ),
+                          child: Text(
+                            '${a.englishName} · ${a.surahNumber}:${a.ayahNumber} →',
+                            style: const TextStyle(color: QColors.nightGold),
+                          ),
+                        ),
+                        IconButton(
+                          tooltip: 'Share',
+                          icon: const Icon(Icons.share_outlined,
+                              size: 20, color: QColors.nightGold),
+                          onPressed: () => Share.share([
+                              a.arabicText,
+                              if (a.translationText != null) a.translationText,
+                              '— ${a.englishName} ${a.surahNumber}:${a.ayahNumber}\nquran.co.in',
+                            ].join('\n'),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

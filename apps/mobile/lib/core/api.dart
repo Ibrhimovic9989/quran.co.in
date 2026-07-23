@@ -100,6 +100,17 @@ class Api {
     return jsonDecode(utf8.decode(res.bodyBytes));
   }
 
+  Future<dynamic> deleteJson(String path) async {
+    final res = await _send(
+      () => http.delete(Uri.parse('$kApiBase$path'), headers: _headers()),
+    );
+    if (res.statusCode >= 400) {
+      throw ApiException(res.statusCode, res.body);
+    }
+    if (res.body.isEmpty) return null;
+    return jsonDecode(utf8.decode(res.bodyBytes));
+  }
+
   /// SSE stream for POST /api/quran/ask — yields decoded event maps
   /// ({type: sources|token|done, ...}).
   Stream<Map<String, dynamic>> askStream({

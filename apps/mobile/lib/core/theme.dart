@@ -27,7 +27,20 @@ class QColors {
   static const nightLine = Color(0xFF223029);
   static const nightAccent = Color(0xFF34B18A);
   static const nightGold = Color(0xFFD9B45C);
+
+  // Sepia (warm reading tone)
+  static const sepiaBg = Color(0xFFF2E7CE);
+  static const sepiaSurface = Color(0xFFFBF3DE);
+  static const sepiaInk = Color(0xFF43361F);
+  static const sepiaMuted = Color(0xFF8A785A);
+  static const sepiaLine = Color(0xFFE2D3B2);
+  static const sepiaAccent = Color(0xFF0F6B4F);
+  static const sepiaGold = Color(0xFF9A7A34);
 }
+
+/// Which colour scheme the reader has chosen. `system` follows the OS
+/// light/dark setting; the others force a specific look.
+enum ThemeChoice { system, light, sepia, night }
 
 const String kQuranFont = 'UthmanicHafs';
 
@@ -118,6 +131,73 @@ ThemeData buildNightTheme() {
       ),
     ),
   );
+}
+
+ThemeData buildSepiaTheme() {
+  final base = ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.light,
+    scaffoldBackgroundColor: QColors.sepiaBg,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: QColors.sepiaAccent,
+      brightness: Brightness.light,
+      surface: QColors.sepiaSurface,
+      primary: QColors.sepiaAccent,
+    ),
+  );
+  return base.copyWith(
+    textTheme: GoogleFonts.interTextTheme(base.textTheme).apply(
+      bodyColor: QColors.sepiaInk,
+      displayColor: QColors.sepiaInk,
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: QColors.sepiaBg,
+      foregroundColor: QColors.sepiaInk,
+      elevation: 0,
+      centerTitle: true,
+    ),
+    cardTheme: const CardThemeData(
+      color: QColors.sepiaSurface,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+        side: BorderSide(color: QColors.sepiaLine),
+      ),
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: QColors.sepiaBg,
+      indicatorColor: const Color(0xFFE7D9B8),
+      iconTheme: WidgetStateProperty.resolveWith(
+        (states) => IconThemeData(
+          color: states.contains(WidgetState.selected)
+              ? QColors.sepiaAccent
+              : QColors.sepiaMuted,
+        ),
+      ),
+    ),
+  );
+}
+
+/// Palette accessor so widgets can pick the right accent/gold/muted for the
+/// active theme without hard-coding light vs night vs sepia everywhere.
+class QPalette {
+  final Color accent, gold, muted, line, surface, ink;
+  const QPalette(this.accent, this.gold, this.muted, this.line, this.surface, this.ink);
+
+  static QPalette of(BuildContext context) {
+    final b = Theme.of(context);
+    if (b.brightness == Brightness.dark) {
+      return const QPalette(QColors.nightAccent, QColors.nightGold, QColors.nightMuted,
+          QColors.nightLine, QColors.nightSurface, QColors.nightInk);
+    }
+    // Distinguish sepia from paper by the scaffold colour.
+    if (b.scaffoldBackgroundColor == QColors.sepiaBg) {
+      return const QPalette(QColors.sepiaAccent, QColors.sepiaGold, QColors.sepiaMuted,
+          QColors.sepiaLine, QColors.sepiaSurface, QColors.sepiaInk);
+    }
+    return const QPalette(QColors.accent, QColors.goldText, QColors.muted, QColors.line,
+        QColors.surface, QColors.ink);
+  }
 }
 
 /// Serif style for translations (Lora — matches the web reading font).

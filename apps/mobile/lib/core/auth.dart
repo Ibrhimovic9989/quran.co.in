@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 
 import 'api.dart';
+import 'library.dart';
 
 class QUser {
   final String id;
@@ -61,6 +62,7 @@ class AuthService {
       if (access == null || refresh == null) return false;
       await Api.instance.saveTokens(access: access, refresh: refresh);
       await _loadMe();
+      if (user.value != null) await Library.instance.onAuthChanged();
       return user.value != null;
     } catch (_) {
       return false; // user cancelled or flow failed
@@ -70,5 +72,6 @@ class AuthService {
   Future<void> signOut() async {
     await Api.instance.clearTokens();
     user.value = null;
+    await Library.instance.onAuthChanged();
   }
 }
