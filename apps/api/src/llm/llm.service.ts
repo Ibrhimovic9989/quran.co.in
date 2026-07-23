@@ -70,20 +70,24 @@ export class LlmService {
    * models (R1/thinking variants) are excluded because their chain-of-thought
    * output would leak into the streamed answer.
    */
-  // Quality-ordered HEAD of the NVIDIA chain (names verified 2026-07-22).
-  // Every other chat-capable model on build.nvidia.com is auto-discovered at
-  // runtime and appended after these as deep fallback (see nvidiaModels()).
+  // SPEED-ordered HEAD of the NVIDIA chain (token/s benchmarked 2026-07-23).
+  // A model that opens fast but *streams* slowly (e.g. reasoning-tuned 49B at
+  // ~2 tok/s) would make every answer feel broken — the cascade only skips on
+  // failure, never on slowness, so the FIRST model that opens is the one used.
+  // Lead with fast, warm, strong-enough models; keep the heavy ones as deep
+  // fallback for when the fast ones are rate-limited. Every other chat model on
+  // build.nvidia.com is auto-discovered and appended after these.
   private static readonly NVIDIA_DEFAULT_MODELS = [
-    'nvidia/llama-3.3-nemotron-super-49b-v1', // verified warm + strong
-    'meta/llama-3.3-70b-instruct',
-    'nvidia/llama-3.3-nemotron-super-49b-v1.5',
-    'meta/llama-4-maverick-17b-128e-instruct',
+    'meta/llama-4-maverick-17b-128e-instruct', // ~128 tok/s, strong — fast primary
+    'meta/llama-3.1-8b-instruct', // ~179 tok/s, warm — fast fallback
     'nvidia/llama-3.1-nemotron-70b-instruct',
+    'meta/llama-3.3-70b-instruct',
     'qwen/qwen3-next-80b-a3b-instruct',
     'mistralai/mistral-large-2-instruct',
     'meta/llama-3.1-70b-instruct',
     'mistralai/mixtral-8x7b-instruct-v0.1',
-    'meta/llama-3.1-8b-instruct', // fast last resort, verified warm
+    'nvidia/llama-3.3-nemotron-super-49b-v1.5',
+    'nvidia/llama-3.3-nemotron-super-49b-v1', // reasoning-tuned, ~2 tok/s — last resort
   ];
 
   // Auto-discovery filters: a model joins the fallback pool only if it looks
