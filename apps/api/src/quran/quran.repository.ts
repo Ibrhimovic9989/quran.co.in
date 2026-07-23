@@ -151,6 +151,19 @@ export class QuranRepository {
     `;
   }
 
+  /** Tajwīd rule-runs per ayah for a surah (raw table). Each row's `runs` is
+   *  a JSON array of [text, ruleClass|null] pairs. */
+  async findTajweedBySurah(surahNumber: number) {
+    return this.prisma.$queryRaw<
+      { ayahNumber: number; runs: [string, string | null][] }[]
+    >`
+      SELECT "ayahNumber", runs
+      FROM quran_tajweed
+      WHERE "surahNumber" = ${surahNumber}
+      ORDER BY "ayahNumber"
+    `;
+  }
+
   /** All words on one Madinah mushaf page (1–604), in reading order. */
   async findWordsByPage(pageNumber: number) {
     return this.prisma.$queryRaw<

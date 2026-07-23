@@ -161,6 +161,19 @@ export class QuranController {
     }
   }
 
+  @Get('surah/:number/tajweed')
+  @Header('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800')
+  async getSurahTajweed(@Param('number') number: string) {
+    const surahNo = validSurahNo(number);
+    try {
+      const tajweed = await this.quran.getSurahTajweed(surahNo);
+      return { tajweed };
+    } catch (error) {
+      this.logger.error(`Error fetching tajweed for surah ${surahNo}`, error as Error);
+      serverError('Failed to fetch tajweed');
+    }
+  }
+
   @Get('surah/:number/ayah/:ayahNumber')
   async getAyah(@Param('number') number: string, @Param('ayahNumber') ayahNumber: string) {
     const surahNo = validSurahNo(number);

@@ -131,6 +131,20 @@ export class QuranService {
   }
 
   /**
+   * Tajwīd rule-runs for a surah, grouped by ayah number.
+   * Rows come from quran_tajweed (ingested via scripts/ingest-tajweed.mjs).
+   * Each ayah maps to an array of { t: text, r: ruleClass|null } runs.
+   */
+  async getSurahTajweed(surahNo: number) {
+    const rows = await this.repository.findTajweedBySurah(surahNo);
+    const byAyah: Record<number, { t: string; r: string | null }[]> = {};
+    for (const row of rows) {
+      byAyah[row.ayahNumber] = row.runs.map(([t, r]) => ({ t, r }));
+    }
+    return byAyah;
+  }
+
+  /**
    * One Madinah mushaf page: words in reading order + names of the surahs
    * that appear on it (for headband rendering).
    */
