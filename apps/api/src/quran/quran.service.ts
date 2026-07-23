@@ -47,7 +47,11 @@ function isCombining(cp: number): boolean {
 function shiftLeadingCombiners(
   runs: [string, string | null][],
 ): { t: string; r: string | null }[] {
-  const out = runs.map(([t, r]) => ({ t, r }));
+  // quran.com's tajweed text encodes the dagger/superscript alef as U+0672
+  // (ALEF WITH WAVY HAMZA); our KFGQPC text + Hafs font use U+0670 (SUPERSCRIPT
+  // ALEF). Normalize so it renders identically to the plain script — as a
+  // combiner it then attaches to its base letter via the shift below.
+  const out = runs.map(([t, r]) => ({ t: t.replace(/ٲ/g, 'ٰ'), r }));
   for (let i = 1; i < out.length; i++) {
     let t = out[i].t;
     let shift = '';
