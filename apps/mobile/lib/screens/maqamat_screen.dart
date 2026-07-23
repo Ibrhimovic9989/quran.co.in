@@ -1,5 +1,6 @@
-// Maqāmāt — learn the melodic modes of recitation. A curated teaching module:
-// each mode's character + a master reciter's example you can play inline.
+// Maqāmāt — learn the melodic modes of recitation. Leads with the "hear the
+// difference" comparison player (one sūrah across all 8 modes), then a card per
+// mode with its character + an example you can play.
 
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
@@ -17,14 +18,18 @@ class MaqamatScreen extends StatefulWidget {
 
 class _MaqamatScreenState extends State<MaqamatScreen> {
   final _player = AudioPlayer();
-  int? _playing; // index of the maqam currently playing
+  String? _playingKey; // 'cmp:<maqam>' or 'card:<index>'
+  String? _nowPlaying; // label shown under the comparison chips
 
   @override
   void initState() {
     super.initState();
     _player.playerStateStream.listen((s) {
       if (s.processingState == ProcessingState.completed && mounted) {
-        setState(() => _playing = null);
+        setState(() {
+          _playingKey = null;
+          _nowPlaying = null;
+        });
       }
     });
   }
@@ -35,18 +40,35 @@ class _MaqamatScreenState extends State<MaqamatScreen> {
     super.dispose();
   }
 
-  Future<void> _toggle(int i) async {
-    if (_playing == i) {
+  /// Play [primary]; if it fails, fall back to [fallback]. [key] identifies the
+  /// currently-playing control so the UI can highlight it.
+  Future<void> _play(String key, String primary, {String? fallback, String? label}) async {
+    if (_playingKey == key) {
       await _player.stop();
-      setState(() => _playing = null);
+      setState(() {
+        _playingKey = null;
+        _nowPlaying = null;
+      });
       return;
     }
-    setState(() => _playing = i);
+    setState(() {
+      _playingKey = key;
+      _nowPlaying = label;
+    });
     try {
-      await _player.setUrl(kMaqamat[i].audioUrl);
+      await _player.setUrl(primary);
       await _player.play();
     } catch (_) {
-      if (mounted) setState(() => _playing = null);
+      if (fallback == null) {
+        if (mounted) setState(() => _playingKey = null);
+        return;
+      }
+      try {
+        await _player.setUrl(fallback);
+        await _player.play();
+      } catch (_) {
+        if (mounted) setState(() => _playingKey = null);
+      }
     }
   }
 
@@ -59,7 +81,7 @@ class _MaqamatScreenState extends State<MaqamatScreen> {
         padding: const EdgeInsets.fromLTRB(14, 8, 14, 28),
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(4, 4, 4, 16),
+            padding: const EdgeInsets.fromLTRB(4, 4, 4, 14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -68,11 +90,19 @@ class _MaqamatScreenState extends State<MaqamatScreen> {
                         fontSize: 11, letterSpacing: 2, fontWeight: FontWeight.w700, color: p.gold)),
                 const SizedBox(height: 8),
                 Text(
-                  'Maqāmāt are the melodic modes a reciter moves through — each carries a different emotional colour. Once you read with tajwīd, these are how recitation becomes beautiful. Listen to each, then try to imitate it.',
+                  'Maqāmāt are the melodic modes a reciter moves through — each carries a different emotional colour. Once you read with tajwīd, these are how recitation becomes beautiful.',
                   style: readingStyle(context, size: 14, color: p.muted),
                 ),
               ],
             ),
+          ),
+          _comparisonCard(p),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4, 4, 4, 8),
+            child: Text('EACH MODE',
+                style: TextStyle(
+                    fontSize: 11, letterSpacing: 2, fontWeight: FontWeight.w700, color: p.gold)),
           ),
           for (var i = 0; i < kMaqamat.length; i++) _card(p, i, kMaqamat[i]),
         ],
@@ -80,8 +110,87 @@ class _MaqamatScreenState extends State<MaqamatScreen> {
     );
   }
 
+  Widget _comparisonCard(QPalette p) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      color: const Color(0xFF0C1F1A),
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('HEAR THE DIFFERENCE',
+                style: TextStyle(
+                    fontSize: 11, letterSpacing: 3, fontWeight: FontWeight.w700, color: QColors.nightGold)),
+            const SizedBox(height: 8),
+            Text(kComparisonPassage,
+                style: quranStyle(size: 22, height: 1.5, color: const Color(0xFFF3EDD9))),
+            const SizedBox(height: 6),
+            const Text(
+              'The same sūrah, eight melodies. Tap each mode and hear how the tune — not the words — changes the feeling.',
+              style: TextStyle(color: Color(0xFFCFE8DD), fontSize: 13, height: 1.5),
+            ),
+            const SizedBox(height: 14),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final c in kMaqamComparison) _chip(c),
+              ],
+            ),
+            if (_nowPlaying != null) ...[
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  const Icon(Icons.graphic_eq, size: 16, color: QColors.nightGold),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text('Now playing · $_nowPlaying',
+                        style: const TextStyle(color: Color(0xFFCFE8DD), fontSize: 12)),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _chip(MaqamClip c) {
+    final key = 'cmp:${c.maqam}';
+    final active = _playingKey == key;
+    return GestureDetector(
+      onTap: () => _play(key, c.primaryUrl,
+          fallback: c.fallbackUrl, label: '${c.maqam} · ${c.reciter}'),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: active ? QColors.nightGold : const Color(0xFF16302A),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: QColors.nightGold.withValues(alpha: active ? 1 : 0.35)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(active ? Icons.stop : Icons.play_arrow,
+                size: 16, color: active ? const Color(0xFF0C1F1A) : QColors.nightGold),
+            const SizedBox(width: 6),
+            Text(c.maqam,
+                style: TextStyle(
+                    color: active ? const Color(0xFF0C1F1A) : const Color(0xFFF3EDD9),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13)),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _card(QPalette p, int i, Maqam m) {
-    final playing = _playing == i;
+    final key = 'card:$i';
+    final playing = _playingKey == key;
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6),
       child: Padding(
@@ -131,7 +240,7 @@ class _MaqamatScreenState extends State<MaqamatScreen> {
                     ),
                   ),
                   IconButton.filledTonal(
-                    onPressed: () => _toggle(i),
+                    onPressed: () => _play(key, m.audioUrl, label: '${m.name} · ${m.reciter}'),
                     icon: Icon(playing ? Icons.stop : Icons.play_arrow),
                   ),
                 ],

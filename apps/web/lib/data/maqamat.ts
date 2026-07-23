@@ -22,6 +22,32 @@ export function maqamAudioUrl(m: Maqam): string {
   return `https://everyayah.com/data/${m.reciterFolder}/${s}${a}.mp3`;
 }
 
+/** One rendition of the shared comparison passage in a given maqām.
+ *  primaryUrl = "same reciter, same sūrah" teaching clip; fallbackUrl = a
+ *  rock-solid everyayah clip used if the primary CDN ever fails. */
+export interface MaqamClip {
+  maqam: string;
+  reciter: string;
+  primaryUrl: string;
+  fallbackUrl: string;
+}
+
+const everyayah = (folder: string) => `https://everyayah.com/data/${folder}/001001.mp3`;
+
+/** "Hear the difference" — Sūrah Al-Fātiḥah across the maqāmāt (mostly Qārī
+ *  Ibrāhīm Bakeer, one reciter, so only the melody changes). */
+export const COMPARISON_PASSAGE = 'Sūrah Al-Fātiḥah';
+export const MAQAM_COMPARISON: MaqamClip[] = [
+  { maqam: 'Bayati', reciter: 'Murottal (Bayati)', primaryUrl: 'https://aac.saavncdn.com/244/a25b01599d76ff6a4322143c82f16ea8_320.mp4', fallbackUrl: everyayah('Husary_128kbps') },
+  { maqam: 'Hijaz', reciter: 'Qārī Ibrāhīm Bakeer', primaryUrl: 'https://aac.saavncdn.com/699/c85dedd126f163e879419f0ed8351466_320.mp4', fallbackUrl: everyayah('Abdul_Basit_Mujawwad_128kbps') },
+  { maqam: 'Saba', reciter: 'Qārī Ibrāhīm Bakeer', primaryUrl: 'https://aac.saavncdn.com/699/bfc13944e60f1871e5b3b96d4f5bb699_320.mp4', fallbackUrl: everyayah('Minshawy_Mujawwad_192kbps') },
+  { maqam: 'Nahawand', reciter: 'Qārī Ibrāhīm Bakeer', primaryUrl: 'https://aac.saavncdn.com/699/1553ede369a7f4de3d2a497bc3ccbc7a_320.mp4', fallbackUrl: everyayah('Minshawy_Mujawwad_192kbps') },
+  { maqam: 'Rast', reciter: 'Qārī Ibrāhīm Bakeer', primaryUrl: 'https://aac.saavncdn.com/699/92d41d5af3f8748518dcc0decdcec75d_320.mp4', fallbackUrl: everyayah('Husary_128kbps') },
+  { maqam: 'Sikah', reciter: 'Qārī Ibrāhīm Bakeer', primaryUrl: 'https://aac.saavncdn.com/529/24f473863ecfa728739afa7f4fa101bb_320.mp4', fallbackUrl: everyayah('Mustafa_Ismail_48kbps') },
+  { maqam: 'Ajam', reciter: 'Qārī Ibrāhīm Bakeer', primaryUrl: 'https://aac.saavncdn.com/699/2d0aa243aa6e74267a2e476fbd792f7e_320.mp4', fallbackUrl: everyayah('Abdurrahmaan_As-Sudais_192kbps') },
+  { maqam: 'Kurd', reciter: 'Qārī Ibrāhīm Bakeer', primaryUrl: 'https://aac.saavncdn.com/699/05f886866d07981419f03aef0c7e08e4_320.mp4', fallbackUrl: everyayah('Alafasy_128kbps') },
+];
+
 export const MAQAMAT: Maqam[] = [
   {
     name: 'Bayati', arabic: 'البياتي', mood: 'Warm · grounding',

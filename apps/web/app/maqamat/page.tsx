@@ -2,24 +2,36 @@
 
 import { useRef, useState } from 'react';
 import Link from 'next/link';
-import { Play, Square, ArrowRight } from 'lucide-react';
-import { MAQAMAT, maqamAudioUrl, type Maqam } from '@/lib/data/maqamat';
+import { Play, Square, ArrowRight, AudioLines } from 'lucide-react';
+import {
+  MAQAMAT, maqamAudioUrl, MAQAM_COMPARISON, COMPARISON_PASSAGE,
+  type Maqam,
+} from '@/lib/data/maqamat';
 
 export default function MaqamatPage() {
-  const [playing, setPlaying] = useState<number | null>(null);
+  // A single shared audio element; `playingKey` identifies which control owns it
+  // ('cmp:<maqam>' for the comparison chips, or a card index).
+  const [playingKey, setPlayingKey] = useState<string | null>(null);
+  const [nowPlaying, setNowPlaying] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const toggle = (i: number) => {
+  const play = (key: string, primary: string, fallback?: string, label?: string) => {
     if (!audioRef.current) audioRef.current = new Audio();
     const audio = audioRef.current;
-    if (playing === i) {
+    if (playingKey === key) {
       audio.pause();
-      setPlaying(null);
+      setPlayingKey(null);
+      setNowPlaying(null);
       return;
     }
-    audio.src = maqamAudioUrl(MAQAMAT[i]);
-    audio.onended = () => setPlaying(null);
-    audio.play().then(() => setPlaying(i)).catch(() => setPlaying(null));
+    setPlayingKey(key);
+    setNowPlaying(label ?? null);
+    audio.onended = () => { setPlayingKey(null); setNowPlaying(null); };
+    const start = (src: string, onFail?: () => void) => {
+      audio.src = src;
+      audio.play().catch(() => (onFail ? onFail() : (setPlayingKey(null), setNowPlaying(null))));
+    };
+    start(primary, fallback ? () => start(fallback) : undefined);
   };
 
   return (
@@ -32,13 +44,55 @@ export default function MaqamatPage() {
         <p className="mt-3 max-w-2xl leading-relaxed text-ink-soft">
           Maqāmāt are the melodic modes a reciter moves through — each carries a different
           emotional colour. Once you read with tajwīd, these are how recitation becomes beautiful.
-          Listen to each, then try to imitate it. (Maqām describes the melody; reciters move freely
-          between modes.)
+          (Maqām describes the melody; reciters move freely between modes.)
         </p>
 
-        <div className="mt-8 space-y-5">
+        {/* The centerpiece: one sūrah, every mode */}
+        <div className="mt-8 rounded-2xl border border-night-gold/30 bg-[#0C1F1A] p-6 md:p-7">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-night-gold">Hear the difference</p>
+          <h2 className="mt-2 font-arabic text-2xl text-[#F3EDD9]" dir="ltr">{COMPARISON_PASSAGE}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-[#CFE8DD]">
+            The same sūrah, eight melodies. Tap each mode and hear how the tune — not the words —
+            changes the feeling.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2.5">
+            {MAQAM_COMPARISON.map((c) => {
+              const key = `cmp:${c.maqam}`;
+              const active = playingKey === key;
+              return (
+                <button
+                  key={c.maqam}
+                  onClick={() => play(key, c.primaryUrl, c.fallbackUrl, `${c.maqam} · ${c.reciter}`)}
+                  className={
+                    'flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ' +
+                    (active
+                      ? 'border-night-gold bg-night-gold text-[#0C1F1A]'
+                      : 'border-night-gold/40 bg-[#16302A] text-[#F3EDD9] hover:border-night-gold')
+                  }
+                >
+                  {active ? <Square className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                  {c.maqam}
+                </button>
+              );
+            })}
+          </div>
+          {nowPlaying && (
+            <div className="mt-4 flex items-center gap-2 text-xs text-[#CFE8DD]">
+              <AudioLines className="h-4 w-4 text-night-gold" />
+              Now playing · {nowPlaying}
+            </div>
+          )}
+        </div>
+
+        <p className="mt-10 text-xs font-bold uppercase tracking-widest text-gold-text">Each mode</p>
+        <div className="mt-4 space-y-5">
           {MAQAMAT.map((m, i) => (
-            <MaqamCard key={m.name} m={m} playing={playing === i} onToggle={() => toggle(i)} />
+            <MaqamCard
+              key={m.name}
+              m={m}
+              playing={playingKey === `card:${i}`}
+              onToggle={() => play(`card:${i}`, maqamAudioUrl(m), undefined, `${m.name} · ${m.reciter}`)}
+            />
           ))}
         </div>
       </div>
