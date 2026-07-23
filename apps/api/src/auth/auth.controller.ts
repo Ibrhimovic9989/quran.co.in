@@ -28,6 +28,25 @@ import { GoogleMobileDto } from './dto/google-mobile.dto';
 const ACCESS_COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7d — matches token TTL
 const REFRESH_COOKIE_MAX_AGE = 30 * 24 * 60 * 60 * 1000; // 30d
 
+function appDeepLink(): string {
+  return process.env.APP_DEEP_LINK ?? 'quranapp://auth';
+}
+
+/** OAuth state: JSON-encoded { r: redirect path, m: mobile flag }. */
+function encodeState(redirect: string | undefined, mobile: boolean): string {
+  return encodeURIComponent(JSON.stringify({ r: safeRedirectPath(redirect), m: mobile }));
+}
+
+function decodeState(raw: string | undefined): { r: string; m: boolean } {
+  try {
+    const parsed = JSON.parse(decodeURIComponent(raw ?? '')) as { r?: string; m?: boolean };
+    return { r: safeRedirectPath(parsed.r), m: Boolean(parsed.m) };
+  } catch {
+    // Legacy state format: a bare URI-encoded path
+    return { r: safeRedirectPath(decodeURIComponent(raw ?? '/')), m: false };
+  }
+}
+
 function webUrl(): string {
   return (process.env.WEB_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 }
@@ -79,8 +98,13 @@ export class AuthController {
   }
 
   @Get('google')
-  google(@Query('redirect') redirect: string | undefined, @Res() res: Response) {
-    const state = encodeURIComponent(safeRedirectPath(redirect));
+  google(
+    @Query('redirect') redirect: string | undefined,
+    @Query('client') client: string | undefined,
+    @Res() res: Response,
+  ) {
+    // client=mobile → finish by deep-linking tokens back into the native app
+    const state = encodeState(redirect, client === 'mobile');
     res.redirect(this.auth.getGoogleAuthUrl(state));
   }
 
@@ -91,15 +115,29 @@ export class AuthController {
     @Res() res: Response,
   ) {
     if (!code) {
-      res.redirect(`${webUrl()}/sign-in?error=oauth`);
+      const st = decodeState(state);
+      res.redirect(st.m ? `${appDeepLink()}#error=oauth` : `${webUrl()}/sign-in?error=oauth`);
       return;
     }
+    const parsedState = decodeState(state);
     try {
       const { accessToken, refreshToken } = await this.auth.handleGoogleCallback(code);
+      if (parsedState.m) {
+        // Mobile shell: hand tokens to the app via deep link. Fragment (#)
+        // keeps them out of server logs and referrers.
+        res.redirect(
+          `${appDeepLink()}#access_token=${encodeURIComponent(accessToken)}&refresh_token=${encodeURIComponent(refreshToken)}`,
+        );
+        return;
+      }
       this.setAuthCookies(res, accessToken, refreshToken);
-      res.redirect(`${webUrl()}${safeRedirectPath(decodeURIComponent(state ?? '/'))}`);
+      res.redirect(`${webUrl()}${parsedState.r}`);
     } catch (err) {
       console.error('[auth] google callback failed:', err);
+      if (parsedState.m) {
+        res.redirect(`${appDeepLink()}#error=oauth`);
+        return;
+      }
       res.redirect(`${webUrl()}/sign-in?error=oauth`);
     }
   }
