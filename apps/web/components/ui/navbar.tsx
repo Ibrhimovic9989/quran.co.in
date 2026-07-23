@@ -19,6 +19,7 @@ import {
   Sparkles,
   Compass,
   Sun,
+  Music2,
 } from "lucide-react";
 import { useSession, signOut } from "@/components/auth/auth-client";
 import { cn } from "@/lib/utils/cn";
@@ -42,6 +43,7 @@ const mainNavItems: NavItem[] = [
   { label: "Today", icon: Sun, href: "/today" },
   { label: "Ask", icon: Sparkles, href: "/ask", beta: true },
   { label: "Topics", icon: Compass, href: "/topics", beta: true },
+  { label: "Maqāmāt", icon: Music2, href: "/maqamat", beta: true },
   { label: "Bookmarks", icon: Bookmark, href: "/bookmarks", requiresAuth: true },
 ];
 

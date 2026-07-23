@@ -9,6 +9,7 @@ import '../core/theme.dart';
 import '../data/revelation_order.dart';
 import '../models.dart';
 import 'juz_screen.dart';
+import 'maqamat_screen.dart';
 import 'search_screen.dart';
 import 'settings_screen.dart';
 import 'surah_screen.dart';
@@ -60,6 +61,12 @@ class _SurahListScreenState extends State<SurahListScreen> {
             icon: const Icon(Icons.search),
             onPressed: () => Navigator.of(context)
                 .push(MaterialPageRoute(builder: (_) => const SearchScreen())),
+          ),
+          IconButton(
+            tooltip: 'Maqāmāt — melodies of recitation',
+            icon: const Icon(Icons.graphic_eq),
+            onPressed: () => Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => const MaqamatScreen())),
           ),
           IconButton(
             tooltip: 'Settings',
