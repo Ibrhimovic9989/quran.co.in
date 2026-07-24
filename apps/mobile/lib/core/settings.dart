@@ -18,7 +18,8 @@ class Settings extends ChangeNotifier {
   SharedPreferences? _prefs;
 
   ThemeChoice _theme = ThemeChoice.system;
-  bool _showTransliteration = false;
+  // Default ON: our readers come from transliteration and lean on it heavily.
+  bool _showTransliteration = true;
   String _reciterId = '1';
 
   ThemeChoice get theme => _theme;
@@ -32,7 +33,7 @@ class Settings extends ChangeNotifier {
       (c) => c.name == t,
       orElse: () => ThemeChoice.system,
     );
-    _showTransliteration = _prefs!.getBool(_kTranslit) ?? false;
+    _showTransliteration = _prefs!.getBool(_kTranslit) ?? true;
     _reciterId = _prefs!.getString(_kReciter) ?? '1';
     notifyListeners();
   }

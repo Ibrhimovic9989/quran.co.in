@@ -331,7 +331,9 @@ class _SurahScreenState extends State<SurahScreen> {
           : _detail == null
               ? const Center(child: CircularProgressIndicator())
               : AnimatedBuilder(
-                  animation: Library.instance.bookmarks,
+                  // Rebuild on bookmark changes AND setting changes, so toggling
+                  // transliteration from the menu repaints the ayāt immediately.
+                  animation: Listenable.merge([Library.instance.bookmarks, Settings.instance]),
                   builder: (context, _) => ListView.builder(
                     controller: _scroll,
                     padding: const EdgeInsets.fromLTRB(12, 4, 12, 24),
