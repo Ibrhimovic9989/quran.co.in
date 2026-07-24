@@ -11,7 +11,14 @@ class MaqamRibbon extends StatelessWidget {
   final List<LessonPhrase> phrases;
   final int activeIndex; // -1 = none
   final double height;
-  const MaqamRibbon({super.key, required this.phrases, this.activeIndex = -1, this.height = 180});
+  final List<double>? userContour; // learner's pitch as 0..1 levels over progress
+  const MaqamRibbon({
+    super.key,
+    required this.phrases,
+    this.activeIndex = -1,
+    this.height = 180,
+    this.userContour,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +26,7 @@ class MaqamRibbon extends StatelessWidget {
       borderRadius: BorderRadius.circular(18),
       child: CustomPaint(
         size: Size(double.infinity, height),
-        painter: _RibbonPainter(phrases, activeIndex),
+        painter: _RibbonPainter(phrases, activeIndex, userContour),
       ),
     );
   }
@@ -28,7 +35,8 @@ class MaqamRibbon extends StatelessWidget {
 class _RibbonPainter extends CustomPainter {
   final List<LessonPhrase> phrases;
   final int active;
-  _RibbonPainter(this.phrases, this.active);
+  final List<double>? userContour;
+  _RibbonPainter(this.phrases, this.active, this.userContour);
 
   static const _bg = Color(0xFF0C1F1A);
   static const _gold = QColors.nightGold;
@@ -106,6 +114,29 @@ class _RibbonPainter extends CustomPainter {
           Paint()..color = _gold.withValues(alpha: 0.5)..strokeWidth = 1.5);
     }
 
+    // Learner's live pitch line (green).
+    final uc = userContour;
+    if (uc != null && uc.length > 1) {
+      final up = Path();
+      for (var i = 0; i < uc.length; i++) {
+        final x = padL + chartW * i / (uc.length - 1);
+        final y = padT + chartH * (1 - uc[i].clamp(0.0, 1.0));
+        if (i == 0) {
+          up.moveTo(x, y);
+        } else {
+          up.lineTo(x, y);
+        }
+      }
+      canvas.drawPath(
+          up,
+          Paint()
+            ..color = const Color(0xFF34B18A)
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 2.5
+            ..strokeCap = StrokeCap.round
+            ..strokeJoin = StrokeJoin.round);
+    }
+
     // Phrase dots: radius from loudness; active glows.
     for (var i = 0; i < points.length; i++) {
       final isActive = i == active;
@@ -121,5 +152,5 @@ class _RibbonPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _RibbonPainter old) =>
-      old.active != active || old.phrases != phrases;
+      old.active != active || old.phrases != phrases || old.userContour != userContour;
 }

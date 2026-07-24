@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
+import '../core/pitch.dart';
 import '../core/theme.dart';
 import '../data/maqam_lessons.dart';
 import '../widgets/maqam_ribbon.dart';
@@ -23,6 +24,14 @@ class _MaqamLessonScreenState extends State<MaqamLessonScreen> {
   bool _playing = false;
   bool _slow = false;
   bool _built = false;
+
+  // "Your turn" mic practice.
+  final _pitch = PitchSession();
+  final List<double> _samplesHz = [];
+  List<double> _userLevels = [];
+  bool _recording = false;
+  int? _score;
+  String? _micError;
 
   MaqamLesson get l => widget.lesson;
 
@@ -45,7 +54,45 @@ class _MaqamLessonScreenState extends State<MaqamLessonScreen> {
   @override
   void dispose() {
     _player.dispose();
+    _pitch.dispose();
     super.dispose();
+  }
+
+  Future<void> _startRecording() async {
+    await _player.pause();
+    setState(() {
+      _playing = false;
+      _micError = null;
+      _score = null;
+      _samplesHz.clear();
+      _userLevels = [];
+    });
+    final err = await _pitch.start((hz) {
+      _samplesHz.add(hz);
+      if (mounted) setState(() => _userLevels = [..._userLevels, pitchToLevel(hz)]);
+    });
+    if (err != null) {
+      if (mounted) setState(() => _micError = err);
+      return;
+    }
+    if (mounted) setState(() => _recording = true);
+  }
+
+  Future<void> _stopRecording() async {
+    await _pitch.stop();
+    if (mounted) {
+      setState(() {
+        _recording = false;
+        _score = shapeMatch(_samplesHz, l.phrases.map((p) => p.pitch).toList());
+      });
+    }
+  }
+
+  String _feedback(int s) {
+    if (s >= 75) return 'Beautiful — your voice followed the shape. Try again, a little slower and fuller.';
+    if (s >= 55) return 'Good — you’re getting the journey. Watch where the line climbs and settles home.';
+    if (s >= 35) return 'A start. Listen once more, then let your voice rise and fall with the line.';
+    return 'Keep going — press Listen, hum along with the shape, then try again. Recite the whole sūrah for the best trace.';
   }
 
   Future<void> _listen() async {
@@ -103,7 +150,11 @@ class _MaqamLessonScreenState extends State<MaqamLessonScreen> {
           Text(l.shape, style: readingStyle(context, size: 14, color: p.muted)),
           const SizedBox(height: 16),
 
-          MaqamRibbon(phrases: l.phrases, activeIndex: _active),
+          MaqamRibbon(
+            phrases: l.phrases,
+            activeIndex: _active,
+            userContour: _userLevels.length > 1 ? _userLevels : null,
+          ),
           const SizedBox(height: 18),
 
           // Current phrase card.
@@ -166,6 +217,86 @@ class _MaqamLessonScreenState extends State<MaqamLessonScreen> {
               const SizedBox(width: 8),
               _pill(p, 'Restart', Icons.replay, false, _restart),
             ],
+          ),
+          const SizedBox(height: 18),
+
+          // Your turn.
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: p.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: p.line),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Your turn', style: TextStyle(fontWeight: FontWeight.w700, color: p.ink)),
+                          const SizedBox(height: 2),
+                          Text('Recite Al-Fātiḥah — follow the shape. We’ll trace your melody.',
+                              style: TextStyle(fontSize: 12, color: p.muted)),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    FilledButton.icon(
+                      onPressed: _recording ? _stopRecording : _startRecording,
+                      icon: Icon(_recording ? Icons.stop : Icons.mic, size: 18),
+                      label: Text(_recording ? 'Stop' : 'Your turn'),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: _recording ? Colors.red.shade600 : p.accent,
+                      ),
+                    ),
+                  ],
+                ),
+                if (_recording)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Row(
+                      children: [
+                        Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle)),
+                        const SizedBox(width: 8),
+                        Text('Listening… recite now, watch your line.',
+                            style: TextStyle(fontSize: 12, color: p.accent)),
+                      ],
+                    ),
+                  ),
+                if (_micError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Text(_micError!, style: TextStyle(fontSize: 12, color: Colors.red.shade600)),
+                  ),
+                if (_score != null && !_recording)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+                          children: [
+                            Text('$_score%',
+                                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: p.ink)),
+                            const SizedBox(width: 8),
+                            Text('shape match',
+                                style: TextStyle(fontWeight: FontWeight.w600, color: p.accent)),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(_feedback(_score!),
+                            style: TextStyle(fontSize: 13, color: p.muted, height: 1.5)),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
           ),
           const SizedBox(height: 12),
           Align(
