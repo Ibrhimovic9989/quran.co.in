@@ -54,7 +54,7 @@ const _fatiha = [
   ['مَٰلِكِ يَوْمِ ٱلدِّينِ', 'Māliki yawmid-dīn'],
   ['إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ', 'Iyyāka naʿbudu wa iyyāka nastaʿīn'],
   ['ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ', 'Ihdinaṣ-ṣirāṭal-mustaqīm'],
-  ['صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ', 'Ṣirāṭalladhīna anʿamta ʿalayhim…'],
+  ['صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ', 'Ṣirāṭalladhīna anʿamta ʿalayhim, ghayril-maghḍūbi ʿalayhim wa laḍ-ḍāllīn'],
 ];
 
 LessonPhrase _p(int i, double pitch, double dyn, String cue) =>

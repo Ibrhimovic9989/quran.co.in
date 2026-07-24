@@ -32,7 +32,7 @@ const F = [
   ['مَٰلِكِ يَوْمِ ٱلدِّينِ', 'Māliki yawmid-dīn'],
   ['إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ', 'Iyyāka naʿbudu wa iyyāka nastaʿīn'],
   ['ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ', 'Ihdinaṣ-ṣirāṭal-mustaqīm'],
-  ['صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ', 'Ṣirāṭalladhīna anʿamta ʿalayhim…'],
+  ['صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ', 'Ṣirāṭalladhīna anʿamta ʿalayhim, ghayril-maghḍūbi ʿalayhim wa laḍ-ḍāllīn'],
 ];
 const ph = (i: number, pitch: number, dynamic: number, cue: string): LessonPhrase => ({
   arabic: F[i][0], translit: F[i][1], pitch, dynamic, cue,
