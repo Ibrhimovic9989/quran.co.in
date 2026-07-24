@@ -2,12 +2,20 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Play, Pause, RotateCcw, GaugeCircle, AudioLines } from 'lucide-react';
+import { ArrowLeft, Play, Pause, RotateCcw, GaugeCircle, AudioLines, Mic, Square } from 'lucide-react';
 import { MAQAM_LESSONS, lessonAudioUrl, type MaqamLesson } from '@/lib/data/maqam-lessons';
 import { MAQAMAT } from '@/lib/data/maqamat';
 import { MaqamRibbon } from '@/components/quran/maqam-ribbon';
+import { startPitchCapture, shapeMatch, pitchToLevel } from '@/lib/audio/pitch';
 
 type View = { t: 'hub' } | { t: 'lesson'; i: number } | { t: 'compare' };
+
+function feedbackFor(score: number): string {
+  if (score >= 75) return 'Beautiful — your voice followed the shape. Try it once more, a little slower and fuller.';
+  if (score >= 55) return 'Good — you’re getting the journey. Watch where the line climbs and where it settles home.';
+  if (score >= 35) return 'A start. Listen once more, then let your voice rise and fall with the line.';
+  return 'Keep going — press Listen, hum along with the shape, then try again. Recite the whole sūrah for the best trace.';
+}
 
 export default function MaqamatPage() {
   const [view, setView] = useState<View>({ t: 'hub' });
@@ -103,7 +111,42 @@ function Lesson({ lesson, onBack }: { lesson: MaqamLesson; onBack: () => void })
   const [playing, setPlaying] = useState(false);
   const [slow, setSlow] = useState(false);
 
-  useEffect(() => () => { audioRef.current?.pause(); }, []);
+  // "Your turn" mic practice.
+  const stopMicRef = useRef<(() => void) | null>(null);
+  const samplesRef = useRef<number[]>([]);
+  const [userLevels, setUserLevels] = useState<number[]>([]);
+  const [recording, setRecording] = useState(false);
+  const [score, setScore] = useState<number | null>(null);
+  const [micError, setMicError] = useState<string | null>(null);
+
+  useEffect(() => () => { audioRef.current?.pause(); stopMicRef.current?.(); }, []);
+
+  const startRecording = async () => {
+    audioRef.current?.pause();
+    setPlaying(false);
+    setMicError(null);
+    setScore(null);
+    samplesRef.current = [];
+    setUserLevels([]);
+    try {
+      const stop = await startPitchCapture((hz) => {
+        if (hz == null) return;
+        samplesRef.current.push(hz);
+        setUserLevels((prev) => [...prev, pitchToLevel(hz)]);
+      });
+      stopMicRef.current = stop;
+      setRecording(true);
+    } catch {
+      setMicError('Microphone access is needed for “Your turn”. Please allow it and try again.');
+    }
+  };
+
+  const stopRecording = () => {
+    stopMicRef.current?.();
+    stopMicRef.current = null;
+    setRecording(false);
+    setScore(shapeMatch(samplesRef.current, lesson.phrases.map((p) => p.pitch)));
+  };
 
   const playFrom = (i: number) => {
     const a = (audioRef.current ??= new Audio());
@@ -145,7 +188,13 @@ function Lesson({ lesson, onBack }: { lesson: MaqamLesson; onBack: () => void })
       <p className="mt-1 text-sm font-semibold text-accent">{lesson.mood}</p>
       <p className="mt-2 leading-relaxed text-ink-soft">{lesson.shape}</p>
 
-      <div className="mt-5"><MaqamRibbon phrases={lesson.phrases} activeIndex={active} /></div>
+      <div className="mt-5">
+        <MaqamRibbon
+          phrases={lesson.phrases}
+          activeIndex={active}
+          userContour={userLevels.length > 1 ? userLevels : undefined}
+        />
+      </div>
 
       <div className="mt-5 rounded-2xl border border-line bg-surface p-5">
         <div className="text-xs font-bold uppercase tracking-widest text-gold-text">Phrase {show + 1} / {lesson.phrases.length}</div>
@@ -171,6 +220,38 @@ function Lesson({ lesson, onBack }: { lesson: MaqamLesson; onBack: () => void })
           className="flex items-center gap-1.5 rounded-full border border-line px-4 py-3 text-sm font-semibold text-ink-muted transition-colors hover:text-ink">
           <RotateCcw className="h-4 w-4" /> Restart
         </button>
+      </div>
+
+      {/* Your turn */}
+      <div className="mt-4 rounded-2xl border border-line bg-surface p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <div className="font-semibold text-ink">Your turn</div>
+            <div className="text-xs text-ink-muted">Recite Al-Fātiḥah — follow the shape. We’ll trace your melody.</div>
+          </div>
+          <button
+            onClick={recording ? stopRecording : startRecording}
+            className={`flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-white transition-colors ${recording ? 'bg-red-600 hover:bg-red-700' : 'bg-accent hover:bg-accent/90'}`}
+          >
+            {recording ? <Square className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+            {recording ? 'Stop' : 'Your turn'}
+          </button>
+        </div>
+        {recording && (
+          <div className="mt-3 flex items-center gap-2 text-xs text-accent">
+            <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-red-600" /> Listening… recite now, watch your line.
+          </div>
+        )}
+        {micError && <p className="mt-3 text-xs text-red-600">{micError}</p>}
+        {score != null && !recording && (
+          <div className="mt-3">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold text-ink">{score}%</span>
+              <span className="text-sm font-semibold text-accent">shape match</span>
+            </div>
+            <p className="mt-1 text-sm text-ink-muted">{feedbackFor(score)}</p>
+          </div>
+        )}
       </div>
 
       <Link href={`/quran/1?ayah=${show + 1}`} className="mt-4 inline-block text-sm font-semibold text-accent hover:underline">

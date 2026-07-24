@@ -10,8 +10,14 @@ const GOLD = '#D9B45C';
 const BRIGHT = '#E3C97E';
 
 export function MaqamRibbon({
-  phrases, activeIndex = -1, height = 180,
-}: { phrases: LessonPhrase[]; activeIndex?: number; height?: number }) {
+  phrases, activeIndex = -1, height = 180, userContour, userColor = '#34B18A',
+}: {
+  phrases: LessonPhrase[];
+  activeIndex?: number;
+  height?: number;
+  userContour?: number[]; // learner's pitch as 0..1 levels over progress
+  userColor?: string;
+}) {
   const W = 340, padL = 44, padR = 20, padT = 18, padB = 20;
   const chartW = W - padL - padR, chartH = height - padT - padB;
   const n = phrases.length;
@@ -49,6 +55,23 @@ export function MaqamRibbon({
       {activeIndex >= 0 && activeIndex < n && (
         <line x1={X(activeIndex)} y1={padT - 6} x2={X(activeIndex)} y2={height - padB + 6}
           stroke={GOLD} strokeOpacity="0.5" strokeWidth="1.5" />
+      )}
+      {/* learner's live pitch line */}
+      {userContour && userContour.length > 1 && (
+        <polyline
+          fill="none"
+          stroke={userColor}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeOpacity="0.9"
+          points={userContour
+            .map((lv, i) => {
+              const x = padL + (chartW * i) / (userContour.length - 1);
+              return `${x},${Y(lv)}`;
+            })
+            .join(' ')}
+        />
       )}
       {/* phrase dots */}
       {pts.map((p, i) => {
