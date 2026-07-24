@@ -35,49 +35,6 @@ class Maqam {
   }
 }
 
-/// One rendition of the shared comparison passage in a given maqām.
-/// [primaryUrl] is the "same reciter, same sūrah" teaching clip; [fallbackUrl]
-/// is a rock-solid everyayah clip used if the primary CDN ever fails.
-class MaqamClip {
-  final String maqam;
-  final String reciter;
-  final String primaryUrl;
-  final String fallbackUrl;
-  const MaqamClip(this.maqam, this.reciter, this.primaryUrl, this.fallbackUrl);
-}
-
-String _everyayah(String folder) => 'https://everyayah.com/data/$folder/001001.mp3';
-
-/// "Hear the difference" — Sūrah Al-Fātiḥah recited across the maqāmāt (mostly
-/// Qārī Ibrāhīm Bakeer, one reciter, so only the melody changes).
-const String kComparisonPassage = 'Sūrah Al-Fātiḥah';
-final List<MaqamClip> kMaqamComparison = [
-  MaqamClip('Bayati', 'Murottal (Bayati)',
-      'https://aac.saavncdn.com/244/a25b01599d76ff6a4322143c82f16ea8_320.mp4',
-      _everyayah('Husary_128kbps')),
-  MaqamClip('Hijaz', 'Qārī Ibrāhīm Bakeer',
-      'https://aac.saavncdn.com/699/c85dedd126f163e879419f0ed8351466_320.mp4',
-      _everyayah('Abdul_Basit_Mujawwad_128kbps')),
-  MaqamClip('Saba', 'Qārī Ibrāhīm Bakeer',
-      'https://aac.saavncdn.com/699/bfc13944e60f1871e5b3b96d4f5bb699_320.mp4',
-      _everyayah('Minshawy_Mujawwad_192kbps')),
-  MaqamClip('Nahawand', 'Qārī Ibrāhīm Bakeer',
-      'https://aac.saavncdn.com/699/1553ede369a7f4de3d2a497bc3ccbc7a_320.mp4',
-      _everyayah('Minshawy_Mujawwad_192kbps')),
-  MaqamClip('Rast', 'Qārī Ibrāhīm Bakeer',
-      'https://aac.saavncdn.com/699/92d41d5af3f8748518dcc0decdcec75d_320.mp4',
-      _everyayah('Husary_128kbps')),
-  MaqamClip('Sikah', 'Qārī Ibrāhīm Bakeer',
-      'https://aac.saavncdn.com/529/24f473863ecfa728739afa7f4fa101bb_320.mp4',
-      _everyayah('Mustafa_Ismail_48kbps')),
-  MaqamClip('Ajam', 'Qārī Ibrāhīm Bakeer',
-      'https://aac.saavncdn.com/699/2d0aa243aa6e74267a2e476fbd792f7e_320.mp4',
-      _everyayah('Abdurrahmaan_As-Sudais_192kbps')),
-  MaqamClip('Kurd', 'Qārī Ibrāhīm Bakeer',
-      'https://aac.saavncdn.com/699/05f886866d07981419f03aef0c7e08e4_320.mp4',
-      _everyayah('Alafasy_128kbps')),
-];
-
 const List<Maqam> kMaqamat = [
   Maqam(
     name: 'Bayati',
