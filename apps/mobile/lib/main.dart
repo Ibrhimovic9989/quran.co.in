@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'core/auth.dart';
 import 'core/chat_store.dart';
+import 'core/learn_progress.dart';
 import 'core/library.dart';
 import 'core/settings.dart';
 import 'core/theme.dart';
@@ -19,6 +20,7 @@ Future<void> main() async {
   await Settings.instance.init();
   await AuthService.instance.init();
   await Library.instance.init();
+  await LearnProgress.instance.init();
   await ChatStore.instance.init();
   runApp(const QuranApp());
 }

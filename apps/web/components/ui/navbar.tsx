@@ -20,6 +20,7 @@ import {
   Compass,
   Sun,
   Music2,
+  GraduationCap,
 } from "lucide-react";
 import { useSession, signOut } from "@/components/auth/auth-client";
 import { cn } from "@/lib/utils/cn";
@@ -40,6 +41,7 @@ interface NavItem {
 const mainNavItems: NavItem[] = [
   { label: "Home", icon: Home, href: "/" },
   { label: "Quran", icon: BookOpen, href: "/quran" },
+  { label: "Learn", icon: GraduationCap, href: "/learn", beta: true },
   { label: "Today", icon: Sun, href: "/today" },
   { label: "Ask", icon: Sparkles, href: "/ask", beta: true },
   { label: "Topics", icon: Compass, href: "/topics", beta: true },
