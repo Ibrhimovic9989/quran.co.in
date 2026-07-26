@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import {
   LEARN_LESSONS, LETTERS, formsOf, letterAudioUrl, ayahAudioUrl,
+  LETTER_AUDIO_READY, LETTER_AUDIO_CREDITS,
   type LearnLesson, type LearnToken, type QLetter,
 } from '@/lib/data/learn-lessons';
 
@@ -155,8 +156,10 @@ function Hub({ done, onOpen }: { done: Set<string>; onOpen: (i: number) => void 
       ))}
 
       <p className="mt-8 text-xs leading-relaxed text-ink-muted">
-        Tajwīd always comes first — beautiful recitation is layered on top of correct reading. Spoken audio for each
-        letter, recorded by a qārī, is on the way.
+        Tajwīd always comes first — beautiful recitation is layered on top of correct reading.{' '}
+        {LETTER_AUDIO_READY
+          ? `Letter audio courtesy of ${LETTER_AUDIO_CREDITS.join(', ')}.`
+          : 'Spoken audio for each letter is on the way.'}
       </p>
     </>
   );
@@ -396,12 +399,25 @@ function LetterSheet({ letter: l, onClose }: { letter: QLetter; onClose: () => v
           ))}
         </div>
 
-        <div className="mt-6 flex items-center gap-3 rounded-xl bg-gold/10 p-3 text-sm text-ink-muted">
-          <AudioLines className="shrink-0 text-gold-text" size={18} />
-          {letterAudioUrl(l)
-            ? 'Tap to hear a qārī pronounce it.'
-            : 'Spoken pronunciation for each letter is coming soon — recorded by a qārī.'}
-        </div>
+        {letterAudioUrl(l) ? (
+          <button
+            onClick={() => {
+              try {
+                new Audio(letterAudioUrl(l)!).play();
+              } catch {
+                /* ignore */
+              }
+            }}
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent/90"
+          >
+            <Volume2 size={18} /> Hear {l.name}
+          </button>
+        ) : (
+          <div className="mt-6 flex items-center gap-3 rounded-xl bg-gold/10 p-3 text-sm text-ink-muted">
+            <AudioLines className="shrink-0 text-gold-text" size={18} />
+            Spoken pronunciation for each letter is coming soon.
+          </div>
+        )}
       </div>
     </div>
   );

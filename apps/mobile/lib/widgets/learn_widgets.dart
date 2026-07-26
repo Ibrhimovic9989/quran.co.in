@@ -3,9 +3,20 @@
 // and the reading-row renderer used by every lesson.
 
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 
 import '../core/theme.dart';
 import '../data/learn_lessons.dart';
+
+/// Shared, app-lifetime player for short letter clips.
+final AudioPlayer _letterAudio = AudioPlayer();
+
+Future<void> _playLetter(String url) async {
+  try {
+    await _letterAudio.setUrl(url);
+    await _letterAudio.play();
+  } catch (_) {/* offline / missing clip — silent */}
+}
 
 /// A tappable grid of letters. Tapping one opens its detail sheet.
 class LetterGrid extends StatelessWidget {
@@ -154,27 +165,34 @@ Future<void> showLetterSheet(BuildContext context, QLetter l) {
             ],
           ),
           const SizedBox(height: 22),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: p.gold.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.graphic_eq, size: 18, color: p.gold),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    letterAudioUrl(l) != null
-                        ? 'Tap to hear a qārī pronounce it.'
-                        : 'Spoken pronunciation for each letter is coming soon — recorded by a qārī.',
-                    style: TextStyle(fontSize: 12.5, color: p.muted, height: 1.4),
+          if (letterAudioUrl(l) case final url?)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: FilledButton.icon(
+                onPressed: () => _playLetter(url),
+                icon: const Icon(Icons.volume_up, size: 18),
+                label: Text('Hear ${l.name}'),
+                style: FilledButton.styleFrom(backgroundColor: p.accent),
+              ),
+            )
+          else
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: p.gold.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.graphic_eq, size: 18, color: p.gold),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text('Spoken pronunciation for each letter is coming soon.',
+                        style: TextStyle(fontSize: 12.5, color: p.muted, height: 1.4)),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
         ],
       ),
     ),

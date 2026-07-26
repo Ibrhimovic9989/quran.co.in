@@ -217,8 +217,18 @@ const maddRows = (): LearnRow[] =>
   });
 
 // ── Audio slots ──────────────────────────────────────────────────────────────
+// Letter-pronunciation audio. To turn it on: host the clips (named per the
+// recording brief — NN_name.mp3, NN = 1-based position in LETTERS, padded), set
+// LETTER_AUDIO_BASE, and flip LETTER_AUDIO_READY. The credit line then appears.
+export const LETTER_AUDIO_READY = false;
+export const LETTER_AUDIO_BASE = ''; // e.g. https://cdn.quran.co.in/learn/qaida
+export const LETTER_AUDIO_CREDITS = ['eQuranSchool', 'al-dirassa', 'Kalimah'];
+
 export function letterAudioUrl(l: QLetter): string | null {
-  return l.audio;
+  if (!LETTER_AUDIO_READY || !LETTER_AUDIO_BASE) return l.audio;
+  const i = LETTERS.indexOf(l);
+  if (i < 0) return null;
+  return `${LETTER_AUDIO_BASE}/${String(i + 1).padStart(2, '0')}_name.mp3`;
 }
 
 /** Word/āyah audio: Ḥuṣarī "Muʿallim" (teaching) recitation, streamed. */

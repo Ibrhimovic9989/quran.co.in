@@ -49,7 +49,9 @@ class LearnScreen extends StatelessWidget {
                 const SizedBox(height: 18),
               ],
               Text(
-                'Tajwīd always comes first — beautiful recitation is layered on top of correct reading. Spoken audio for each letter, recorded by a qārī, is on the way.',
+                kLetterAudioReady
+                    ? 'Tajwīd always comes first — beautiful recitation is layered on top of correct reading. Letter audio courtesy of ${kLetterAudioCredits.join(', ')}.'
+                    : 'Tajwīd always comes first — beautiful recitation is layered on top of correct reading. Spoken audio for each letter is on the way.',
                 style: TextStyle(fontSize: 12, color: p.muted, height: 1.5),
               ),
             ],

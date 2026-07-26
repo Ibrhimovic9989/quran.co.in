@@ -257,8 +257,21 @@ List<LearnRow> _maddRows() => [
     ];
 
 // ── Audio slots ──────────────────────────────────────────────────────────────
-/// Per-letter recording — null until the commissioned matrix lands.
-String? letterAudioUrl(QLetter l) => l.audio;
+// Letter-pronunciation audio. To turn it on: host the clips (named per the
+// recording brief — NN_name.mp3, NN = 1-based position in kLetters, padded),
+// set [kLetterAudioBase], and flip [kLetterAudioReady] to true. The credit line
+// then appears automatically in the Learn hub.
+const bool kLetterAudioReady = false;
+const String kLetterAudioBase = ''; // e.g. https://cdn.quran.co.in/learn/qaida
+const List<String> kLetterAudioCredits = ['eQuranSchool', 'al-dirassa', 'Kalimah'];
+
+/// Per-letter recording — null until [kLetterAudioReady] is set.
+String? letterAudioUrl(QLetter l) {
+  if (!kLetterAudioReady || kLetterAudioBase.isEmpty) return l.audio;
+  final i = kLetters.indexOf(l);
+  if (i < 0) return null;
+  return '$kLetterAudioBase/${(i + 1).toString().padLeft(2, '0')}_name.mp3';
+}
 
 /// Word/āyah audio: Ḥuṣarī "Muʿallim" (teaching) recitation, streamed.
 String ayahAudioUrl(String ref) {
