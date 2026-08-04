@@ -9,6 +9,8 @@
   "scripts": {
     "dev:web": "npm run dev -w web",
     "build:web": "npm run build -w web",
+    "dev:devportal": "npm run dev -w devportal",
+    "build:devportal": "npm run build -w devportal",
     "dev:api": "npm run start:dev -w api",
     "build:api": "npm run build -w api",
     "db:generate": "npm run generate -w @quran/database",
