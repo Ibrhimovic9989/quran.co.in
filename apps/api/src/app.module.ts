@@ -9,6 +9,7 @@ import { ReadingHistoryModule } from './reading-history/reading-history.module';
 import { SearchModule } from './search/search.module';
 import { AskModule } from './ask/ask.module';
 import { LlmModule } from './llm/llm.module';
+import { DeveloperModule } from './developer/developer.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { LlmModule } from './llm/llm.module';
     ReadingHistoryModule,
     SearchModule,
     AskModule,
+    DeveloperModule,
   ],
 })
 export class AppModule {}

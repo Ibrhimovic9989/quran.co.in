@@ -52,10 +52,34 @@ model User {
   bookmarks Bookmark[]
   notes     Note[]
   readingHistory ReadingHistory[]
+  apiClients ApiClient[]
 
   @@index([authProviderId])
   @@index([email])
   @@map("users")
+}
+
+// Developer API clients — a signed-in user registers an app and gets an API key
+// to call the public API. We store only the SHA-256 hash of the key; the plain
+// key is shown once at creation. See apps/api/src/developer.
+model ApiClient {
+  id           String    @id @default(uuid())
+  name         String
+  keyHash      String    @unique
+  keyPrefix    String // first chars of the key, shown in the dashboard to identify it
+  ownerId      String
+  scopes       String    @default("quran:read")
+  tier         String    @default("free")
+  revoked      Boolean   @default(false)
+  requestCount Int       @default(0)
+  lastUsedAt   DateTime?
+  createdAt    DateTime  @default(now())
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId])
+  @@index([keyHash])
+  @@map("api_clients")
 }
 
 // ============================================

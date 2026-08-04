@@ -78,6 +78,43 @@ Maintenance scripts (run from `apps/api/`):
 1. Project setting **Root Directory: `apps/web`**.
 2. Env var `NEXT_PUBLIC_API_URL=https://api.quran.co.in`.
 
+## Public API
+
+The same API that powers our apps is open for developers to build on.
+
+- **Base URL:** `https://api.quran.co.in`
+- **Docs:** Swagger UI at [`/api/docs`](https://api.quran.co.in/api/docs); OpenAPI
+  spec at `/api/docs-json` (generate a client with e.g.
+  `openapi-generator generate -i https://api.quran.co.in/api/docs-json -g <lang>`).
+
+**Reading the Qurʾān needs no key** — the read endpoints are public:
+
+```bash
+curl https://api.quran.co.in/api/quran/surahs
+curl https://api.quran.co.in/api/quran/surah/1/ayahs
+```
+
+**Get an API key** for a higher, identified rate tier (and so we can keep the
+service healthy): sign in on quran.co.in, then
+
+```bash
+# create a key (returned ONCE — store it)
+curl -X POST https://api.quran.co.in/api/developer/keys \
+  -H 'Authorization: Bearer <your-login-jwt>' \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"My app"}'
+
+# then call the API with it
+curl https://api.quran.co.in/api/quran/surah/1/ayahs -H 'X-API-Key: qk_live_...'
+```
+
+Manage keys at `GET /api/developer/keys` and revoke with
+`DELETE /api/developer/keys/:id`. We store only a hash of your key — keep the
+plaintext safe. Rate limits are returned in `X-RateLimit-*` headers.
+
+> Build something beautiful with it. Attribution to quran.co.in is appreciated
+> but not required.
+
 ## Contributing
 
 We'd love your help. The `main` branch is protected — **all changes land through

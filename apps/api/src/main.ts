@@ -23,11 +23,14 @@ async function bootstrap() {
     .setTitle('Quran.co.in API')
     .setDescription(
       'REST API serving the quran.co.in web app and mobile clients. ' +
-        'Auth: Google OAuth issues an httpOnly cookie (web) or a Bearer JWT via POST /api/auth/google/mobile (mobile).',
+        'Auth: Google OAuth issues an httpOnly cookie (web) or a Bearer JWT via POST /api/auth/google/mobile (mobile). ' +
+        'Third-party developers: the Qurʾān read endpoints are public; register an app under /api/developer/keys ' +
+        'and pass your key as the X-API-Key header for a higher, identified rate tier.',
     )
     .setVersion('1.0')
     .addBearerAuth()
     .addCookieAuth('access_token')
+    .addApiKey({ type: 'apiKey', name: 'X-API-Key', in: 'header' }, 'api-key')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api/docs', app, document, { jsonDocumentUrl: 'api/docs-json' });
