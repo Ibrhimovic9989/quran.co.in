@@ -1,16 +1,23 @@
 # Quran.co.in
 
-Monorepo for quran.co.in — a modern Quran platform: read all 114 surahs with
-translations and audio, AI-powered Ask (RAG over pgvector), semantic search,
-bookmarks, reading history, and a personalised verse of the day.
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-0F6B4F.svg)](LICENSE)
+
+Open-source monorepo for quran.co.in — a modern Qurʾān platform: read all 114
+sūrahs with translations and audio, AI-powered Ask (RAG over pgvector), semantic
+search, bookmarks, reading history, a personalised verse of the day, and a
+teaching ladder — **Tajwīd Mode**, **Maqāmāt** (melodic modes), and a
+**Noorani-Qāʿidah "Learn to Read"** engine — on both web and native mobile.
+
+Built as ṣadaqah jāriyah: free, and open for anyone to learn from, self-host, or
+build on. Contributions are welcome — see [Contributing](#contributing).
 
 ## Architecture
 
 ```
 apps/
   web/          Next.js 16 frontend (Vercel) — UI, SSR, OG images, sitemap
-  api/          NestJS backend (Render)      — data, auth, AI; also serves the
-                                               future Flutter mobile app
+  api/          NestJS backend (Render)      — data, auth, AI; serves web + mobile
+  mobile/       Flutter app (Android/iOS)    — native client over the same API
 packages/
   database/     Shared Prisma schema + migrations (Supabase Postgres + pgvector)
 ```
@@ -70,6 +77,31 @@ Maintenance scripts (run from `apps/api/`):
 **Web → Vercel**:
 1. Project setting **Root Directory: `apps/web`**.
 2. Env var `NEXT_PUBLIC_API_URL=https://api.quran.co.in`.
+
+## Contributing
+
+We'd love your help. The `main` branch is protected — **all changes land through
+pull requests**, and only maintainers merge.
+
+1. **Fork** the repo and create a branch off `main`.
+2. Copy the `.env.example` files (no secrets are shipped — bring your own keys,
+   or run the read-only Qurʾān endpoints without any).
+3. Make your change; keep it in the style of the surrounding code.
+4. Open a **pull request**. A maintainer (see [CODEOWNERS](.github/CODEOWNERS))
+   will review.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide and
+[SECURITY.md](SECURITY.md) to report a vulnerability privately.
+
+## License
+
+Licensed under the **Apache License 2.0** — see [LICENSE](LICENSE). You are free
+to use, modify, and redistribute, including commercially, with attribution and
+the patent grant Apache 2.0 provides.
+
+Secrets, credentials, and production data are **never** in this repository; they
+live only in each deployment's environment. The code here is the whole project —
+what runs in production builds from it.
 
 ## History
 
