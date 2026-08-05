@@ -100,7 +100,69 @@ function Hub({ onOpen, onCompare }: { onOpen: (i: number) => void; onCompare: ()
           </li>
         ))}
       </ul>
+
+      <MaqamatSeoContent />
     </>
+  );
+}
+
+// ── SEO / content section (unique, indexable) ────────────────────────────────
+const MAQAMAT_FAQS: { q: string; a: string }[] = [
+  {
+    q: 'What are the maqāmāt in Qurʾān recitation?',
+    a: 'The maqāmāt are the melodic modes — the musical scales and paths — that reciters use to recite the Qurʾān beautifully. Each maqām (such as Bayātī, Ḥijāz or Ṣabā) has its own scale and emotional character, and moves the voice through three registers, from a low “home,” up to a peak, and back.',
+  },
+  {
+    q: 'What are the main maqāmāt used for the Qurʾān?',
+    a: 'The most common are eight: Bayātī, Ḥijāz, Ṣabā, Nahāwand, Rast, Sīkāh, ʿAjam and Kurd. Bayātī is often where a reciter begins and ends; each of the others carries a different feeling.',
+  },
+  {
+    q: 'Do the maqāmāt change the meaning of the Qurʾān?',
+    a: 'No. The maqām is the reciter’s melody, not part of the text. Correct recitation (tajwīd) always comes first; the melody is beauty layered on top of accurate reading, and reciters express each maqām differently.',
+  },
+  {
+    q: 'How can I learn to recite the Qurʾān in a maqām?',
+    a: 'These free lessons teach the shape of each maqām on Sūrah al-Fātiḥah: you watch the melody rise and fall as a line, hear a master reciter demonstrate it phrase by phrase, and then try it yourself. You learn the pattern, not just listen to examples.',
+  },
+];
+
+function MaqamatSeoContent() {
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: MAQAMAT_FAQS.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  };
+  return (
+    <section className="mt-14 border-t border-line pt-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <h2 className="font-reading text-2xl font-bold text-ink">Learning the melodies of Qurʾān recitation</h2>
+      <p className="mt-3 max-w-2xl leading-relaxed text-ink-soft">
+        When you hear a reciter move you to tears, part of what you are hearing is a <strong>maqām</strong> — a
+        melodic mode with its own scale and feeling. The maqāmāt are the shared musical language of Qurʾān
+        recitation: Bayātī’s warmth, Ḥijāz’s longing, Ṣabā’s ache. Every reciter moves the voice through three
+        registers — low and grounded, rising, then a peak — and each maqām is a different path through them.
+      </p>
+      <p className="mt-3 max-w-2xl leading-relaxed text-ink-soft">
+        Most tools only give you audio and leave you to guess the pattern. Here you learn the shape: each lesson
+        draws a maqām’s melody as a line you can follow over Sūrah al-Fātiḥah, a master reciter demonstrates it
+        phrase by phrase, and then it’s your turn. Tajwīd always comes first — the melody is beauty layered on
+        top of correct reading.
+      </p>
+
+      <h2 className="mt-10 font-reading text-2xl font-bold text-ink">Frequently asked questions</h2>
+      <div className="mt-4 max-w-2xl space-y-5">
+        {MAQAMAT_FAQS.map((f) => (
+          <div key={f.q}>
+            <p className="font-semibold text-ink">{f.q}</p>
+            <p className="mt-1 leading-relaxed text-ink-soft">{f.a}</p>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
