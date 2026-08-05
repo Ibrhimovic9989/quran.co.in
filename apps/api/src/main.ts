@@ -31,6 +31,26 @@ async function bootstrap() {
     .addBearerAuth()
     .addCookieAuth('access_token')
     .addApiKey({ type: 'apiKey', name: 'X-API-Key', in: 'header' }, 'api-key')
+    .addOAuth2(
+      {
+        type: 'oauth2',
+        description: 'Third-party apps: register at developers.quran.co.in, then use the OAuth2 Authorization Code + PKCE flow (hosted by Logto) to act on a user\'s behalf.',
+        flows: {
+          authorizationCode: {
+            authorizationUrl: `${(process.env.LOGTO_ENDPOINT ?? 'https://2jytqm.logto.app').replace(/\/$/, '')}/oidc/auth`,
+            tokenUrl: `${(process.env.LOGTO_ENDPOINT ?? 'https://2jytqm.logto.app').replace(/\/$/, '')}/oidc/token`,
+            scopes: {
+              'bookmarks:read': 'Read your bookmarks',
+              'bookmarks:write': 'Add and remove your bookmarks',
+              'history:read': 'Read your reading history',
+              'history:write': 'Update your reading history',
+              'profile:read': 'Read your basic profile',
+            },
+          },
+        },
+      },
+      'oauth2',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api/docs', app, document, { jsonDocumentUrl: 'api/docs-json' });

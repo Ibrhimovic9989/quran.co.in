@@ -10,6 +10,7 @@ import { SearchModule } from './search/search.module';
 import { AskModule } from './ask/ask.module';
 import { LlmModule } from './llm/llm.module';
 import { DeveloperModule } from './developer/developer.module';
+import { OAuthModule } from './oauth/oauth.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { DeveloperModule } from './developer/developer.module';
     SearchModule,
     AskModule,
     DeveloperModule,
+    OAuthModule,
   ],
 })
 export class AppModule {}
