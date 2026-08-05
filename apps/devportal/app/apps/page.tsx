@@ -52,7 +52,7 @@ function SignInPrompt() {
       <p className="mt-6 text-sm text-muted">
         Want the details first?{' '}
         <Link
-          href="/docs#oauth"
+          href="/docs/oauth"
           className="text-accent underline-offset-2 hover:underline"
         >
           Read the OAuth 2.0 guide
@@ -411,7 +411,7 @@ export default function AppsPage() {
             Register an app to let users sign in with their quran.co.in account
             and grant it access to their data. See the{' '}
             <Link
-              href="/docs#oauth"
+              href="/docs/oauth"
               className="font-medium text-accent underline-offset-2 hover:underline"
             >
               OAuth 2.0 guide

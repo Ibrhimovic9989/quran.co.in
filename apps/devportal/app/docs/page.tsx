@@ -187,6 +187,21 @@ export default function DocsPage() {
             , the same flow quran.com uses.
           </p>
 
+          <Link
+            href="/docs/oauth"
+            className="flex items-center justify-between gap-4 rounded-xl border border-accent/30 bg-accent-soft p-5 transition-colors hover:opacity-90"
+          >
+            <div>
+              <p className="font-semibold text-ink">
+                Read the full OAuth 2.0 guide →
+              </p>
+              <p className="text-sm text-ink-soft">
+                Complete Node.js walkthrough, refresh tokens, the user-data API
+                (bookmarks, history, profile) and error handling.
+              </p>
+            </div>
+          </Link>
+
           <div className="overflow-hidden rounded-xl border border-line">
             <table className="w-full text-left text-sm">
               <tbody className="divide-y divide-line">
