@@ -2,6 +2,11 @@ import { MetadataRoute } from 'next';
 
 const BASE_URL = 'https://quran.co.in';
 
+// Serve the sitemap as a cached, static file (regenerated daily) so Google's
+// fetch is instant and can never time out, and `lastmod` stays stable within
+// the day instead of changing on every request.
+export const revalidate = 86400;
+
 // Surah names for descriptive URLs (SEO signal)
 const SURAHS = [
   { no: 1, slug: 'al-fatiha' }, { no: 2, slug: 'al-baqarah' }, { no: 3, slug: 'al-imran' },
