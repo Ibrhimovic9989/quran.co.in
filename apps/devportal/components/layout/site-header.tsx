@@ -11,6 +11,7 @@ const NAV = [
   { href: '/', label: 'Home' },
   { href: '/docs', label: 'Quickstart' },
   { href: '/dashboard', label: 'Dashboard' },
+  { href: '/apps', label: 'OAuth Apps' },
 ];
 
 export function SiteHeader() {
