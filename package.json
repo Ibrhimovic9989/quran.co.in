@@ -13,6 +13,7 @@
     "build:devportal": "npm run build -w devportal",
     "dev:api": "npm run start:dev -w api",
     "build:api": "npm run build -w api",
+    "indexnow": "node scripts/indexnow.mjs",
     "db:generate": "npm run generate -w @quran/database",
     "db:migrate": "npm run migrate -w @quran/database",
     "db:studio": "npm run studio -w @quran/database"
