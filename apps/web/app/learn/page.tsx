@@ -161,7 +161,97 @@ function Hub({ done, onOpen }: { done: Set<string>; onOpen: (i: number) => void 
           ? `Letter audio courtesy of ${LETTER_AUDIO_CREDITS.join(', ')}.`
           : 'Spoken audio for each letter is on the way.'}
       </p>
+
+      <LearnSeoContent />
     </>
+  );
+}
+
+// ── SEO / content section (unique, indexable, keyword-targeted) ───────────────
+const LEARN_FAQS: { q: string; a: string }[] = [
+  {
+    q: 'What is the Noorani Qāʿidah?',
+    a: 'The Noorani Qāʿidah (Qāʿidah Nūrāniyyah) is the classic beginner’s primer for reading the Qurʾān. It takes you, step by step, from the individual Arabic letters through their joined forms, the short vowels (ḥarakāt), tanwīn, elongation (madd), sukūn and shaddah, up to reading real Qurʾānic words — with correct pronunciation from the start.',
+  },
+  {
+    q: 'Is this Qurʾān-reading course free?',
+    a: 'Yes — completely free, with no ads and no signup required. It is built as ṣadaqah jāriyah so anyone can learn to read the Qurʾān.',
+  },
+  {
+    q: 'Do I need to know any Arabic to start?',
+    a: 'No. The course begins at the very first letter and assumes no prior Arabic. It is made especially for people who currently read the Qurʾān through English transliteration and want to read the script itself.',
+  },
+  {
+    q: 'Can adults learn to read the Qurʾān?',
+    a: 'Absolutely. This course is designed for adults coming from transliteration as much as for children — each lesson introduces one idea at a time and lets you practice at your own pace.',
+  },
+  {
+    q: 'How long does it take to learn to read the Qurʾān?',
+    a: 'It depends on how often you practice, but with consistent daily practice many learners can read basic words within a few weeks and grow comfortable over a few months. Progress is saved so you can pick up where you left off.',
+  },
+  {
+    q: 'What will I learn?',
+    a: 'The full arc of reading: the 29 Arabic letters and how they change shape in a word, the short and long vowels, tanwīn, sukūn, shaddah, ghunnah and basic tajwīd — then reading real āyāt in the muṣḥaf.',
+  },
+];
+
+function LearnSeoContent() {
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: LEARN_FAQS.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  };
+  const courseSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    name: 'Learn to Read the Qurʾān — Noorani Qāʿidah',
+    description:
+      'A free, step-by-step Noorani Qāʿidah course to read the Qurʾān from the Arabic letters to reading real āyāt.',
+    provider: { '@type': 'Organization', name: 'Quran.co.in', url: 'https://quran.co.in' },
+    isAccessibleForFree: true,
+    inLanguage: 'en',
+  };
+  return (
+    <section className="mt-14 border-t border-line pt-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) }} />
+
+      <h2 className="font-reading text-2xl font-bold text-ink">How to learn to read the Qurʾān, step by step</h2>
+      <p className="mt-3 max-w-2xl leading-relaxed text-ink-soft">
+        If you have only ever read the Qurʾān through English transliteration, learning to read the Arabic
+        script can feel out of reach. It isn’t. Reading the Qurʾān is a single skill — turning the marks on
+        the page into the correct sounds — and it is learned one small step at a time. This free course follows
+        the time-tested <strong>Noorani Qāʿidah</strong> method: you start with the letters, then the vowels,
+        then join them into words, until you can read the muṣḥaf itself.
+      </p>
+      <p className="mt-3 max-w-2xl leading-relaxed text-ink-soft">
+        Each lesson introduces just one idea and lets you tap any letter to hear it, see where it is made in the
+        mouth, and watch how it changes shape inside a word. Tajwīd — the rules of correct pronunciation — is
+        woven in from the very first letter, because reading the Qurʾān correctly comes before reading it
+        beautifully. There is no signup and nothing to buy; your progress is saved on your device.
+      </p>
+
+      <h3 className="mt-8 font-reading text-lg font-bold text-ink">Who this is for</h3>
+      <p className="mt-2 max-w-2xl leading-relaxed text-ink-soft">
+        New Muslims and reverts, parents teaching their children, and anyone who reads the Qurʾān from
+        transliteration and wants to graduate to the Arabic script. No prior Arabic is needed — the course
+        begins at the very first letter.
+      </p>
+
+      <h2 className="mt-10 font-reading text-2xl font-bold text-ink">Frequently asked questions</h2>
+      <div className="mt-4 max-w-2xl space-y-5">
+        {LEARN_FAQS.map((f) => (
+          <div key={f.q}>
+            <p className="font-semibold text-ink">{f.q}</p>
+            <p className="mt-1 leading-relaxed text-ink-soft">{f.a}</p>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
