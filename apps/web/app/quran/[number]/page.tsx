@@ -3,7 +3,9 @@
 
 import type { Metadata } from 'next';
 import { SurahDisplay } from '@/components/quran/surah-display';
+import { SurahAbout } from '@/components/quran/surah-about';
 import { SurahSchema } from '@/components/seo/json-ld';
+import { SURAH_SEO } from '@/lib/data/surah-seo';
 import { backendUrl } from '@/lib/api/backend';
 import { notFound } from 'next/navigation';
 import type { SurahResponse, TafsirResponse } from '@/types/quran-api';
@@ -56,7 +58,12 @@ export async function generateMetadata({
     if (!surah) return {};
 
     const title = `Surah ${surah.surahNameTranslation} (${surah.surahName}) — ${surahNo}:1-${surah.totalAyah}`;
-    const description = `Read Surah ${surah.surahNameTranslation} (${surah.surahName}) online in Arabic with English translation, transliteration, and audio. ${surah.totalAyah} ayahs, revealed in ${surah.revelationPlace}. Free at Quran.co.in.`;
+    // Unique per-surah description (theme-led) so no two pages share meta text.
+    const seo = SURAH_SEO[surahNo];
+    const firstSentence = seo ? seo.theme.split('. ')[0].replace(/\.$/, '') + '.' : '';
+    const description = seo
+      ? `${firstSentence} Read Surah ${surah.surahNameTranslation} with English translation, transliteration & audio — ${surah.totalAyah} āyāt, revealed in ${surah.revelationPlace}. Quran.co.in`
+      : `Read Surah ${surah.surahNameTranslation} (${surah.surahName}) online in Arabic with English translation, transliteration, and audio. ${surah.totalAyah} ayahs, revealed in ${surah.revelationPlace}. Free at Quran.co.in.`;
     const url = `${BASE_URL}/quran/${surahNo}`;
 
     return {
@@ -134,6 +141,13 @@ export default async function SurahPage({
           revelationPlace={surah.revelationPlace}
         />
         <SurahDisplay surah={surah} tafsirs={tafsirs} mushafPage={mushafPage} />
+        <SurahAbout
+          surahNo={surahNo}
+          surahName={surah.surahName}
+          surahNameTranslation={surah.surahNameTranslation}
+          totalAyah={surah.totalAyah}
+          revelationPlace={surah.revelationPlace}
+        />
       </main>
     );
   } catch (error) {
