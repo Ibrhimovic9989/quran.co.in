@@ -40,25 +40,37 @@ const AuthContext = createContext<AuthContextValue>({
   refresh: async () => {},
 });
 
+// Never let an auth check hang the UI: abort after a bounded time so a slow or
+// cold backend resolves us to "signed out" quickly instead of spinning.
+async function fetchWithTimeout(url: string, opts: RequestInit, ms = 12000): Promise<Response> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  try {
+    return await fetch(url, { ...opts, signal: ctrl.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [status, setStatus] = useState<AuthStatus>('loading');
 
   const refresh = useCallback(async () => {
     try {
-      let res = await fetch(backendUrl('/api/auth/me'), {
+      let res = await fetchWithTimeout(backendUrl('/api/auth/me'), {
         credentials: 'include',
         cache: 'no-store',
       });
 
       // Access token expired → try one silent refresh, then re-check.
       if (res.status === 401) {
-        const refreshed = await fetch(backendUrl('/api/auth/refresh'), {
+        const refreshed = await fetchWithTimeout(backendUrl('/api/auth/refresh'), {
           method: 'POST',
           credentials: 'include',
         });
         if (refreshed.ok) {
-          res = await fetch(backendUrl('/api/auth/me'), {
+          res = await fetchWithTimeout(backendUrl('/api/auth/me'), {
             credentials: 'include',
             cache: 'no-store',
           });

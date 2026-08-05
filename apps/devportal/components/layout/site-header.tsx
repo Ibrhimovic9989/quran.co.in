@@ -64,9 +64,10 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          {status === 'loading' ? (
-            <div className="h-9 w-24 animate-pulse rounded-md bg-line-soft" />
-          ) : status === 'authenticated' && user ? (
+          {/* Show "Sign in" immediately (the common case); only swap to the
+              account menu once we've confirmed the visitor is authenticated. No
+              skeleton — the button must never wait on a slow/cold auth check. */}
+          {status === 'authenticated' && user ? (
             <div className="flex items-center gap-2">
               <span className="hidden max-w-[10rem] truncate text-sm text-ink-soft sm:inline">
                 {user.name || user.email}
