@@ -32,18 +32,24 @@ function appDeepLink(): string {
   return process.env.APP_DEEP_LINK ?? 'quranapp://auth';
 }
 
-/** OAuth state: JSON-encoded { r: redirect path, m: mobile flag }. */
+// OAuth state carries the RAW redirect target — either a same-site path
+// (e.g. "/dashboard", used by the web app) or an absolute URL whose origin is
+// a first-party frontend (e.g. https://developers.quran.co.in/dashboard, used
+// by the developer portal). It is only resolved to a real Location at the end,
+// and only ever to an origin present in WEB_ORIGIN — never an open redirect.
+
+/** OAuth state: JSON-encoded { r: raw redirect, m: mobile flag }. */
 function encodeState(redirect: string | undefined, mobile: boolean): string {
-  return encodeURIComponent(JSON.stringify({ r: safeRedirectPath(redirect), m: mobile }));
+  return encodeURIComponent(JSON.stringify({ r: redirect ?? '/', m: mobile }));
 }
 
 function decodeState(raw: string | undefined): { r: string; m: boolean } {
   try {
     const parsed = JSON.parse(decodeURIComponent(raw ?? '')) as { r?: string; m?: boolean };
-    return { r: safeRedirectPath(parsed.r), m: Boolean(parsed.m) };
+    return { r: parsed.r ?? '/', m: Boolean(parsed.m) };
   } catch {
     // Legacy state format: a bare URI-encoded path
-    return { r: safeRedirectPath(decodeURIComponent(raw ?? '/')), m: false };
+    return { r: decodeURIComponent(raw ?? '/'), m: false };
   }
 }
 
@@ -51,11 +57,42 @@ function webUrl(): string {
   return (process.env.WEB_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 }
 
-/** Only allow same-site path redirects (no scheme, no protocol-relative). */
+/** First-party origins allowed to receive a post-auth redirect (from WEB_ORIGIN). */
+function allowedOrigins(): string[] {
+  return (process.env.WEB_ORIGIN ?? 'http://localhost:3000')
+    .split(',')
+    .map((o) => o.trim().replace(/\/$/, ''))
+    .filter(Boolean);
+}
+
+/** The allowed absolute origin named in `raw`, else WEB_URL — never an open redirect. */
+function resolveOrigin(raw: string | undefined): string {
+  if (raw && raw.includes('://')) {
+    try {
+      const u = new URL(raw);
+      const origin = `${u.protocol}//${u.host}`;
+      if (allowedOrigins().includes(origin)) return origin;
+    } catch {
+      /* malformed → fall through to WEB_URL */
+    }
+  }
+  return webUrl();
+}
+
+/** Same-site path (+query) from `raw`; no scheme, no protocol-relative. */
 function safeRedirectPath(raw: string | undefined): string {
   if (!raw) return '/';
-  if (!raw.startsWith('/') || raw.startsWith('//') || raw.includes('://')) return '/';
-  return raw;
+  let path = raw;
+  if (raw.includes('://')) {
+    try {
+      const u = new URL(raw);
+      path = u.pathname + u.search;
+    } catch {
+      return '/';
+    }
+  }
+  if (!path.startsWith('/') || path.startsWith('//')) return '/';
+  return path;
 }
 
 function publicUser(user: User) {
@@ -116,7 +153,7 @@ export class AuthController {
   ) {
     if (!code) {
       const st = decodeState(state);
-      res.redirect(st.m ? `${appDeepLink()}#error=oauth` : `${webUrl()}/sign-in?error=oauth`);
+      res.redirect(st.m ? `${appDeepLink()}#error=oauth` : `${resolveOrigin(st.r)}/sign-in?error=oauth`);
       return;
     }
     const parsedState = decodeState(state);
@@ -131,14 +168,14 @@ export class AuthController {
         return;
       }
       this.setAuthCookies(res, accessToken, refreshToken);
-      res.redirect(`${webUrl()}${parsedState.r}`);
+      res.redirect(`${resolveOrigin(parsedState.r)}${safeRedirectPath(parsedState.r)}`);
     } catch (err) {
       console.error('[auth] google callback failed:', err);
       if (parsedState.m) {
         res.redirect(`${appDeepLink()}#error=oauth`);
         return;
       }
-      res.redirect(`${webUrl()}/sign-in?error=oauth`);
+      res.redirect(`${resolveOrigin(parsedState.r)}/sign-in?error=oauth`);
     }
   }
 
