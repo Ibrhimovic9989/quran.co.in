@@ -4,7 +4,14 @@
 // Logto user (`sub`) to our own User record by email, so the rest of the API can
 // act on the user's behalf exactly as it does for first-party sessions.
 
-import { Injectable, Logger, ServiceUnavailableException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+  ServiceUnavailableException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { createRemoteJWKSet, jwtVerify, type JWTPayload } from 'jose';
 import { UserRepository } from '../users/user.repository';
 
@@ -14,12 +21,39 @@ export interface LogtoGrant {
   clientId?: string;
 }
 
+/** A developer's third-party OAuth app, as shown in the portal. */
+export interface OAuthAppView {
+  id: string; // this is the client_id
+  name: string;
+  redirectUris: string[];
+  createdAt?: number;
+}
+
+interface LogtoApp {
+  id: string;
+  name: string;
+  isThirdParty?: boolean;
+  oidcClientMetadata?: { redirectUris?: string[]; postLogoutRedirectUris?: string[] };
+  customData?: { ownerUserId?: string };
+  createdAt?: number;
+}
+
+function toView(a: LogtoApp): OAuthAppView {
+  return {
+    id: a.id,
+    name: a.name,
+    redirectUris: a.oidcClientMetadata?.redirectUris ?? [],
+    createdAt: a.createdAt,
+  };
+}
+
 @Injectable()
 export class LogtoService {
   private readonly logger = new Logger(LogtoService.name);
   private jwks?: ReturnType<typeof createRemoteJWKSet>;
   private mgmt?: { token: string; expiresAt: number };
   private readonly userCache = new Map<string, { email: string; name?: string; at: number }>();
+  private scopeIds?: { ids: string[]; at: number };
   private static readonly USER_TTL = 5 * 60_000;
 
   constructor(private readonly users: UserRepository) {}
@@ -118,5 +152,88 @@ export class LogtoService {
     const j = (await res.json()) as { access_token: string; expires_in?: number };
     this.mgmt = { token: j.access_token, expiresAt: Date.now() + (j.expires_in ?? 3600) * 1000 };
     return this.mgmt.token;
+  }
+
+  // ── Third-party app management (developer portal) ──────────────────────────
+
+  private async api(path: string, init?: RequestInit): Promise<Response> {
+    const token = await this.managementToken();
+    return fetch(`${this.endpoint()}/api${path}`, {
+      ...init,
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
+    });
+  }
+
+  /** Scope ids of our API resource — what a third-party app may request. Cached. */
+  private async resourceScopeIds(): Promise<string[]> {
+    if (this.scopeIds && Date.now() - this.scopeIds.at < 10 * 60_000) return this.scopeIds.ids;
+    const resources = (await (await this.api('/resources')).json()) as Array<{ id: string; indicator: string }>;
+    const res = resources.find((r) => r.indicator === this.indicator());
+    if (!res) return [];
+    const scopes = (await (await this.api(`/resources/${res.id}/scopes`)).json()) as Array<{ id: string }>;
+    const ids = scopes.map((s) => s.id);
+    this.scopeIds = { ids, at: Date.now() };
+    return ids;
+  }
+
+  /** Fetch an app and assert the caller owns it (owner is stored in customData). */
+  private async ownedApp(ownerId: string, id: string): Promise<LogtoApp> {
+    const res = await this.api(`/applications/${encodeURIComponent(id)}`);
+    if (!res.ok) throw new NotFoundException({ error: 'App not found.' });
+    const app = (await res.json()) as LogtoApp;
+    if (app.customData?.ownerUserId !== ownerId) throw new NotFoundException({ error: 'App not found.' });
+    return app;
+  }
+
+  async listAppsByOwner(ownerId: string): Promise<OAuthAppView[]> {
+    const apps = (await (await this.api('/applications?page=1&page_size=200')).json()) as LogtoApp[];
+    return apps.filter((a) => a.isThirdParty && a.customData?.ownerUserId === ownerId).map(toView);
+  }
+
+  /** Register a confidential third-party app; returns client_id + client_secret. */
+  async createThirdPartyApp(
+    ownerId: string,
+    name: string,
+    redirectUris: string[],
+  ): Promise<{ clientId: string; clientSecret: string; app: OAuthAppView }> {
+    const res = await this.api('/applications', {
+      method: 'POST',
+      body: JSON.stringify({
+        name,
+        type: 'Traditional',
+        isThirdParty: true,
+        oidcClientMetadata: { redirectUris, postLogoutRedirectUris: [] },
+        customData: { ownerUserId: ownerId },
+      }),
+    });
+    if (!res.ok) throw new BadRequestException({ error: 'Could not create the application.' });
+    const app = (await res.json()) as LogtoApp;
+
+    // Let the app request our API scopes (+ the user's email/profile) with consent.
+    const scopeIds = await this.resourceScopeIds();
+    await this.api(`/applications/${app.id}/user-consent-scopes`, {
+      method: 'POST',
+      body: JSON.stringify({ resourceScopes: scopeIds, userScopes: ['email', 'profile'] }),
+    });
+
+    const secrets = (await (await this.api(`/applications/${app.id}/secrets`)).json()) as Array<{ value: string }>;
+    return { clientId: app.id, clientSecret: secrets[0]?.value ?? '', app: toView(app) };
+  }
+
+  async updateRedirectUris(ownerId: string, id: string, redirectUris: string[]): Promise<OAuthAppView> {
+    const app = await this.ownedApp(ownerId, id);
+    const res = await this.api(`/applications/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        oidcClientMetadata: { ...(app.oidcClientMetadata ?? {}), redirectUris, postLogoutRedirectUris: [] },
+      }),
+    });
+    if (!res.ok) throw new BadRequestException({ error: 'Could not update the application.' });
+    return toView((await res.json()) as LogtoApp);
+  }
+
+  async deleteApp(ownerId: string, id: string): Promise<void> {
+    await this.ownedApp(ownerId, id);
+    await this.api(`/applications/${encodeURIComponent(id)}`, { method: 'DELETE' });
   }
 }
