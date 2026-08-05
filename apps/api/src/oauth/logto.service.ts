@@ -186,8 +186,23 @@ export class LogtoService {
   }
 
   async listAppsByOwner(ownerId: string): Promise<OAuthAppView[]> {
-    const apps = (await (await this.api('/applications?page=1&page_size=200')).json()) as LogtoApp[];
-    return apps.filter((a) => a.isThirdParty && a.customData?.ownerUserId === ownerId).map(toView);
+    // Logto caps page_size at 100 and 400s on anything larger — page through it.
+    // Always check res.ok: a Logto error is a JSON *object*, and calling
+    // .filter on it would throw a raw 500 (the "Internal server error" bug).
+    const PAGE = 100;
+    const all: LogtoApp[] = [];
+    for (let page = 1; page <= 50; page++) {
+      const res = await this.api(`/applications?page=${page}&page_size=${PAGE}`);
+      if (!res.ok) {
+        this.logger.error(`Logto list applications failed: ${res.status} ${await res.text()}`);
+        throw new ServiceUnavailableException({ error: 'OAuth provider is unavailable.' });
+      }
+      const batch = (await res.json()) as LogtoApp[];
+      if (!Array.isArray(batch) || batch.length === 0) break;
+      all.push(...batch);
+      if (batch.length < PAGE) break;
+    }
+    return all.filter((a) => a.isThirdParty && a.customData?.ownerUserId === ownerId).map(toView);
   }
 
   /** Register a confidential third-party app; returns client_id + client_secret. */
