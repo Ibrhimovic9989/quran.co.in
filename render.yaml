@@ -18,7 +18,7 @@ services:
       - key: PORT
         value: "3001"
       - key: WEB_ORIGIN
-        value: https://quran.co.in,https://www.quran.co.in
+        value: https://quran.co.in,https://www.quran.co.in,https://developers.quran.co.in
       - key: DATABASE_URL
         sync: false # set in Render dashboard (Supabase pooled URL)
       - key: DIRECT_URL
