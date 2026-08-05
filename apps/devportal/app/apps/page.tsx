@@ -24,6 +24,7 @@ import {
   updateRedirectUris,
 } from '@/lib/api/oauth-apps';
 import { OAuthCredentialsModal } from '@/components/dashboard/oauth-credentials-modal';
+import { WhichAuth } from '@/components/dashboard/which-auth';
 import { cn } from '@/lib/utils/cn';
 
 // ── Sign-in gate ────────────────────────────────────────────────────
@@ -422,6 +423,8 @@ export default function AppsPage() {
           {apps.length} {apps.length === 1 ? 'app' : 'apps'}
         </span>
       </div>
+
+      <WhichAuth current="oauth" />
 
       {/* Register app */}
       <section className="mt-8 rounded-xl border border-line bg-surface-warm p-6 shadow-card">

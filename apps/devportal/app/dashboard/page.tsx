@@ -19,6 +19,7 @@ import {
   revokeKey,
 } from '@/lib/api/developer';
 import { RevealModal } from '@/components/dashboard/reveal-modal';
+import { WhichAuth } from '@/components/dashboard/which-auth';
 import { cn } from '@/lib/utils/cn';
 
 function formatDate(value: string | null): string {
@@ -267,6 +268,8 @@ export default function DashboardPage() {
           {activeCount} active {activeCount === 1 ? 'key' : 'keys'}
         </span>
       </div>
+
+      <WhichAuth current="keys" />
 
       {/* Create key */}
       <section className="mt-8 rounded-xl border border-line bg-surface-warm p-6 shadow-card">
