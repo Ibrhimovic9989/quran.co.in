@@ -44,6 +44,14 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Ask (AI) developer access — the AI endpoint has real cost, so third-party
+  // API/OAuth use of it is gated behind owner approval (the site's own Ask just
+  // needs sign-in). State: none | pending | approved | denied.
+  askAccess      String    @default("none")
+  askUseCase     String?
+  askRequestedAt DateTime?
+  askDecidedAt   DateTime?
+
   // NextAuth relationships
   accounts  Account[]
   sessions  Session[]

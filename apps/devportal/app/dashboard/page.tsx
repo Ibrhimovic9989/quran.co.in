@@ -20,6 +20,8 @@ import {
 } from '@/lib/api/developer';
 import { RevealModal } from '@/components/dashboard/reveal-modal';
 import { WhichAuth } from '@/components/dashboard/which-auth';
+import { AskAccessCard } from '@/components/dashboard/ask-access-card';
+import { AskAdminPanel } from '@/components/dashboard/ask-admin-panel';
 import { cn } from '@/lib/utils/cn';
 
 function formatDate(value: string | null): string {
@@ -352,6 +354,10 @@ export default function DashboardPage() {
           />
         )}
       </section>
+
+      <AskAccessCard />
+
+      <AskAdminPanel />
 
       {revealed && (
         <RevealModal

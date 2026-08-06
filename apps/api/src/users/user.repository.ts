@@ -50,4 +50,57 @@ export class UserRepository {
       data: { name: data.name, imageUrl: data.imageUrl },
     });
   }
+
+  // ── Ask (AI) developer-access gate ──────────────────────────────────────
+  private static readonly askSelect = {
+    askAccess: true,
+    askUseCase: true,
+    askRequestedAt: true,
+    askDecidedAt: true,
+  } as const;
+
+  getAskAccess(userId: string) {
+    return this.prisma.user.findUnique({
+      where: { id: userId },
+      select: UserRepository.askSelect,
+    });
+  }
+
+  requestAskAccess(userId: string, useCase: string) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        askAccess: 'pending',
+        askUseCase: useCase,
+        askRequestedAt: new Date(),
+        askDecidedAt: null,
+      },
+      select: UserRepository.askSelect,
+    });
+  }
+
+  decideAskAccess(userId: string, decision: 'approved' | 'denied') {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { askAccess: decision, askDecidedAt: new Date() },
+      select: { id: true, email: true, name: true, askAccess: true },
+    });
+  }
+
+  /** Every developer who has ever requested Ask, pending first. Owner-only view. */
+  listAskRequests() {
+    return this.prisma.user.findMany({
+      where: { askAccess: { in: ['pending', 'approved', 'denied'] } },
+      orderBy: [{ askAccess: 'asc' }, { askRequestedAt: 'desc' }],
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        askAccess: true,
+        askUseCase: true,
+        askRequestedAt: true,
+        askDecidedAt: true,
+      },
+    });
+  }
 }

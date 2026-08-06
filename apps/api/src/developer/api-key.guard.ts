@@ -17,6 +17,8 @@ export interface ApiClientContext {
   id: string;
   name: string;
   scopes: string;
+  /** True when the key's owner is approved to use the costly Ask (AI) endpoint. */
+  askApproved: boolean;
 }
 
 export interface KeyedRequest extends Request {
@@ -46,7 +48,12 @@ export class ApiKeyGuard implements CanActivate {
       throw new UnauthorizedException({ error: 'Invalid or revoked API key.' });
     }
 
-    req.apiClient = { id: client.id, name: client.name, scopes: client.scopes };
+    req.apiClient = {
+      id: client.id,
+      name: client.name,
+      scopes: client.scopes,
+      askApproved: client.owner?.askAccess === 'approved',
+    };
 
     const res = context.switchToHttp().getResponse<Response>();
     const rl = rateLimit(`apikey:${client.id}`, KEYED_RATE_LIMIT, RATE_WINDOW_MS);

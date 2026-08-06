@@ -38,9 +38,15 @@ export class ApiKeyRepository {
     });
   }
 
-  /** Full record (incl. revoked flag) for guard validation — keyed by hash. */
+  /**
+   * Full record (incl. revoked flag) for guard validation — keyed by hash.
+   * Pulls the owner's Ask-access state so the Ask gate can authorize in one hop.
+   */
   findByHash(hash: string) {
-    return this.prisma.apiClient.findUnique({ where: { keyHash: hash } });
+    return this.prisma.apiClient.findUnique({
+      where: { keyHash: hash },
+      include: { owner: { select: { askAccess: true } } },
+    });
   }
 
   listByOwner(ownerId: string) {

@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils/cn';
 import { type Mode, SUGGESTED, LOADING_STEPS } from './constants';
 import { renderMarkdown } from './answer-renderer';
 import { backendUrl } from '@/lib/api/backend';
+import { useAuth, signIn } from '@/components/auth/auth-client';
 
 interface SourceAyah {
   surahNumber: number;
@@ -58,6 +59,8 @@ function LoadingIndicator() {
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function AskPage() {
+  const { status } = useAuth();
+  const signedIn = status === 'authenticated';
   const [mode, setMode] = useState<Mode>('focused');
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -104,6 +107,12 @@ export default function AskPage() {
 
   async function ask(question: string) {
     if (!question.trim() || loading) return;
+    // Ask (AI) has real cost, so it's for signed-in users only. Prompt instead
+    // of firing a request that the API would reject with 401.
+    if (!signedIn) {
+      signIn('google', { callbackUrl: '/ask' });
+      return;
+    }
 
     const userMsg: Message = { role: 'user', content: question.trim() };
     setMessages((prev) => [...prev, userMsg]);
@@ -118,9 +127,24 @@ export default function AskPage() {
 
       const res = await fetch(backendUrl('/api/quran/ask'), {
         method: 'POST',
+        credentials: 'include', // send the session cookie so the API sees a signed-in user
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: question.trim(), mode, history: historyToSend }),
       });
+
+      if (res.status === 401) {
+        setMessages((prev) => {
+          const msgs = [...prev];
+          msgs[msgs.length - 1] = {
+            ...msgs[msgs.length - 1],
+            content: 'Please sign in to use Ask — it’s free, and keeps this AI feature sustainable.',
+          };
+          return msgs;
+        });
+        setLoading(false);
+        signIn('google', { callbackUrl: '/ask' });
+        return;
+      }
 
       if (!res.ok || !res.body) throw new Error('Request failed');
 
@@ -586,9 +610,11 @@ export default function AskPage() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={
-                mode === 'focused'
-                  ? 'Ask about any topic in the Quran…'
-                  : 'Ask about any ayah, surah, or topic…'
+                !signedIn
+                  ? 'Sign in to ask about the Quran — it’s free'
+                  : mode === 'focused'
+                    ? 'Ask about any topic in the Quran…'
+                    : 'Ask about any ayah, surah, or topic…'
               }
               rows={2}
               className="w-full px-4 pt-4 pb-2 text-sm md:text-base text-gray-900 placeholder:text-gray-400 resize-none focus:outline-none bg-transparent"
@@ -596,15 +622,15 @@ export default function AskPage() {
             <div className="flex items-center justify-between px-3 pb-3">
               <p className="text-[11px] text-gray-400">Enter to send · Shift+Enter for new line</p>
               <button
-                onClick={() => ask(input)}
-                disabled={!input.trim() || loading}
+                onClick={() => (signedIn ? ask(input) : signIn('google', { callbackUrl: '/ask' }))}
+                disabled={loading || (signedIn && !input.trim())}
                 className={cn(
                   'inline-flex items-center gap-1.5 disabled:bg-gray-200 disabled:text-gray-400 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors',
                   mode === 'focused' ? 'bg-accent hover:bg-accent-strong' : 'bg-gold-text hover:bg-gold-text'
                 )}
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                Ask
+                {signedIn ? 'Ask' : 'Sign in to Ask'}
               </button>
             </div>
           </div>
