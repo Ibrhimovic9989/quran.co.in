@@ -3,19 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "apps/*"
   ],
   "scripts": {
     "dev:web": "npm run dev -w web",
     "build:web": "npm run build -w web",
-    "dev:devportal": "npm run dev -w devportal",
-    "build:devportal": "npm run build -w devportal",
-    "dev:api": "npm run start:dev -w api",
-    "build:api": "npm run build -w api",
-    "indexnow": "node scripts/indexnow.mjs",
-    "db:generate": "npm run generate -w @quran/database",
-    "db:migrate": "npm run migrate -w @quran/database",
-    "db:studio": "npm run studio -w @quran/database"
+    "indexnow": "node scripts/indexnow.mjs"
   }
 }
