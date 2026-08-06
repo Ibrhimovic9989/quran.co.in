@@ -22,7 +22,11 @@ export class LogtoAuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToHttp().getRequest<Request & { user?: unknown; oauthScopes?: string[] }>();
+    const req = context
+      .switchToHttp()
+      .getRequest<
+        Request & { user?: unknown; oauthScopes?: string[]; oauthClientId?: string }
+      >();
     const header = req.headers.authorization;
     if (!header?.startsWith('Bearer ')) {
       throw new UnauthorizedException({ error: 'A Bearer access token is required.' });
@@ -40,6 +44,7 @@ export class LogtoAuthGuard implements CanActivate {
     const user = await this.logto.resolveUser(grant.sub);
     req.user = { userId: user.id, email: user.email };
     req.oauthScopes = grant.scopes;
+    req.oauthClientId = grant.clientId;
     return true;
   }
 }

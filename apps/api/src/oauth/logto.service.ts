@@ -53,6 +53,7 @@ export class LogtoService {
   private jwks?: ReturnType<typeof createRemoteJWKSet>;
   private mgmt?: { token: string; expiresAt: number };
   private readonly userCache = new Map<string, { email: string; name?: string; at: number }>();
+  private readonly appOwnerCache = new Map<string, { ownerId?: string; at: number }>();
   private scopeIds?: { ids: string[]; at: number };
   private static readonly USER_TTL = 5 * 60_000;
 
@@ -174,6 +175,24 @@ export class LogtoService {
     const ids = scopes.map((s) => s.id);
     this.scopeIds = { ids, at: Date.now() };
     return ids;
+  }
+
+  /**
+   * Our User id that owns the OAuth app with this client_id (from the app's
+   * customData). Cached — used to check the developer's Ask approval per request.
+   */
+  async appOwnerId(clientId: string): Promise<string | undefined> {
+    const cached = this.appOwnerCache.get(clientId);
+    if (cached && Date.now() - cached.at < LogtoService.USER_TTL) return cached.ownerId;
+    const res = await this.api(`/applications/${encodeURIComponent(clientId)}`);
+    if (!res.ok) {
+      this.appOwnerCache.set(clientId, { ownerId: undefined, at: Date.now() });
+      return undefined;
+    }
+    const app = (await res.json()) as LogtoApp;
+    const ownerId = app.customData?.ownerUserId;
+    this.appOwnerCache.set(clientId, { ownerId, at: Date.now() });
+    return ownerId;
   }
 
   /** Fetch an app and assert the caller owns it (owner is stored in customData). */

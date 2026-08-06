@@ -7,5 +7,6 @@ import { AskAccessGuard } from './ask-access.guard';
 @Module({
   controllers: [AskController],
   providers: [AskService, AskAccessGuard],
+  exports: [AskService], // consumed by the OAuth v1/ask endpoint
 })
 export class AskModule {}

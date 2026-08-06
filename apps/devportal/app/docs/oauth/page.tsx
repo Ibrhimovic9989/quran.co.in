@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, ExternalLink, Lock, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Lock, ShieldCheck, Sparkles } from 'lucide-react';
 import { CodeBlock } from '@/components/ui/code-block';
 import { BACKEND_URL } from '@/lib/api/backend';
 
@@ -25,6 +25,10 @@ const SCOPES: Array<[string, string]> = [
   ['bookmarks:write', 'Create and remove the user’s bookmarks.'],
   ['history:read', 'Read the user’s reading history.'],
   ['history:write', 'Record the user’s reading history.'],
+  [
+    'ask:use',
+    'Use the AI “Ask the Qurʼan” endpoint on the user’s behalf. Also requires the app’s developer to be approved for Ask (request it in the console).',
+  ],
 ];
 
 const USER_ENDPOINTS: Array<[string, string, string, string]> = [
@@ -48,6 +52,12 @@ const USER_ENDPOINTS: Array<[string, string, string, string]> = [
     '/api/v1/history',
     'history:write',
     'Record a reading position. Body: { surahNumber, ayahNumber? }.',
+  ],
+  [
+    'POST',
+    '/api/v1/ask',
+    'ask:use',
+    'Ask the Qurʼan (AI), streamed as SSE. Body: { question, mode?, history? }. Developer must be Ask-approved.',
   ],
 ];
 
@@ -427,6 +437,29 @@ export default function OAuthGuidePage() {
             Example — bookmark Ayat al-Kursī for the signed-in user:
           </p>
           <CodeBlock label="Write a bookmark" code={BOOKMARK_WRITE_EXAMPLE} />
+
+          <div className="flex items-start gap-3 rounded-lg border border-line bg-surface-warm p-4 text-sm text-ink-soft">
+            <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+            <span>
+              <span className="font-medium text-ink">Ask (AI) is extra-gated.</span>{' '}
+              <code className="rounded bg-line-soft px-1.5 py-0.5 font-mono text-[0.85em] text-ink">
+                POST /api/v1/ask
+              </code>{' '}
+              needs the user to grant{' '}
+              <code className="rounded bg-line-soft px-1.5 py-0.5 font-mono text-[0.85em] text-ink">
+                ask:use
+              </code>{' '}
+              <em>and</em> your developer account to be approved for Ask (it has
+              real per-call cost). Request approval from the{' '}
+              <Link
+                href="/dashboard"
+                className="font-medium text-accent underline-offset-2 hover:underline"
+              >
+                console
+              </Link>
+              ; until then the endpoint returns 403.
+            </span>
+          </div>
         </section>
 
         {/* Errors */}
