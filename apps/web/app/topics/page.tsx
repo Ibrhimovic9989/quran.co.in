@@ -44,10 +44,10 @@ export default function TopicsPage() {
 
         {/* Header */}
         <div className="mb-8 md:mb-10">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-ink mb-2">
             Explore by Topic
           </h1>
-          <p className="text-sm md:text-base text-gray-500">
+          <p className="text-sm md:text-base text-muted">
             Browse Quranic ayahs organized by theme. Powered by semantic search across all 6,236 verses.
           </p>
         </div>
@@ -62,7 +62,7 @@ export default function TopicsPage() {
                 'text-left p-3 md:p-4 rounded-2xl border transition-all duration-200',
                 'hover:shadow-md hover:-translate-y-0.5 active:translate-y-0',
                 topic.color,
-                activeTopic?.id === topic.id && 'ring-2 ring-offset-1 ring-gray-900 shadow-md'
+                activeTopic?.id === topic.id && 'ring-2 ring-offset-1 ring-ink shadow-md'
               )}
             >
               <div className="text-2xl mb-2">{topic.emoji}</div>
@@ -75,7 +75,7 @@ export default function TopicsPage() {
 
         {/* Results panel */}
         {activeTopic && (
-          <div ref={resultsRef} className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+          <div ref={resultsRef} className="rounded-2xl border border-line bg-surface shadow-sm overflow-hidden">
             {/* Panel header */}
             <div className={cn('flex items-center justify-between px-5 py-4 border-b', activeTopic.color)}>
               <div className="flex items-center gap-3">
@@ -100,45 +100,45 @@ export default function TopicsPage() {
             {/* Loading */}
             {loading && (
               <div className="flex flex-col items-center justify-center py-16 gap-3">
-                <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-                <p className="text-sm text-gray-400">Finding the most relevant ayahs…</p>
+                <Loader2 className="w-6 h-6 animate-spin text-muted" />
+                <p className="text-sm text-muted">Finding the most relevant ayahs…</p>
               </div>
             )}
 
             {/* Results */}
             {!loading && results.length > 0 && (
-              <ul className="divide-y divide-gray-100">
+              <ul className="divide-y divide-line-soft">
                 {results.map((r, i) => (
                   <li key={`${r.surahNumber}:${r.ayahNumber}`}>
                     <Link
                       href={`/quran/${r.surahNumber}`}
-                      className="flex gap-4 px-5 py-4 hover:bg-gray-50 transition-colors group"
+                      className="flex gap-4 px-5 py-4 hover:bg-surface-warm transition-colors group"
                     >
                       {/* Rank */}
                       <div className="shrink-0 w-6 text-center">
-                        <span className="text-xs font-bold text-gray-300">{i + 1}</span>
+                        <span className="text-xs font-bold text-muted">{i + 1}</span>
                       </div>
 
                       {/* Content */}
                       <div className="flex-1 min-w-0 space-y-1.5">
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-xs font-semibold text-gray-500">
+                          <span className="text-xs font-semibold text-muted">
                             {r.englishName}
                             {r.englishNameTranslation && (
-                              <span className="font-normal text-gray-400"> · {r.englishNameTranslation}</span>
+                              <span className="font-normal text-muted"> · {r.englishNameTranslation}</span>
                             )}
-                            <span className="ml-2 font-bold text-gray-700">{r.surahNumber}:{r.ayahNumber}</span>
+                            <span className="ml-2 font-bold text-ink-soft">{r.surahNumber}:{r.ayahNumber}</span>
                           </span>
                           <div className="flex items-center gap-1 shrink-0">
-                            <span className="text-[10px] text-gray-400">{Math.round(r.similarity * 100)}%</span>
-                            <ExternalLink className="w-3 h-3 text-gray-300 group-hover:text-gray-500 transition-colors" />
+                            <span className="text-[10px] text-muted">{Math.round(r.similarity * 100)}%</span>
+                            <ExternalLink className="w-3 h-3 text-muted group-hover:text-muted transition-colors" />
                           </div>
                         </div>
-                        <p lang="ar" dir="rtl" className="font-arabic text-right text-lg leading-relaxed text-gray-800">
+                        <p lang="ar" dir="rtl" className="font-arabic text-right text-lg leading-relaxed text-ink">
                           {r.arabicText}
                         </p>
                         {r.translationText && (
-                          <p className="text-sm text-gray-600 leading-relaxed">{r.translationText}</p>
+                          <p className="text-sm text-ink-soft leading-relaxed">{r.translationText}</p>
                         )}
                       </div>
                     </Link>
@@ -148,7 +148,7 @@ export default function TopicsPage() {
             )}
 
             {!loading && results.length === 0 && (
-              <div className="py-12 text-center text-sm text-gray-400">
+              <div className="py-12 text-center text-sm text-muted">
                 No results found. Try another topic.
               </div>
             )}

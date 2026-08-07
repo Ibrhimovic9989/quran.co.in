@@ -25,17 +25,17 @@ export function SectionDivider({ context, className }: SectionDividerProps) {
   if (!verse) return null;
 
   return (
-    <div className={cn('py-12 md:py-16 text-center border-t border-b border-gray-200 my-12 md:my-16', className)}>
+    <div className={cn('py-12 md:py-16 text-center border-t border-b border-line my-12 md:my-16', className)}>
       <div className="max-w-3xl mx-auto px-4">
         {verse.arabic && (
-          <Text className="text-2xl md:text-3xl font-arabic text-gray-900 mb-4 leading-relaxed">
+          <Text className="text-2xl md:text-3xl font-arabic text-ink mb-4 leading-relaxed">
             {verse.arabic}
           </Text>
         )}
-        <Text className="text-lg md:text-xl text-gray-700 italic leading-relaxed mb-2">
+        <Text className="text-lg md:text-xl text-ink-soft italic leading-relaxed mb-2">
           "{verse.text}"
         </Text>
-        <Text className="text-sm text-gray-600 font-medium">
+        <Text className="text-sm text-ink-soft font-medium">
           — {verse.source}
         </Text>
       </div>

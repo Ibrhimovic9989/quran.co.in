@@ -52,12 +52,12 @@ export function TafsirDisplay({ tafsir, className }: TafsirDisplayProps) {
       {/* Selected Tafsir Content */}
       <Card className="overflow-hidden">
         {/* Author Header Section */}
-        <div className="mb-6 pb-4 border-b border-gray-800">
+        <div className="mb-6 pb-4 border-b border-ink">
           <Heading level={4} className="mb-2 text-white">
             {selectedTafsir.author}
           </Heading>
           {selectedTafsir.groupVerse && (
-            <Text className="text-sm text-gray-400 italic leading-relaxed">
+            <Text className="text-sm text-muted italic leading-relaxed">
               {selectedTafsir.groupVerse}
             </Text>
           )}

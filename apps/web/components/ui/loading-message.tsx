@@ -37,15 +37,15 @@ export function LoadingMessage({ className, showIcon = true }: LoadingMessagePro
   return (
     <div className={cn("flex flex-col items-center justify-center gap-4 text-center max-w-2xl mx-auto px-4", className)}>
       {showIcon && Icon && (
-        <div className={cn("flex items-center justify-center w-12 h-12 rounded-full bg-gray-100", typeColors[message.type])}>
+        <div className={cn("flex items-center justify-center w-12 h-12 rounded-full bg-line-soft", typeColors[message.type])}>
           <Icon className="w-6 h-6" />
         </div>
       )}
       <div className="space-y-2">
-        <Text className="text-lg md:text-xl text-gray-700 leading-relaxed italic">
+        <Text className="text-lg md:text-xl text-ink-soft leading-relaxed italic">
           "{message.text}"
         </Text>
-        <Text className="text-sm text-gray-600 font-medium">
+        <Text className="text-sm text-ink-soft font-medium">
           — {message.source}
         </Text>
       </div>

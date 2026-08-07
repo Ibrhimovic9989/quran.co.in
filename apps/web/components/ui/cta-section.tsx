@@ -18,7 +18,7 @@ interface CTASectionProps {
 
 export function CTASection({ className }: CTASectionProps) {
   return (
-    <section className={cn("w-full py-8 md:py-16 lg:py-20 bg-gradient-to-b from-gray-50/50 to-white", className)}>
+    <section className={cn("w-full py-8 md:py-16 lg:py-20 bg-gradient-to-b from-surface-warm/50 to-surface", className)}>
       <Container>
         <div className="max-w-4xl mx-auto text-center">
           {/* Headline - Mobile optimized */}
@@ -27,7 +27,7 @@ export function CTASection({ className }: CTASectionProps) {
             className="text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-ink mb-3 md:mb-4 leading-tight"
           >
             Begin Your Journey{' '}
-            <span className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent whitespace-nowrap">
+            <span className="bg-gradient-to-r from-ink via-ink-soft to-ink bg-clip-text text-transparent whitespace-nowrap">
               Today
             </span>
           </Heading>
@@ -63,7 +63,7 @@ export function CTASection({ className }: CTASectionProps) {
                 background="rgba(255, 255, 255, 1)"
                 shimmerColor="#000000"
                 borderRadius="8px"
-                className="w-full sm:w-auto text-black font-semibold px-5 py-2.5 md:px-8 md:py-4 text-sm md:text-base border-2 border-gray-300 hover:border-gray-400 transition-colors"
+                className="w-full sm:w-auto text-ink font-semibold px-5 py-2.5 md:px-8 md:py-4 text-sm md:text-base border-2 border-line hover:border-line transition-colors"
               >
                 <span className="flex items-center justify-center gap-2 relative z-10">
                   <UserPlus className="w-4 h-4 md:w-5 md:h-5" />

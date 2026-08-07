@@ -51,7 +51,7 @@ export function QuranReminder({ className }: QuranReminderProps) {
   return (
     <p
       className={cn(
-        'text-xs text-gray-400 text-center transition-opacity duration-[400ms]',
+        'text-xs text-muted text-center transition-opacity duration-[400ms]',
         visible ? 'opacity-100' : 'opacity-0',
         className
       )}

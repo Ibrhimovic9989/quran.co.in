@@ -120,7 +120,7 @@ export function Quran3D({ className, autoRotate = true }: Quran3DProps) {
 
         {/* Pages Edge - Smaller on mobile */}
         <div
-          className="absolute w-4 md:w-8 h-full bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 rounded-l-lg"
+          className="absolute w-4 md:w-8 h-full bg-gradient-to-r from-line-soft via-surface-warm to-line-soft rounded-l-lg"
           style={{
             transform: 'rotateY(-90deg) translateZ(0px)',
             left: '-20px',
@@ -131,7 +131,7 @@ export function Quran3D({ className, autoRotate = true }: Quran3DProps) {
           {Array.from({ length: 20 }).map((_, i) => (
             <div
               key={i}
-              className="absolute w-full h-px bg-gray-300 opacity-20"
+              className="absolute w-full h-px bg-line opacity-20"
               style={{ top: `${(i + 1) * 5}%` }}
             />
           ))}

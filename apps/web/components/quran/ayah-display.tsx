@@ -394,7 +394,7 @@ export function AyahDisplay({
                   {Array.from({ length: 3 }).map((_, i) => (
                     <div key={i} className="px-3 py-3 space-y-1.5 animate-pulse">
                       <div className="h-3 w-24 bg-accent-soft rounded" />
-                      <div className="h-3 w-full bg-gray-100 rounded" />
+                      <div className="h-3 w-full bg-line-soft rounded" />
                     </div>
                   ))}
                 </div>
@@ -414,7 +414,7 @@ export function AyahDisplay({
                             </span>
                             <div className="flex items-center gap-1">
                               <span className="text-[10px] text-ink-muted">{Math.round(r.similarity * 100)}%</span>
-                              <ExternalLink className="w-3 h-3 text-gray-300 group-hover:text-accent transition-colors" />
+                              <ExternalLink className="w-3 h-3 text-muted group-hover:text-accent transition-colors" />
                             </div>
                           </div>
                           <p lang="ar" dir="rtl" className="font-arabic text-right text-base leading-[1.9] text-ink-soft">

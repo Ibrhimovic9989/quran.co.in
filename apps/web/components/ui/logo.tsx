@@ -35,7 +35,7 @@ export function Logo({
         )}
       />
       {!showText && variant === 'icon' && (
-        <span className="ml-2 text-base md:text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <span className="ml-2 text-base md:text-xl font-semibold text-ink dark:text-gray-100">
           Quran.co.in
         </span>
       )}

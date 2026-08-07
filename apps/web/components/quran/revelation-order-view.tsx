@@ -99,17 +99,17 @@ export function RevelationOrderView({ surahs, searchQuery = '' }: RevelationOrde
     <section className={cn('w-full py-6 md:py-24 bg-paper')}>
       <Container>
         <div className="max-w-4xl mx-auto text-center mb-6 md:mb-16">
-          <Heading level={1} className="text-2xl md:text-5xl font-bold text-gray-900 mb-3 md:mb-6 leading-tight">
+          <Heading level={1} className="text-2xl md:text-5xl font-bold text-ink mb-3 md:mb-6 leading-tight">
             Revelation Order
           </Heading>
-          <Text className="text-sm md:text-lg text-gray-700 max-w-2xl mx-auto leading-tight md:leading-relaxed mb-3 md:mb-6">
+          <Text className="text-sm md:text-lg text-ink-soft max-w-2xl mx-auto leading-tight md:leading-relaxed mb-3 md:mb-6">
             {searchQuery 
               ? `Found ${surahsByRevelation.length} surahs matching your search`
               : 'This view shows the chronological order of Surahs in the Quran based on when they were revealed to the Prophet Muhammad ﷺ.'
             }
           </Text>
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 md:p-4 text-left max-w-3xl mx-auto">
-            <Text className="text-xs md:text-sm text-gray-700 leading-tight md:leading-relaxed">
+            <Text className="text-xs md:text-sm text-ink-soft leading-tight md:leading-relaxed">
               <strong>Note:</strong> The chronology is a subject of scholarly opinion and some Surahs were revealed in parts at different times. The ordering here is based on the work of{' '}
               <a
                 href="https://tanzil.net"
@@ -127,7 +127,7 @@ export function RevelationOrderView({ surahs, searchQuery = '' }: RevelationOrde
         {/* Surahs Grid - Same as Surah view but with revelation order number - Mobile optimized */}
         {surahsByRevelation.length === 0 ? (
           <div className="text-center py-6 md:py-12">
-            <Text className="text-gray-600 text-sm md:text-lg">
+            <Text className="text-ink-soft text-sm md:text-lg">
               No surahs found matching your search. Try a different query.
             </Text>
           </div>

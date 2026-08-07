@@ -457,7 +457,7 @@ export function SurahDisplay({ surah, mushafPage = null, tafsirs }: SurahDisplay
 
         {!hasMore && totalAyahs > INITIAL_AYAHS && (
           <div className="mt-4 md:mt-8 text-center">
-            <Text className="text-gray-600 text-xs md:text-base">
+            <Text className="text-ink-soft text-xs md:text-base">
               All {totalAyahs} ayahs loaded
             </Text>
           </div>

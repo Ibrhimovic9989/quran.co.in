@@ -116,10 +116,10 @@ export default async function SurahPage({
 
     if (!surah) {
       return (
-        <main className="min-h-screen bg-white text-black p-8">
+        <main className="min-h-screen bg-surface text-ink p-8">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Surah Not Found</h1>
-            <p className="text-gray-600 text-lg">
+            <h1 className="text-3xl font-bold text-ink mb-4">Surah Not Found</h1>
+            <p className="text-ink-soft text-lg">
               Unable to load surah {surahNo}. Please try again later.
             </p>
           </div>
@@ -153,13 +153,13 @@ export default async function SurahPage({
   } catch (error) {
     console.error('Error loading surah:', error);
       return (
-        <main className="min-h-screen bg-white text-black p-8">
+        <main className="min-h-screen bg-surface text-ink p-8">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Error Loading Surah</h1>
-            <p className="text-gray-600 text-lg">
+            <h1 className="text-3xl font-bold text-ink mb-4">Error Loading Surah</h1>
+            <p className="text-ink-soft text-lg">
               {error instanceof Error ? error.message : 'Failed to load surah'}
             </p>
-            <p className="text-sm text-gray-500 mt-4">
+            <p className="text-sm text-muted mt-4">
               Please refresh the page or try again later.
             </p>
           </div>

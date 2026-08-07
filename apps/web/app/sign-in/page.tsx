@@ -62,10 +62,10 @@ function SignInContent() {
   // Show loading state while checking session - Mobile optimized
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white px-4">
+      <div className="min-h-screen flex items-center justify-center bg-surface px-4">
         <div className="text-center">
-          <div className="w-6 h-6 md:w-8 md:h-8 border-3 md:border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin mx-auto mb-3 md:mb-4"></div>
-          <p className="text-gray-600 text-sm md:text-base">Loading...</p>
+          <div className="w-6 h-6 md:w-8 md:h-8 border-3 md:border-4 border-line border-t-gray-900 rounded-full animate-spin mx-auto mb-3 md:mb-4"></div>
+          <p className="text-ink-soft text-sm md:text-base">Loading...</p>
         </div>
       </div>
     );
@@ -79,16 +79,16 @@ function SignInContent() {
       </div>
 
       {/* Right Side - Sign In Form - Mobile First */}
-      <div className="flex-1 flex items-center justify-center p-3 sm:p-4 md:p-6 lg:p-8 bg-white">
+      <div className="flex-1 flex items-center justify-center p-3 sm:p-4 md:p-6 lg:p-8 bg-surface">
         <div className="w-full max-w-md">
-          <Card className="border border-gray-200 shadow-lg">
+          <Card className="border border-line shadow-lg">
             <div className="p-4 sm:p-6 md:p-8 space-y-4 md:space-y-6">
               {/* Header - Mobile optimized */}
               <div className="text-center space-y-1.5 md:space-y-2">
-                <Heading level={1} className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
+                <Heading level={1} className="text-2xl sm:text-3xl md:text-4xl font-bold text-ink leading-tight">
                   Welcome Back
                 </Heading>
-                <Text className="text-xs sm:text-sm md:text-base text-gray-600">
+                <Text className="text-xs sm:text-sm md:text-base text-ink-soft">
                   Sign in to continue your Quranic journey
                 </Text>
               </div>
@@ -116,21 +116,21 @@ function SignInContent() {
               </div>
 
               {/* Additional Info - Mobile optimized */}
-              <div className="pt-2 md:pt-4 border-t border-gray-200">
-                <Text className="text-center text-[10px] sm:text-xs md:text-sm text-gray-500 leading-relaxed">
+              <div className="pt-2 md:pt-4 border-t border-line">
+                <Text className="text-center text-[10px] sm:text-xs md:text-sm text-muted leading-relaxed">
                   By continuing, you agree to our{' '}
-                  <a href="/terms" className="text-gray-900 hover:underline font-medium">
+                  <a href="/terms" className="text-ink hover:underline font-medium">
                     Terms of Service
                   </a>
                   {' '}and{' '}
-                  <a href="/privacy" className="text-gray-900 hover:underline font-medium">
+                  <a href="/privacy" className="text-ink hover:underline font-medium">
                     Privacy Policy
                   </a>
                 </Text>
               </div>
 
               {/* Trust Indicators - Mobile optimized */}
-              <div className="flex items-center justify-center gap-3 sm:gap-4 md:gap-6 pt-2 md:pt-4 text-[10px] sm:text-xs text-gray-500">
+              <div className="flex items-center justify-center gap-3 sm:gap-4 md:gap-6 pt-2 md:pt-4 text-[10px] sm:text-xs text-muted">
                 <div className="flex items-center gap-1">
                   <svg className="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -161,10 +161,10 @@ function SignInContent() {
 export default function SignInPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-white px-4">
+      <div className="min-h-screen flex items-center justify-center bg-surface px-4">
         <div className="text-center">
-          <div className="w-6 h-6 md:w-8 md:h-8 border-3 md:border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin mx-auto mb-3 md:mb-4"></div>
-          <p className="text-gray-600 text-sm md:text-base">Loading...</p>
+          <div className="w-6 h-6 md:w-8 md:h-8 border-3 md:border-4 border-line border-t-gray-900 rounded-full animate-spin mx-auto mb-3 md:mb-4"></div>
+          <p className="text-ink-soft text-sm md:text-base">Loading...</p>
         </div>
       </div>
     }>

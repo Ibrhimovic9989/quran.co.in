@@ -21,7 +21,7 @@ function renderEmphasis(text: string, keyPrefix: string): React.ReactNode[] {
   return tokens.map((t, i) => {
     if (t.length > 4 && t.startsWith('**') && t.endsWith('**')) {
       return (
-        <strong key={`${keyPrefix}-b-${i}`} className="font-semibold text-gray-900">
+        <strong key={`${keyPrefix}-b-${i}`} className="font-semibold text-ink">
           {t.slice(2, -2)}
         </strong>
       );
@@ -91,7 +91,7 @@ export function renderMarkdown(text: string): React.ReactNode[] {
       nodes.push(
         <div key={`ar-${i}`} className="bg-gold-soft/30 border border-gold/30 rounded-xl px-4 py-3 my-2 space-y-2">
           <p lang="ar" dir="rtl"
-            className="font-arabic text-right text-xl leading-[2.2] text-gray-800">
+            className="font-arabic text-right text-xl leading-[2.2] text-ink">
             {arabic}
           </p>
           {translation && (

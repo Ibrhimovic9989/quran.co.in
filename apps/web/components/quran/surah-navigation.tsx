@@ -25,7 +25,7 @@ export function SurahNavigation({
   };
 
   return (
-    <div className="mt-8 border-t border-gray-200 pt-6 md:mt-12 md:pt-8">
+    <div className="mt-8 border-t border-line pt-6 md:mt-12 md:pt-8">
       <div className="flex flex-col items-stretch justify-between gap-3 md:flex-row md:items-center md:gap-4">
         <div className="flex flex-1 gap-2 md:gap-3">
           {prevSurahNo ? (

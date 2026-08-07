@@ -379,15 +379,15 @@ export function AudioPlayer({
     <div className={cn(minimal ? 'space-y-0' : 'space-y-3', className)}>
       {!minimal && (
         <>
-          <Text className="mb-3 text-sm text-gray-400">Audio Recitation</Text>
+          <Text className="mb-3 text-sm text-muted">Audio Recitation</Text>
 
           {ayahNo ? (
             <div className="mb-3">
-              <Text className="text-xs text-gray-500">Plays this ayah only</Text>
+              <Text className="text-xs text-muted">Plays this ayah only</Text>
             </div>
           ) : (
             <div className="mb-3">
-              <Text className="text-xs text-gray-500">Plays entire surah</Text>
+              <Text className="text-xs text-muted">Plays entire surah</Text>
             </div>
           )}
         </>
@@ -407,7 +407,7 @@ export function AudioPlayer({
               disabled={isLoadingAudio}
               className={cn(
                 minimal &&
-                  'h-9 rounded-full border-stone-200 bg-stone-50 px-3 py-1.5 text-sm text-stone-700 focus:border-stone-400'
+                  'h-9 rounded-full border-line bg-surface-warm px-3 py-1.5 text-sm text-ink-soft focus:border-line'
               )}
             />
           </div>
@@ -424,7 +424,7 @@ export function AudioPlayer({
         />
 
         {resumeSeconds !== null && !isPlaying && (
-          <span className="text-xs text-gray-400 italic">
+          <span className="text-xs text-muted italic">
             Resumes from {Math.floor(resumeSeconds / 60)}m {resumeSeconds % 60}s
           </span>
         )}

@@ -91,7 +91,7 @@ const accessibilityStatements = [
 
 export function TrustIndicators({ className }: TrustIndicatorsProps) {
   return (
-    <section className={cn("w-full py-8 md:py-16 lg:py-20 bg-gradient-to-b from-white to-gray-50/30", className)}>
+    <section className={cn("w-full py-8 md:py-16 lg:py-20 bg-gradient-to-b from-surface to-surface-warm/30", className)}>
       <Container>
         {/* Section Header - Mobile optimized */}
         <div className="max-w-4xl mx-auto text-center mb-8 md:mb-12">
@@ -100,7 +100,7 @@ export function TrustIndicators({ className }: TrustIndicatorsProps) {
             className="text-2xl md:text-4xl lg:text-5xl font-bold text-ink mb-3 md:mb-4 leading-tight"
           >
             Trusted by Thousands,{' '}
-            <span className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent whitespace-nowrap">
+            <span className="bg-gradient-to-r from-ink via-ink-soft to-ink bg-clip-text text-transparent whitespace-nowrap">
               Built for You
             </span>
           </Heading>
@@ -115,7 +115,7 @@ export function TrustIndicators({ className }: TrustIndicatorsProps) {
             <Card
               key={index}
               className={cn(
-                "relative overflow-hidden border border-line hover:border-gray-300",
+                "relative overflow-hidden border border-line hover:border-line",
                 "transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
                 `bg-gradient-to-br ${point.gradient}`,
                 "text-center group/data"
@@ -155,7 +155,7 @@ export function TrustIndicators({ className }: TrustIndicatorsProps) {
         {/* Quality & Accessibility Grid - Mobile optimized */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5 lg:gap-6 max-w-5xl mx-auto">
           {/* Quality Indicators */}
-          <Card className="border border-line hover:border-gray-300 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+          <Card className="border border-line hover:border-line transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
             <div className="space-y-2.5 md:space-y-4">
               <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-5">
                 <div className="flex items-center justify-center w-8 h-8 md:w-12 md:h-12 rounded-md md:rounded-xl bg-emerald-100 text-emerald-700">
@@ -181,7 +181,7 @@ export function TrustIndicators({ className }: TrustIndicatorsProps) {
           </Card>
 
           {/* Accessibility Statements */}
-          <Card className="border border-line hover:border-gray-300 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+          <Card className="border border-line hover:border-line transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
             <div className="space-y-2.5 md:space-y-4">
               <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-5">
                 <div className="flex items-center justify-center w-8 h-8 md:w-12 md:h-12 rounded-md md:rounded-xl bg-blue-100 text-blue-700">

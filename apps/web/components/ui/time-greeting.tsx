@@ -62,9 +62,9 @@ export function TimeGreeting() {
 
   return (
     <div className="text-center mb-4 px-4">
-      <p className="text-sm md:text-base text-gray-500 italic">
+      <p className="text-sm md:text-base text-muted italic">
         {greeting.salutation}{' '}
-        <span className="text-gray-400">{greeting.suggestion}</span>
+        <span className="text-muted">{greeting.suggestion}</span>
       </p>
     </div>
   );

@@ -84,7 +84,7 @@ export function ValueProposition({ className }: ValuePropositionProps) {
             className="text-2xl md:text-4xl lg:text-5xl font-bold text-ink mb-3 md:mb-4 leading-tight"
           >
             Experience the Quran{' '}
-            <span className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent whitespace-nowrap">
+            <span className="bg-gradient-to-r from-ink via-ink-soft to-ink bg-clip-text text-transparent whitespace-nowrap">
               Like Never Before
             </span>
           </Heading>
@@ -121,18 +121,18 @@ const Feature = ({
   return (
     <Card
       className={cn(
-        "relative overflow-hidden border border-line hover:border-gray-300",
+        "relative overflow-hidden border border-line hover:border-line",
         "transition-all duration-300 hover:shadow-xl group/feature",
         "flex flex-col"
       )}
     >
       {/* Hover gradient effect - top row */}
       {index < 4 && (
-        <div className="opacity-0 group-hover/feature:opacity-100 transition duration-300 absolute inset-0 h-full w-full bg-gradient-to-t from-gray-50 to-transparent pointer-events-none" />
+        <div className="opacity-0 group-hover/feature:opacity-100 transition duration-300 absolute inset-0 h-full w-full bg-gradient-to-t from-surface-warm to-transparent pointer-events-none" />
       )}
       {/* Hover gradient effect - bottom row */}
       {index >= 4 && (
-        <div className="opacity-0 group-hover/feature:opacity-100 transition duration-300 absolute inset-0 h-full w-full bg-gradient-to-b from-gray-50 to-transparent pointer-events-none" />
+        <div className="opacity-0 group-hover/feature:opacity-100 transition duration-300 absolute inset-0 h-full w-full bg-gradient-to-b from-surface-warm to-transparent pointer-events-none" />
       )}
       
       {/* Icon - Mobile optimized */}
@@ -142,7 +142,7 @@ const Feature = ({
       
       {/* Title with animated indicator - Mobile optimized */}
       <div className="text-sm md:text-lg font-bold mb-1.5 md:mb-2 relative z-10">
-        <div className="absolute left-0 inset-y-0 h-4 md:h-5 group-hover/feature:h-6 w-0.5 md:w-1 rounded-tr-full rounded-br-full bg-gray-300 group-hover/feature:bg-night transition-all duration-300 origin-center" />
+        <div className="absolute left-0 inset-y-0 h-4 md:h-5 group-hover/feature:h-6 w-0.5 md:w-1 rounded-tr-full rounded-br-full bg-line group-hover/feature:bg-night transition-all duration-300 origin-center" />
         <span className="group-hover/feature:translate-x-2 transition duration-300 inline-block text-ink pl-2.5 md:pl-4">
           {title}
         </span>

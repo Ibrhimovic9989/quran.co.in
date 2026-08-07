@@ -59,10 +59,10 @@ export default function ProfilePage() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-surface">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <div className="w-8 h-8 border-4 border-line border-t-gray-900 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-ink-soft">Loading...</p>
         </div>
       </div>
     );
@@ -133,16 +133,16 @@ export default function ProfilePage() {
         <div className="py-6 md:py-12">
           {/* Header */}
           <div className="mb-6 md:mb-8">
-            <Heading level={1} className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">
+            <Heading level={1} className="text-2xl md:text-4xl font-bold text-ink mb-2">
               Profile
             </Heading>
-            <Text className="text-sm md:text-base text-gray-600">
+            <Text className="text-sm md:text-base text-ink-soft">
               Manage your account information and preferences
             </Text>
           </div>
 
           {/* Profile Card */}
-          <Card className="border border-gray-200 shadow-lg mb-6">
+          <Card className="border border-line shadow-lg mb-6">
             <div className="p-4 md:p-6">
               {/* User Info */}
               <div className="flex items-start gap-4 md:gap-6 mb-6">
@@ -165,20 +165,20 @@ export default function ProfilePage() {
 
                 {/* User Details */}
                 <div className="flex-1 min-w-0">
-                  <Heading level={2} className="text-xl md:text-2xl font-bold text-gray-900 mb-1">
+                  <Heading level={2} className="text-xl md:text-2xl font-bold text-ink mb-1">
                     {session.user.name || 'User'}
                   </Heading>
                 </div>
               </div>
 
               {/* Account Information */}
-              <div className="space-y-4 border-t border-gray-200 pt-4">
+              <div className="space-y-4 border-t border-line pt-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <User className="w-5 h-5 text-gray-400" />
+                    <User className="w-5 h-5 text-muted" />
                     <div>
-                      <Text className="text-sm font-medium text-gray-900">Name</Text>
-                      <Text className="text-xs text-gray-600">{session.user.name || 'Not provided'}</Text>
+                      <Text className="text-sm font-medium text-ink">Name</Text>
+                      <Text className="text-xs text-ink-soft">{session.user.name || 'Not provided'}</Text>
                     </div>
                   </div>
                 </div>
@@ -186,10 +186,10 @@ export default function ProfilePage() {
                 {session.user.email && (
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <Mail className="w-5 h-5 text-gray-400" />
+                      <Mail className="w-5 h-5 text-muted" />
                       <div>
-                        <Text className="text-sm font-medium text-gray-900">Email</Text>
-                        <Text className="text-xs text-gray-600">{session.user.email}</Text>
+                        <Text className="text-sm font-medium text-ink">Email</Text>
+                        <Text className="text-xs text-ink-soft">{session.user.email}</Text>
                       </div>
                     </div>
                   </div>
@@ -198,10 +198,10 @@ export default function ProfilePage() {
                 {userData?.createdAt && (
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <Calendar className="w-5 h-5 text-gray-400" />
+                      <Calendar className="w-5 h-5 text-muted" />
                       <div>
-                        <Text className="text-sm font-medium text-gray-900">Member Since</Text>
-                        <Text className="text-xs text-gray-600">
+                        <Text className="text-sm font-medium text-ink">Member Since</Text>
+                        <Text className="text-xs text-ink-soft">
                           {loadingUserData ? (
                             'Loading...'
                           ) : (
@@ -220,9 +220,9 @@ export default function ProfilePage() {
           </Card>
 
           {/* Actions */}
-          <Card className="border border-gray-200 shadow-lg">
+          <Card className="border border-line shadow-lg">
             <div className="p-4 md:p-6">
-              <Heading level={3} className="text-lg md:text-xl font-bold text-gray-900 mb-4">
+              <Heading level={3} className="text-lg md:text-xl font-bold text-ink mb-4">
                 Account Actions
               </Heading>
               <div className="space-y-3">

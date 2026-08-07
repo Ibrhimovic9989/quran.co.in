@@ -70,7 +70,7 @@ export function BenefitsSection({ className }: BenefitsSectionProps) {
             className="text-2xl md:text-4xl lg:text-5xl font-bold text-ink mb-3 md:mb-4 leading-tight"
           >
             Transform Your Relationship with the{' '}
-            <span className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent whitespace-nowrap">
+            <span className="bg-gradient-to-r from-ink via-ink-soft to-ink bg-clip-text text-transparent whitespace-nowrap">
               Quran
             </span>
           </Heading>
@@ -85,7 +85,7 @@ export function BenefitsSection({ className }: BenefitsSectionProps) {
             <Card
               key={index}
               className={cn(
-                "relative overflow-hidden border border-line hover:border-gray-300",
+                "relative overflow-hidden border border-line hover:border-line",
                 "transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
                 `bg-gradient-to-br ${benefit.gradient}`,
                 "group/benefit"
@@ -111,7 +111,7 @@ export function BenefitsSection({ className }: BenefitsSectionProps) {
               </div>
 
               {/* Hover Effect Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover/benefit:opacity-100 transition-opacity duration-300 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-br from-surface/0 to-surface/10 opacity-0 group-hover/benefit:opacity-100 transition-opacity duration-300 pointer-events-none" />
             </Card>
           ))}
         </div>

@@ -144,7 +144,7 @@ export function Navbar({ className }: NavbarProps) {
                         active
                           ? "bg-accent-soft text-accent gap-2"
                           : "bg-transparent text-ink-soft hover:bg-accent-soft/60 hover:text-ink",
-                        "focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white rounded-full",
+                        "focus:outline-none focus-visible:ring-2 focus-visible:ring-line/50 focus-visible:ring-offset-2 focus-visible:ring-offset-paper rounded-full",
                       )}
                     >
                       <span className="relative inline-flex shrink-0">
@@ -190,8 +190,8 @@ export function Navbar({ className }: NavbarProps) {
                   aria-label="Sign Out"
                   className={cn(
                     "flex items-center px-4 py-2 rounded-full transition-all duration-300 ease-in-out relative h-10 min-w-[44px] min-h-[40px] max-h-[44px] cursor-pointer",
-                    "bg-transparent text-gray-600 hover:bg-red-50 hover:text-red-600",
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white rounded-full",
+                    "bg-transparent text-ink-soft hover:bg-red-50 hover:text-red-600",
+                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50 focus-visible:ring-offset-2 focus-visible:ring-offset-paper rounded-full",
                   )}
                 >
                   <LogOut size={20} strokeWidth={2} aria-hidden className="w-5 h-5" />
@@ -228,7 +228,7 @@ export function Navbar({ className }: NavbarProps) {
                 <button
                   onClick={() => signOut({ callbackUrl: "/" })}
                   aria-label="Sign Out"
-                  className="flex items-center justify-center w-9 h-9 rounded-full text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                  className="flex items-center justify-center w-9 h-9 rounded-full text-muted hover:bg-red-50 hover:text-red-600 transition-colors"
                 >
                   <LogOut size={18} strokeWidth={2} aria-hidden />
                 </button>

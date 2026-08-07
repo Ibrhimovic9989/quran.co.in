@@ -87,7 +87,7 @@ export function BookmarkButton({ surahNumber, ayahNumber, className, iconOnly = 
         'flex items-center justify-center gap-2 rounded-md transition-colors duration-200',
         bookmarked
           ? 'bg-amber-50 text-amber-700 hover:bg-amber-100'
-          : 'bg-stone-100 text-stone-600 hover:bg-stone-200',
+          : 'bg-line-soft text-ink-soft hover:bg-line',
         iconOnly ? 'h-9 w-9 rounded-full p-0' : 'px-3 py-1.5',
         'disabled:opacity-50 disabled:cursor-not-allowed',
         className

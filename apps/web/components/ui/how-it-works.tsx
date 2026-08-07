@@ -66,7 +66,7 @@ const steps: Step[] = [
 
 export function HowItWorks({ className }: HowItWorksProps) {
   return (
-    <section className={cn("w-full py-8 md:py-16 lg:py-20 bg-gradient-to-b from-white to-gray-50/50", className)}>
+    <section className={cn("w-full py-8 md:py-16 lg:py-20 bg-gradient-to-b from-surface to-surface-warm/50", className)}>
       <Container>
         {/* Section Header - Mobile optimized */}
         <div className="max-w-4xl mx-auto text-center mb-8 md:mb-12">
@@ -75,7 +75,7 @@ export function HowItWorks({ className }: HowItWorksProps) {
             className="text-2xl md:text-4xl lg:text-5xl font-bold text-ink mb-3 md:mb-4 leading-tight"
           >
             Getting Started is{' '}
-            <span className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 bg-clip-text text-transparent whitespace-nowrap">
+            <span className="bg-gradient-to-r from-ink via-ink-soft to-ink bg-clip-text text-transparent whitespace-nowrap">
               Simple
             </span>
           </Heading>
@@ -90,14 +90,14 @@ export function HowItWorks({ className }: HowItWorksProps) {
             <div key={index} className="relative flex flex-col">
               {/* Connector Line (Desktop only) */}
               {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-16 left-full w-full h-0.5 bg-gray-200 -z-10" style={{ width: 'calc(100% - 2rem)' }}>
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-gray-300 rounded-full"></div>
+                <div className="hidden lg:block absolute top-16 left-full w-full h-0.5 bg-line -z-10" style={{ width: 'calc(100% - 2rem)' }}>
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-line rounded-full"></div>
                 </div>
               )}
 
               <Card
                 className={cn(
-                  "relative overflow-hidden border border-line hover:border-gray-300",
+                  "relative overflow-hidden border border-line hover:border-line",
                   "transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
                   `bg-gradient-to-br ${step.gradient}`,
                   "group/step flex flex-col h-full"
@@ -105,7 +105,7 @@ export function HowItWorks({ className }: HowItWorksProps) {
               >
                 {/* Step Number Badge - Mobile optimized */}
                 <div className="absolute top-2.5 right-2.5 md:top-4 md:right-4">
-                  <div className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 rounded-full bg-paper border-2 border-gray-300 text-ink-soft font-bold text-xs md:text-sm shadow-sm">
+                  <div className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 rounded-full bg-paper border-2 border-line text-ink-soft font-bold text-xs md:text-sm shadow-sm">
                     {step.number}
                   </div>
                 </div>
@@ -132,7 +132,7 @@ export function HowItWorks({ className }: HowItWorksProps) {
                 </div>
 
                 {/* Hover Effect Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover/step:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-br from-surface/0 to-surface/10 opacity-0 group-hover/step:opacity-100 transition-opacity duration-300 pointer-events-none" />
               </Card>
             </div>
           ))}

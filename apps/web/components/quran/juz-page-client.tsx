@@ -168,10 +168,10 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
               <BookOpen className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </div>
             <div>
-              <Heading level={1} className="text-2xl md:text-4xl font-bold text-gray-900 mb-1 md:mb-2 leading-tight">
+              <Heading level={1} className="text-2xl md:text-4xl font-bold text-ink mb-1 md:mb-2 leading-tight">
                 Juz {juzNumber}
               </Heading>
-              <Text className="text-gray-600 text-xs md:text-base">
+              <Text className="text-ink-soft text-xs md:text-base">
                 {ayahs.length} Ayahs • {Object.keys(ayahsBySurah).length} Surahs
               </Text>
             </div>
@@ -179,7 +179,7 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
 
           {/* Reciter Selection - Mobile optimized */}
           {availableReciters.length > 0 && (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 md:p-4">
+            <div className="bg-surface-warm border border-line rounded-lg p-3 md:p-4">
               <ReciterSelector
                 audioData={ayahs.length > 0 ? ayahs[0].audio : {}}
                 selectedReciter={selectedReciter}
@@ -224,19 +224,19 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
                 return (
                   <div key={surahNo} className="space-y-3 md:space-y-4">
                     {/* Surah Header - Mobile optimized */}
-                    <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-3 md:p-4 border border-gray-200">
+                    <div className="bg-gradient-to-r from-surface-warm to-line-soft rounded-lg p-3 md:p-4 border border-line">
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex-1 min-w-0">
-                          <Heading level={3} className="text-base md:text-xl font-bold text-gray-900 mb-1 leading-tight">
+                          <Heading level={3} className="text-base md:text-xl font-bold text-ink mb-1 leading-tight">
                             {firstAyah.surahNameTranslation} ({surahNo})
                           </Heading>
-                          <Text className="text-sm md:text-lg font-arabic text-gray-700 leading-tight">
+                          <Text className="text-sm md:text-lg font-arabic text-ink-soft leading-tight">
                             {firstAyah.surahNameArabic}
                           </Text>
                         </div>
                         {surahRange && (
                           <div className="text-right flex-shrink-0">
-                            <Text className="text-xs md:text-sm text-gray-600 whitespace-nowrap">
+                            <Text className="text-xs md:text-sm text-ink-soft whitespace-nowrap">
                               Ayahs {surahRange.startAyah} - {surahRange.endAyah}
                             </Text>
                           </div>
@@ -264,7 +264,7 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
 
         {!isInitialLoading && !error && ayahs.length === 0 && (
           <div className="text-center py-8 md:py-16">
-            <Text className="text-gray-600 text-sm md:text-base">No ayahs found for this Juz.</Text>
+            <Text className="text-ink-soft text-sm md:text-base">No ayahs found for this Juz.</Text>
           </div>
         )}
 
@@ -282,7 +282,7 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
 
         {/* Navigation Buttons - Mobile optimized */}
         {!isInitialLoading && !error && (
-          <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-gray-200">
+          <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-line">
             <div className="flex gap-3 md:gap-4 justify-between items-center">
               {juzNumber > 1 ? (
                 <div className="flex-1">

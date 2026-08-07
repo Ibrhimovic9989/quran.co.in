@@ -177,7 +177,7 @@ export function PageLoader({ className }: PageLoaderProps) {
       </div>
 
       {/* Subtle gradient overlay for depth - very minimal */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-50/20 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-surface-warm/20 pointer-events-none" />
     </div>
   );
 }

@@ -51,8 +51,8 @@ const categories = [
     title: 'Platform Settings',
     description: 'Adjusting themes, languages, and technical configurations.',
     icon: Settings,
-    color: 'text-gray-600',
-    bg: 'bg-gray-100',
+    color: 'text-ink-soft',
+    bg: 'bg-line-soft',
     href: '/profile',
     tags: ['settings', 'language', 'theme', 'configuration', 'preferences'],
   },
@@ -89,9 +89,9 @@ export default function HelpCenterPage() {
   }, [query]);
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-surface">
       {/* Search Header */}
-      <div className="bg-gray-50 pt-32 pb-20 border-b border-gray-100">
+      <div className="bg-surface-warm pt-32 pb-20 border-b border-line-soft">
         <Container>
           <div className="max-w-3xl mx-auto text-center">
             <Heading level={1} className="text-4xl md:text-5xl font-bold mb-6">
@@ -104,13 +104,13 @@ export default function HelpCenterPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 aria-label="Search help topics"
-                className="w-full h-14 pl-12 pr-10 rounded-2xl border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-black/10 text-lg bg-white"
+                className="w-full h-14 pl-12 pr-10 rounded-2xl border border-line shadow-sm focus:outline-none focus:ring-2 focus:ring-black/10 text-lg bg-surface"
               />
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-6 h-6" aria-hidden="true" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted w-6 h-6" aria-hidden="true" />
               {query && (
                 <button
                   onClick={() => setQuery('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted hover:text-ink-soft transition-colors"
                   aria-label="Clear search"
                 >
                   <X className="w-5 h-5" />
@@ -118,12 +118,12 @@ export default function HelpCenterPage() {
               )}
             </div>
             <div className="mt-6 flex flex-wrap justify-center gap-2 items-center">
-              <Text className="text-sm text-gray-500">Popular topics:</Text>
+              <Text className="text-sm text-muted">Popular topics:</Text>
               {popularTopics.map((t) => (
                 <button
                   key={t.label}
                   onClick={() => setQuery(t.query)}
-                  className="text-sm font-medium text-gray-900 hover:underline focus:outline-none focus:ring-2 focus:ring-gray-300 rounded"
+                  className="text-sm font-medium text-ink hover:underline focus:outline-none focus:ring-2 focus:ring-line rounded"
                 >
                   {t.label}
                 </button>
@@ -139,7 +139,7 @@ export default function HelpCenterPage() {
             {query ? `Results for "${query}"` : 'Browse by Category'}
           </Heading>
           {query && (
-            <Text className="text-sm text-gray-500">
+            <Text className="text-sm text-muted">
               {filteredCategories.length} of {categories.length} categories
             </Text>
           )}
@@ -151,7 +151,7 @@ export default function HelpCenterPage() {
               const Icon = cat.icon;
               return (
                 <Link key={cat.title} href={cat.href}>
-                  <Card className="p-6 border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all cursor-pointer group h-full">
+                  <Card className="p-6 border border-line-soft hover:border-line hover:shadow-lg transition-all cursor-pointer group h-full">
                     <div
                       className={`w-12 h-12 ${cat.bg} ${cat.color} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}
                     >
@@ -160,8 +160,8 @@ export default function HelpCenterPage() {
                     <Heading level={3} className="text-xl font-bold mb-3">
                       {cat.title}
                     </Heading>
-                    <Text className="text-gray-600 mb-4">{cat.description}</Text>
-                    <span className="text-sm font-bold text-gray-900 flex items-center gap-1 group-hover:gap-2 transition-all">
+                    <Text className="text-ink-soft mb-4">{cat.description}</Text>
+                    <span className="text-sm font-bold text-ink flex items-center gap-1 group-hover:gap-2 transition-all">
                       View Articles <span aria-hidden="true">→</span>
                     </span>
                   </Card>
@@ -171,23 +171,23 @@ export default function HelpCenterPage() {
           </div>
         ) : (
           <div className="text-center py-20">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="w-8 h-8 text-gray-400" aria-hidden="true" />
+            <div className="w-16 h-16 bg-line-soft rounded-full flex items-center justify-center mx-auto mb-4">
+              <Search className="w-8 h-8 text-muted" aria-hidden="true" />
             </div>
             <Heading level={3} className="text-xl font-bold mb-2">No results found</Heading>
-            <Text className="text-gray-500 mb-6">
+            <Text className="text-muted mb-6">
               Try a different search term, or browse our FAQ for answers.
             </Text>
             <div className="flex gap-3 justify-center">
               <button
                 onClick={() => setQuery('')}
-                className="px-5 py-2.5 bg-gray-100 text-gray-900 font-semibold rounded-xl hover:bg-gray-200 transition-colors"
+                className="px-5 py-2.5 bg-line-soft text-ink font-semibold rounded-xl hover:bg-line transition-colors"
               >
                 Clear Search
               </button>
               <Link
                 href="/faq"
-                className="px-5 py-2.5 bg-black text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors"
+                className="px-5 py-2.5 bg-accent text-white font-semibold rounded-xl hover:bg-accent-strong transition-colors"
               >
                 View FAQ
               </Link>
@@ -196,23 +196,23 @@ export default function HelpCenterPage() {
         )}
 
         {/* Still need help? */}
-        <div className="mt-24 text-center bg-black rounded-3xl p-12 text-white overflow-hidden relative">
+        <div className="mt-24 text-center bg-accent rounded-3xl p-12 text-white overflow-hidden relative">
           <div className="relative z-10">
             <Heading level={2} className="text-3xl font-bold mb-4">
               Still need help?
             </Heading>
-            <Text className="text-gray-300 mb-8 max-w-lg mx-auto">
+            <Text className="text-muted mb-8 max-w-lg mx-auto">
               Our support team is always here to assist you with any questions or technical
               challenges you might face.
             </Text>
             <Link
               href="/contact"
-              className="inline-block bg-white text-black font-bold px-8 py-4 rounded-xl hover:scale-105 transition-transform"
+              className="inline-block bg-surface text-ink font-bold px-8 py-4 rounded-xl hover:scale-105 transition-transform"
             >
               Contact Support
             </Link>
           </div>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-surface/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl" />
         </div>
       </Container>

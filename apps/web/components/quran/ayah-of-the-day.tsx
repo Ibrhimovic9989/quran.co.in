@@ -55,7 +55,7 @@ export function AyahOfTheDay({ className }: { className?: string }) {
   return (
     <div className={cn(
       'relative rounded-2xl border border-amber-200/70 overflow-hidden',
-      'bg-gradient-to-br from-amber-50 via-white to-orange-50/30',
+      'bg-gradient-to-br from-amber-50 via-surface to-orange-50/30',
       className
     )}>
       {/* Top label */}
@@ -75,14 +75,14 @@ export function AyahOfTheDay({ className }: { className?: string }) {
       <p
         lang="ar"
         dir="rtl"
-        className="font-arabic text-right text-xl md:text-2xl leading-[2.1] text-gray-900 px-4 py-2"
+        className="font-arabic text-right text-xl md:text-2xl leading-[2.1] text-ink px-4 py-2"
       >
         {ayah.arabicText}
       </p>
 
       {/* Translation */}
       {ayah.translationText && (
-        <p className="text-sm text-gray-600 leading-relaxed px-4 pb-3 italic">
+        <p className="text-sm text-ink-soft leading-relaxed px-4 pb-3 italic">
           "{ayah.translationText}"
         </p>
       )}

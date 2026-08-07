@@ -27,7 +27,7 @@ import { CTASection } from '@/components/ui/cta-section';
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-surface">
       {/* Hero Section with 3D Quran Scene - Full width, no container */}
       <HeroSection />
 

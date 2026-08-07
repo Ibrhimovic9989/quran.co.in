@@ -37,7 +37,7 @@ function LoadingIndicator() {
 
   return (
     <div className="flex flex-col gap-2 py-2">
-      <div className="flex items-center gap-2 text-accent-soft0">
+      <div className="flex items-center gap-2 text-accent">
         <Loader2 className="w-4 h-4 animate-spin flex-shrink-0" />
         <span className="text-sm font-medium transition-all duration-300">{LOADING_STEPS[step]}</span>
       </div>
@@ -47,7 +47,7 @@ function LoadingIndicator() {
             key={i}
             className={cn(
               'h-0.5 rounded-full transition-all duration-500',
-              i <= step ? 'bg-accent w-6' : 'bg-gray-200 w-3'
+              i <= step ? 'bg-accent w-6' : 'bg-line w-3'
             )}
           />
         ))}
@@ -432,8 +432,8 @@ export default function AskPage() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-accent-soft mb-4">
             <Sparkles className="w-6 h-6 text-accent" />
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Ask the Quran</h1>
-          <p className="text-sm md:text-base text-gray-500 max-w-lg mx-auto">
+          <h1 className="text-2xl md:text-3xl font-bold text-ink mb-2">Ask the Quran</h1>
+          <p className="text-sm md:text-base text-muted max-w-lg mx-auto">
             {mode === 'focused'
               ? 'Get answers grounded in semantically matched ayahs — every response is cited.'
               : 'Ask about any surah, ayah, or topic. The full Quran is open to you.'}
@@ -442,12 +442,12 @@ export default function AskPage() {
 
         {/* Mode toggle */}
         <div className="flex justify-center mb-8">
-          <div className="inline-flex items-center bg-gray-100 rounded-full p-1 gap-1">
+          <div className="inline-flex items-center bg-line-soft rounded-full p-1 gap-1">
             <button
               onClick={() => switchMode('focused')}
               className={cn(
                 'inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all',
-                mode === 'focused' ? 'bg-white text-accent-strong shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                mode === 'focused' ? 'bg-surface text-accent-strong shadow-sm' : 'text-muted hover:text-ink-soft'
               )}
             >
               <Focus className="w-3.5 h-3.5" /> Focused
@@ -456,7 +456,7 @@ export default function AskPage() {
               onClick={() => switchMode('open')}
               className={cn(
                 'inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all',
-                mode === 'open' ? 'bg-white text-accent-strong shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                mode === 'open' ? 'bg-surface text-accent-strong shadow-sm' : 'text-muted hover:text-ink-soft'
               )}
             >
               <Globe className="w-3.5 h-3.5" /> Open Quran
@@ -486,10 +486,10 @@ export default function AskPage() {
                     key={s}
                     onClick={() => ask(s)}
                     className={cn(
-                      'text-left text-sm px-4 py-3 rounded-xl border bg-white transition-all',
+                      'text-left text-sm px-4 py-3 rounded-xl border bg-surface transition-all',
                       mode === 'focused'
-                        ? 'border-gray-200 hover:border-accent/40 hover:bg-accent-soft/50 text-gray-600 hover:text-accent-strong'
-                        : 'border-gray-200 hover:border-gold/50 hover:bg-gold-soft/40/50 text-gray-600 hover:text-gold-text'
+                        ? 'border-line hover:border-accent/40 hover:bg-accent-soft/50 text-ink-soft hover:text-accent-strong'
+                        : 'border-line hover:border-gold/50 hover:bg-gold-soft/40/50 text-ink-soft hover:text-gold-text'
                     )}
                   >
                     {s}
@@ -510,13 +510,13 @@ export default function AskPage() {
                 className={cn('flex', msg.role === 'user' ? 'justify-end' : 'justify-start')}
               >
                 {msg.role === 'user' ? (
-                  <div className="max-w-[85%] bg-gray-900 text-white rounded-2xl rounded-tr-sm px-4 py-3 text-sm leading-relaxed">
+                  <div className="max-w-[85%] bg-accent text-white rounded-2xl rounded-tr-sm px-4 py-3 text-sm leading-relaxed">
                     {msg.content}
                   </div>
                 ) : (
                   <div className="w-full space-y-3">
                     {/* Answer bubble */}
-                    <div className="answer-bubble bg-surface border border-gray-100 rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm">
+                    <div className="answer-bubble bg-surface border border-line-soft rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm">
                       {msg.content ? (
                         <div className="text-sm md:text-base space-y-0.5 msg-content">
                           {renderMarkdown(msg.content)}
@@ -527,7 +527,7 @@ export default function AskPage() {
 
                       {/* Share as Image button */}
                       {msg.content && !loading && (
-                        <div data-share-btn="true" className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+                        <div data-share-btn="true" className="flex items-center gap-2 mt-3 pt-3 border-t border-line-soft">
                           <button
                             onClick={() => {
                               const qIdx = i - 1;
@@ -535,7 +535,7 @@ export default function AskPage() {
                               handleShareAnswer(q, i);
                             }}
                             disabled={sharingIdx === i}
-                            className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-accent transition-colors disabled:opacity-50"
+                            className="inline-flex items-center gap-1.5 text-xs font-medium text-muted hover:text-accent transition-colors disabled:opacity-50"
                           >
                             {sharingIdx === i ? (
                               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -551,7 +551,7 @@ export default function AskPage() {
                     {/* Source ayahs */}
                     {msg.sources && msg.sources.length > 0 && (
                       <div className="space-y-1.5">
-                        <p className="text-xs font-semibold text-gray-400 px-1 flex items-center gap-1">
+                        <p className="text-xs font-semibold text-muted px-1 flex items-center gap-1">
                           <BookOpen className="w-3 h-3" />
                           {mode === 'focused' ? 'Referenced ayahs' : 'Context provided'}
                         </p>
@@ -588,7 +588,7 @@ export default function AskPage() {
           <div className="flex justify-center mb-4">
             <button
               onClick={() => setMessages([])}
-              className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-ink-soft transition-colors"
             >
               <RotateCcw className="w-3 h-3" /> New conversation
             </button>
@@ -602,8 +602,8 @@ export default function AskPage() {
           <div className={cn(
             'bg-surface border rounded-2xl shadow-lg overflow-hidden transition-all',
             mode === 'focused'
-              ? 'border-gray-200 focus-within:border-accent/40 focus-within:ring-2 focus-within:ring-accent-soft'
-              : 'border-gray-200 focus-within:border-gold/50 focus-within:ring-2 focus-within:ring-gold-soft'
+              ? 'border-line focus-within:border-accent/40 focus-within:ring-2 focus-within:ring-accent-soft'
+              : 'border-line focus-within:border-gold/50 focus-within:ring-2 focus-within:ring-gold-soft'
           )}>
             <textarea
               value={input}
@@ -617,15 +617,15 @@ export default function AskPage() {
                     : 'Ask about any ayah, surah, or topic…'
               }
               rows={2}
-              className="w-full px-4 pt-4 pb-2 text-sm md:text-base text-gray-900 placeholder:text-gray-400 resize-none focus:outline-none bg-transparent"
+              className="w-full px-4 pt-4 pb-2 text-sm md:text-base text-ink placeholder:text-muted resize-none focus:outline-none bg-transparent"
             />
             <div className="flex items-center justify-between px-3 pb-3">
-              <p className="text-[11px] text-gray-400">Enter to send · Shift+Enter for new line</p>
+              <p className="text-[11px] text-muted">Enter to send · Shift+Enter for new line</p>
               <button
                 onClick={() => (signedIn ? ask(input) : signIn('google', { callbackUrl: '/ask' }))}
                 disabled={loading || (signedIn && !input.trim())}
                 className={cn(
-                  'inline-flex items-center gap-1.5 disabled:bg-gray-200 disabled:text-gray-400 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors',
+                  'inline-flex items-center gap-1.5 disabled:bg-line disabled:text-muted text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors',
                   mode === 'focused' ? 'bg-accent hover:bg-accent-strong' : 'bg-gold-text hover:bg-gold-text'
                 )}
               >
@@ -634,7 +634,7 @@ export default function AskPage() {
               </button>
             </div>
           </div>
-          <p className="text-center text-[11px] text-gray-400 mt-2">
+          <p className="text-center text-[11px] text-muted mt-2">
             Not a substitute for scholarly guidance. Always refer to qualified scholars.
           </p>
           </div>

@@ -30,7 +30,7 @@ export function UserProfile() {
       )}
       <div>
         <p className="text-sm font-medium">{session.user.name}</p>
-        <p className="text-xs text-gray-500">{session.user.email}</p>
+        <p className="text-xs text-muted">{session.user.email}</p>
       </div>
     </div>
   );

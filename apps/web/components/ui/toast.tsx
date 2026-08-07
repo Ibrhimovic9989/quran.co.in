@@ -34,16 +34,16 @@ const icons: Record<ToastType, React.ElementType> = {
 };
 
 const styles: Record<ToastType, string> = {
-  success: 'bg-white border-emerald-200 text-emerald-800',
-  error: 'bg-white border-red-200 text-red-800',
-  info: 'bg-white border-gray-200 text-gray-800',
-  warning: 'bg-white border-amber-200 text-amber-800',
+  success: 'bg-surface border-emerald-200 text-emerald-800',
+  error: 'bg-surface border-red-200 text-red-800',
+  info: 'bg-surface border-line text-ink',
+  warning: 'bg-surface border-amber-200 text-amber-800',
 };
 
 const iconStyles: Record<ToastType, string> = {
   success: 'text-emerald-500',
   error: 'text-red-500',
-  info: 'text-gray-500',
+  info: 'text-muted',
   warning: 'text-amber-500',
 };
 
@@ -85,7 +85,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
           setVisible(false);
           setTimeout(() => onDismiss(toast.id), 300);
         }}
-        className="shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+        className="shrink-0 text-muted hover:text-ink-soft transition-colors"
         aria-label="Dismiss notification"
       >
         <X className="w-4 h-4" />

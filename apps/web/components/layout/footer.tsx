@@ -89,9 +89,9 @@ export function Footer({ className }: FooterProps) {
                     className={cn(
                       "w-full h-10 px-4 pr-12 rounded-md",
                       "bg-paper border text-ink",
-                      emailError ? "border-red-400" : "border-gray-300",
+                      emailError ? "border-red-400" : "border-line",
                       "placeholder:text-ink-muted",
-                      "focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900",
+                      "focus:outline-none focus:ring-2 focus:ring-ink focus:border-ink",
                       "disabled:opacity-50 disabled:cursor-not-allowed"
                     )}
                   />
@@ -103,7 +103,7 @@ export function Footer({ className }: FooterProps) {
                       "bg-accent text-white flex items-center justify-center",
                       "transition-transform hover:scale-105",
                       "disabled:opacity-50 disabled:cursor-not-allowed",
-                      "focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
+                      "focus:outline-none focus:ring-2 focus:ring-ink focus:ring-offset-2"
                     )}
                   >
                     <Send className="h-4 w-4" />

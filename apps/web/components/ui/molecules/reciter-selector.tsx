@@ -33,7 +33,7 @@ export function ReciterSelector({
 
   return (
     <div className={className}>
-      {!hideLabel && <Text className="mb-2 text-sm text-gray-400">{label}</Text>}
+      {!hideLabel && <Text className="mb-2 text-sm text-muted">{label}</Text>}
       <Select
         value={selectedReciter || ''}
         onChange={(e) => onReciterChange(e.target.value)}
@@ -41,7 +41,7 @@ export function ReciterSelector({
         placeholder="Select Reciter"
         className={
           minimal
-            ? 'h-9 rounded-full border-stone-200 bg-stone-50 px-3 py-1.5 text-sm text-stone-700 focus:border-stone-400'
+            ? 'h-9 rounded-full border-line bg-surface-warm px-3 py-1.5 text-sm text-ink-soft focus:border-line'
             : undefined
         }
       />

@@ -27,7 +27,7 @@ export function RevelationLegendModal({ className }: { className?: string }) {
         type="button"
         onClick={() => setOpen(true)}
         className={cn(
-          'inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800 transition-colors',
+          'inline-flex items-center gap-1.5 text-xs text-muted hover:text-ink transition-colors',
           className
         )}
         aria-label="Learn about revelation periods"
@@ -44,7 +44,7 @@ export function RevelationLegendModal({ className }: { className?: string }) {
           {/* Sheet / Modal */}
           <div className={cn(
             // Mobile: full-width bottom sheet with rounded top corners
-            'w-full bg-white rounded-t-3xl shadow-2xl',
+            'w-full bg-surface rounded-t-3xl shadow-2xl',
             // Desktop: centered card
             'md:rounded-2xl md:max-w-lg md:w-full md:mx-4',
             // Animate up on mobile
@@ -52,15 +52,15 @@ export function RevelationLegendModal({ className }: { className?: string }) {
           )}>
             {/* Drag handle (mobile only) */}
             <div className="flex justify-center pt-3 pb-1 md:hidden">
-              <div className="w-10 h-1 rounded-full bg-gray-300" />
+              <div className="w-10 h-1 rounded-full bg-line" />
             </div>
 
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-              <h2 className="text-base font-bold text-gray-900">Revelation Periods</h2>
+            <div className="flex items-center justify-between px-5 py-4 border-b border-line-soft">
+              <h2 className="text-base font-bold text-ink">Revelation Periods</h2>
               <button
                 onClick={() => setOpen(false)}
-                className="p-2 -mr-1 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                className="p-2 -mr-1 rounded-full text-muted hover:text-ink-soft hover:bg-line-soft active:bg-line transition-colors"
                 aria-label="Close"
               >
                 <X className="w-5 h-5" />
@@ -69,9 +69,9 @@ export function RevelationLegendModal({ className }: { className?: string }) {
 
             {/* Body — scrollable, safe area aware */}
             <div className="px-5 py-4 space-y-5 overflow-y-auto max-h-[70vh] pb-safe">
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <p className="text-sm text-ink-soft leading-relaxed">
                 The Quran was revealed over{' '}
-                <span className="font-semibold text-gray-800">23 years</span> (610–632 CE).
+                <span className="font-semibold text-ink">23 years</span> (610–632 CE).
                 Scholars grouped surahs into four periods based on when and where they were revealed:
               </p>
 
@@ -95,17 +95,17 @@ export function RevelationLegendModal({ className }: { className?: string }) {
                     </div>
                     {/* Text */}
                     <div className="min-w-0">
-                      <p className="text-[11px] font-semibold text-gray-400 mb-1 leading-none">{header}</p>
-                      <p className="text-sm text-gray-700 leading-relaxed">{body}</p>
+                      <p className="text-[11px] font-semibold text-muted mb-1 leading-none">{header}</p>
+                      <p className="text-sm text-ink-soft leading-relaxed">{body}</p>
                     </div>
                   </div>
                 );
               })}
 
               {/* Approximation note */}
-              <div className="pt-4 border-t border-gray-100">
-                <p className="text-xs text-gray-500 leading-relaxed">
-                  <span className="font-semibold text-gray-600">* About the years:</span>{' '}
+              <div className="pt-4 border-t border-line-soft">
+                <p className="text-xs text-muted leading-relaxed">
+                  <span className="font-semibold text-ink-soft">* About the years:</span>{' '}
                   {APPROXIMATION_NOTE}
                 </p>
               </div>

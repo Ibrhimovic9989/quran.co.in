@@ -44,19 +44,19 @@ function BookmarksList() {
         <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6">
           <Bookmark className="w-10 h-10 text-amber-400" />
         </div>
-        <Heading level={3} className="text-xl font-bold text-gray-900 mb-3">
+        <Heading level={3} className="text-xl font-bold text-ink mb-3">
           No bookmarks yet
         </Heading>
-        <Text className="text-gray-500 max-w-sm mb-2">
+        <Text className="text-muted max-w-sm mb-2">
           You don't have any bookmarks yet. You can bookmark ayahs that touch your heart to revisit them later.
         </Text>
-        <Text className="text-gray-400 text-xs max-w-xs mb-8 italic">
+        <Text className="text-muted text-xs max-w-xs mb-8 italic">
           Tap the bookmark icon on any verse while reading to save it here.
         </Text>
         <div className="flex flex-col sm:flex-row gap-3">
           <Link
             href="/quran"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-black text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-semibold rounded-xl hover:bg-accent-strong transition-colors"
           >
             <BookOpen className="w-4 h-4" />
             Go to Quran
@@ -83,31 +83,31 @@ function BookmarksList() {
             className="flex items-center gap-3 group"
           >
             <Link href={surahUrl} className="flex-1">
-              <Card className="p-4 border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all cursor-pointer group-hover:bg-gray-50/50">
+              <Card className="p-4 border border-line-soft hover:border-line hover:shadow-md transition-all cursor-pointer group-hover:bg-surface-warm/50">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-9 h-9 bg-amber-50 rounded-full flex items-center justify-center shrink-0">
                       <BookmarkCheck className="w-4 h-4 text-amber-600" />
                     </div>
                     <div className="min-w-0">
-                      <p className="font-semibold text-gray-900 text-sm leading-tight">
+                      <p className="font-semibold text-ink text-sm leading-tight">
                         {bookmark.surahNumber}. {surahName}
                       </p>
                       {bookmark.ayahNumber && (
-                        <p className="text-xs text-gray-500 mt-0.5">Verse {bookmark.ayahNumber}</p>
+                        <p className="text-xs text-muted mt-0.5">Verse {bookmark.ayahNumber}</p>
                       )}
                       {bookmark.surah?.arabicName && (
-                        <p className="text-base font-arabic text-gray-700 mt-1">{bookmark.surah.arabicName}</p>
+                        <p className="text-base font-arabic text-ink-soft mt-1">{bookmark.surah.arabicName}</p>
                       )}
                     </div>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-gray-600 transition-colors shrink-0" />
+                  <ArrowRight className="w-4 h-4 text-muted group-hover:text-ink-soft transition-colors shrink-0" />
                 </div>
               </Card>
             </Link>
             <button
               onClick={() => handleRemove(bookmark.surahNumber, bookmark.ayahNumber ?? undefined)}
-              className="p-2 text-gray-300 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50 shrink-0"
+              className="p-2 text-muted hover:text-red-500 transition-colors rounded-lg hover:bg-red-50 shrink-0"
               aria-label={`Remove bookmark for ${surahName}`}
               title="Remove bookmark"
             >
@@ -133,7 +133,7 @@ export default function BookmarksPage() {
   if (status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-line border-t-gray-900 rounded-full animate-spin" />
       </div>
     );
   }
@@ -152,11 +152,11 @@ export default function BookmarksPage() {
                 <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center">
                   <Bookmark className="w-5 h-5 text-amber-600" />
                 </div>
-                <Heading level={1} className="text-2xl md:text-3xl font-bold text-gray-900">
+                <Heading level={1} className="text-2xl md:text-3xl font-bold text-ink">
                   My Bookmarks
                 </Heading>
               </div>
-              <Text className="text-gray-500">
+              <Text className="text-muted">
                 Your saved verses for quick access
               </Text>
             </div>

@@ -34,14 +34,14 @@ export function InlineVerse({
       <div className={cn('my-12 md:my-16 text-center', className)}>
         <div className="max-w-3xl mx-auto">
           {verse.arabic && (
-            <Text className="text-2xl md:text-3xl font-arabic text-gray-900 mb-4 leading-relaxed">
+            <Text className="text-2xl md:text-3xl font-arabic text-ink mb-4 leading-relaxed">
               {verse.arabic}
             </Text>
           )}
-          <Text className="text-lg md:text-xl text-gray-700 italic leading-relaxed mb-2">
+          <Text className="text-lg md:text-xl text-ink-soft italic leading-relaxed mb-2">
             "{verse.text}"
           </Text>
-          <Text className="text-sm text-gray-600 font-medium">
+          <Text className="text-sm text-ink-soft font-medium">
             — {verse.source}
           </Text>
         </div>
@@ -52,8 +52,8 @@ export function InlineVerse({
   if (style === 'inline') {
     return (
       <div className={cn('my-6', className)}>
-        <Text className="text-base md:text-lg text-gray-700 italic leading-relaxed">
-          "{verse.text}" <span className="text-sm text-gray-600 not-italic">— {verse.source}</span>
+        <Text className="text-base md:text-lg text-ink-soft italic leading-relaxed">
+          "{verse.text}" <span className="text-sm text-ink-soft not-italic">— {verse.source}</span>
         </Text>
       </div>
     );
@@ -62,16 +62,16 @@ export function InlineVerse({
   // Default: quote style
   return (
     <div className={cn('my-8 md:my-12', className)}>
-      <div className="max-w-2xl mx-auto border-l-4 border-gray-300 pl-6 py-2">
+      <div className="max-w-2xl mx-auto border-l-4 border-line pl-6 py-2">
         {verse.arabic && (
-          <Text className="text-xl md:text-2xl font-arabic text-gray-900 mb-3 leading-relaxed text-right">
+          <Text className="text-xl md:text-2xl font-arabic text-ink mb-3 leading-relaxed text-right">
             {verse.arabic}
           </Text>
         )}
-        <Text className="text-base md:text-lg text-gray-700 italic leading-relaxed mb-2">
+        <Text className="text-base md:text-lg text-ink-soft italic leading-relaxed mb-2">
           "{verse.text}"
         </Text>
-        <Text className="text-sm text-gray-600 font-medium">
+        <Text className="text-sm text-ink-soft font-medium">
           — {verse.source}
         </Text>
       </div>

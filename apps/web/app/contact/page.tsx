@@ -90,58 +90,58 @@ export default function ContactPage() {
   };
 
   const inputClass =
-    'w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black/10 transition-all';
+    'w-full px-4 py-3 rounded-xl border border-line focus:outline-none focus:ring-2 focus:ring-black/10 transition-all';
   const errorClass = 'border-red-300 focus:ring-red-200';
 
   return (
-    <main className="min-h-screen bg-white pt-24 pb-16">
+    <main className="min-h-screen bg-surface pt-24 pb-16">
       <Container>
         <div className="grid lg:grid-cols-2 gap-16">
           {/* Left: Contact Info */}
           <div>
-            <Heading level={1} className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            <Heading level={1} className="text-4xl md:text-5xl font-bold text-ink mb-6">
               Get in Touch
             </Heading>
-            <Text className="text-lg text-gray-600 mb-12">
+            <Text className="text-lg text-ink-soft mb-12">
               Have questions, feedback, or want to report an issue? We&apos;d love to hear from you.
               Our team typically responds within 24–48 hours.
             </Text>
 
             <div className="space-y-8">
               <div className="flex gap-4">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center shrink-0">
-                  <Mail className="w-6 h-6 text-gray-700" />
+                <div className="w-12 h-12 bg-line-soft rounded-full flex items-center justify-center shrink-0">
+                  <Mail className="w-6 h-6 text-ink-soft" />
                 </div>
                 <div>
                   <Heading level={4} className="text-lg font-bold">Email Us</Heading>
-                  <a href="mailto:support@quran.co.in" className="text-gray-600 hover:underline">
+                  <a href="mailto:support@quran.co.in" className="text-ink-soft hover:underline">
                     support@quran.co.in
                   </a>
-                  <Text className="text-gray-500 text-sm">For general inquiries and support</Text>
+                  <Text className="text-muted text-sm">For general inquiries and support</Text>
                 </div>
               </div>
 
               <div className="flex gap-4">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center shrink-0">
-                  <MessageSquare className="w-6 h-6 text-gray-700" />
+                <div className="w-12 h-12 bg-line-soft rounded-full flex items-center justify-center shrink-0">
+                  <MessageSquare className="w-6 h-6 text-ink-soft" />
                 </div>
                 <div>
                   <Heading level={4} className="text-lg font-bold">Feedback</Heading>
-                  <a href="mailto:feedback@quran.co.in" className="text-gray-600 hover:underline">
+                  <a href="mailto:feedback@quran.co.in" className="text-ink-soft hover:underline">
                     feedback@quran.co.in
                   </a>
-                  <Text className="text-gray-500 text-sm">Suggestions and feature requests</Text>
+                  <Text className="text-muted text-sm">Suggestions and feature requests</Text>
                 </div>
               </div>
 
               <div className="flex gap-4">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center shrink-0">
-                  <MapPin className="w-6 h-6 text-gray-700" />
+                <div className="w-12 h-12 bg-line-soft rounded-full flex items-center justify-center shrink-0">
+                  <MapPin className="w-6 h-6 text-ink-soft" />
                 </div>
                 <div>
                   <Heading level={4} className="text-lg font-bold">Location</Heading>
-                  <Text className="text-gray-600">Digital First Team</Text>
-                  <Text className="text-gray-500 text-sm">Global Community — Serving from several regions</Text>
+                  <Text className="text-ink-soft">Digital First Team</Text>
+                  <Text className="text-muted text-sm">Global Community — Serving from several regions</Text>
                 </div>
               </div>
             </div>
@@ -149,14 +149,14 @@ export default function ContactPage() {
 
           {/* Right: Contact Form */}
           <div>
-            <Card className="p-8 border border-gray-100 shadow-xl rounded-2xl">
+            <Card className="p-8 border border-line-soft shadow-xl rounded-2xl">
               {isSent ? (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Send className="w-8 h-8" />
                   </div>
                   <Heading level={2} className="text-2xl font-bold mb-4">Message Sent!</Heading>
-                  <Text className="text-gray-600 mb-8">
+                  <Text className="text-ink-soft mb-8">
                     Your email client should have opened. If it didn&apos;t, please email us directly at{' '}
                     <a href="mailto:support@quran.co.in" className="underline">
                       support@quran.co.in
@@ -171,7 +171,7 @@ export default function ContactPage() {
                 <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <label className="text-sm font-medium text-gray-700" htmlFor="contact-name">
+                      <label className="text-sm font-medium text-ink-soft" htmlFor="contact-name">
                         Name <span className="text-red-500" aria-hidden="true">*</span>
                       </label>
                       <input
@@ -192,7 +192,7 @@ export default function ContactPage() {
                       )}
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-sm font-medium text-gray-700" htmlFor="contact-email">
+                      <label className="text-sm font-medium text-ink-soft" htmlFor="contact-email">
                         Email <span className="text-red-500" aria-hidden="true">*</span>
                       </label>
                       <input
@@ -215,12 +215,12 @@ export default function ContactPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700" htmlFor="contact-subject">Subject</label>
+                    <label className="text-sm font-medium text-ink-soft" htmlFor="contact-subject">Subject</label>
                     <select
                       id="contact-subject"
                       value={form.subject}
                       onChange={handleChange('subject')}
-                      className={`${inputClass} appearance-none bg-white`}
+                      className={`${inputClass} appearance-none bg-surface`}
                     >
                       <option>General Inquiry</option>
                       <option>Technical Support</option>
@@ -231,7 +231,7 @@ export default function ContactPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700" htmlFor="contact-message">
+                    <label className="text-sm font-medium text-ink-soft" htmlFor="contact-message">
                       Message <span className="text-red-500" aria-hidden="true">*</span>
                     </label>
                     <textarea
@@ -249,7 +249,7 @@ export default function ContactPage() {
                         <AlertCircle className="w-3 h-3" /> {errors.message}
                       </p>
                     )}
-                    <p className="text-xs text-gray-400 text-right">{form.message.length} chars</p>
+                    <p className="text-xs text-muted text-right">{form.message.length} chars</p>
                   </div>
 
                   {submitError && (
@@ -270,7 +270,7 @@ export default function ContactPage() {
                     </span>
                   </ShimmerButton>
 
-                  <p className="text-xs text-center text-gray-400">
+                  <p className="text-xs text-center text-muted">
                     This will open your email client. Alternatively, write directly to{' '}
                     <a href="mailto:support@quran.co.in" className="underline">support@quran.co.in</a>.
                   </p>

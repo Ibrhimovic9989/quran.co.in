@@ -42,34 +42,34 @@ export function ContinueReading({ className }: ContinueReadingProps) {
 
   return (
     <div className={cn('mb-6 md:mb-8', className)}>
-      <Heading level={2} className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
+      <Heading level={2} className="text-xl md:text-2xl font-bold text-ink mb-4">
         Continue Reading
       </Heading>
       <Link href={surahUrl}>
-        <Card className="border border-gray-200 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer group">
+        <Card className="border border-line shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer group">
           <div className="p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 {/* Arabic Name */}
-                <div className="text-2xl md:text-4xl text-right mb-2 md:mb-3 font-arabic text-gray-900">
+                <div className="text-2xl md:text-4xl text-right mb-2 md:mb-3 font-arabic text-ink">
                   {bookmark.surah.arabicName}
                 </div>
                 {/* English Name and Verse */}
                 <div className="flex items-center gap-2 md:gap-3">
-                  <Text className="text-sm md:text-base font-semibold text-gray-900">
+                  <Text className="text-sm md:text-base font-semibold text-ink">
                     {bookmark.surahNumber}. {surahName}
                   </Text>
                   {bookmark.ayahNumber && (
                     <>
-                      <span className="text-gray-400">•</span>
-                      <Text className="text-sm md:text-base text-gray-600">
+                      <span className="text-muted">•</span>
+                      <Text className="text-sm md:text-base text-ink-soft">
                         Verse {bookmark.ayahNumber}
                       </Text>
                     </>
                   )}
                 </div>
               </div>
-              <ArrowRight className="w-5 h-5 md:w-6 md:h-6 text-gray-400 group-hover:text-gray-900 transition-colors" />
+              <ArrowRight className="w-5 h-5 md:w-6 md:h-6 text-muted group-hover:text-ink transition-colors" />
             </div>
           </div>
         </Card>

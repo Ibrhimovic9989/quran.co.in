@@ -24,7 +24,7 @@ const typeIcons = {
 };
 
 const variantStyles = {
-  subtle: 'bg-gray-50 border border-gray-200',
+  subtle: 'bg-surface-warm border border-line',
   prominent: 'bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200',
   minimal: 'bg-transparent border-0',
 };
@@ -59,7 +59,7 @@ export function ContextualVerse({
             'flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center',
             variant === 'prominent' 
               ? 'bg-blue-100 text-blue-600' 
-              : 'bg-gray-100 text-gray-600'
+              : 'bg-line-soft text-ink-soft'
           )}>
             <Icon className="w-5 h-5" />
           </div>
@@ -67,7 +67,7 @@ export function ContextualVerse({
         
         <div className="flex-1 space-y-2">
           {verse.arabic && (
-            <Text className="text-right text-lg md:text-xl font-arabic leading-relaxed text-gray-900">
+            <Text className="text-right text-lg md:text-xl font-arabic leading-relaxed text-ink">
               {verse.arabic}
             </Text>
           )}
@@ -75,8 +75,8 @@ export function ContextualVerse({
           <Text className={cn(
             'leading-relaxed',
             variant === 'prominent' 
-              ? 'text-gray-800 text-base md:text-lg italic' 
-              : 'text-gray-700 text-sm md:text-base'
+              ? 'text-ink text-base md:text-lg italic' 
+              : 'text-ink-soft text-sm md:text-base'
           )}>
             "{verse.text}"
           </Text>
@@ -85,7 +85,7 @@ export function ContextualVerse({
             'text-xs md:text-sm font-medium',
             variant === 'prominent' 
               ? 'text-blue-700' 
-              : 'text-gray-600'
+              : 'text-ink-soft'
           )}>
             — {verse.source}
           </Text>

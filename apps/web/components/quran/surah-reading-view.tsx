@@ -184,19 +184,19 @@ export function SurahReadingView({
       <button
         type="button"
         onClick={() => setShowAudioControls((v) => !v)}
-        className="inline-flex shrink-0 items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:text-gray-900"
+        className="inline-flex shrink-0 items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium text-ink-soft shadow-sm transition-colors hover:text-ink"
         aria-expanded={showAudioControls}
       >
         <Play className="h-4 w-4 text-teal-600" aria-hidden="true" />
         Audio
         {showAudioControls
-          ? <ChevronUp className="h-4 w-4 text-gray-400" aria-hidden="true" />
-          : <ChevronDown className="h-4 w-4 text-gray-400" aria-hidden="true" />
+          ? <ChevronUp className="h-4 w-4 text-muted" aria-hidden="true" />
+          : <ChevronDown className="h-4 w-4 text-muted" aria-hidden="true" />
         }
       </button>
 
       {/* Arabic / Transliteration / Translation toggle */}
-      <div className="inline-flex shrink-0 rounded-full border border-gray-200 bg-gray-100 p-1">
+      <div className="inline-flex shrink-0 rounded-full border border-line bg-line-soft p-1">
         {([
           { id: 'arabic', label: 'Arabic', beta: false },
           { id: 'transliteration', label: 'Translit', beta: true },
@@ -208,7 +208,7 @@ export function SurahReadingView({
             onClick={() => setTextMode(mode.id)}
             className={cn(
               'rounded-full px-3 py-2 text-sm font-semibold transition-colors flex items-center gap-1',
-              textMode === mode.id ? 'bg-gray-900 text-white' : 'text-gray-700 hover:text-gray-900'
+              textMode === mode.id ? 'bg-accent text-white' : 'text-ink-soft hover:text-ink'
             )}
           >
             {mode.label}
@@ -253,7 +253,7 @@ export function SurahReadingView({
 
       {/* Font size A− / A+ */}
       {textMode === 'arabic' && (
-        <div className="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-gray-200 bg-gray-100 px-2 py-1">
+        <div className="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-line bg-line-soft px-2 py-1">
           <button
             type="button"
             onClick={() => {
@@ -262,7 +262,7 @@ export function SurahReadingView({
             }}
             disabled={fontSize === 'sm'}
             aria-label="Decrease font size"
-            className="w-7 h-7 flex items-center justify-center text-sm font-bold text-gray-600 hover:text-gray-900 disabled:opacity-30 disabled:cursor-not-allowed rounded-full hover:bg-gray-200 transition-colors"
+            className="w-7 h-7 flex items-center justify-center text-sm font-bold text-ink-soft hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed rounded-full hover:bg-line transition-colors"
           >
             A<span className="text-[9px]">−</span>
           </button>
@@ -274,7 +274,7 @@ export function SurahReadingView({
             }}
             disabled={fontSize === 'xl'}
             aria-label="Increase font size"
-            className="w-7 h-7 flex items-center justify-center text-sm font-bold text-gray-600 hover:text-gray-900 disabled:opacity-30 disabled:cursor-not-allowed rounded-full hover:bg-gray-200 transition-colors"
+            className="w-7 h-7 flex items-center justify-center text-sm font-bold text-ink-soft hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed rounded-full hover:bg-line transition-colors"
           >
             A<span className="text-[11px]">+</span>
           </button>
@@ -286,7 +286,7 @@ export function SurahReadingView({
         <button
           type="button"
           onClick={() => setFocusMode(true)}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-gray-200 bg-gray-100 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-200 hover:text-gray-900 transition-colors"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-line-soft px-3 py-2 text-xs font-medium text-ink-soft hover:bg-line hover:text-ink transition-colors"
           aria-label="Enter focus mode"
         >
           <Maximize2 className="h-3.5 w-3.5" />
@@ -297,9 +297,9 @@ export function SurahReadingView({
   );
 
   const audioPanel = showAudioControls && Object.keys(audioData).length > 0 && (
-    <div className="mb-4 rounded-2xl border border-stone-200 bg-white/90 p-3 shadow-sm md:p-4">
+    <div className="mb-4 rounded-2xl border border-line bg-surface/90 p-3 shadow-sm md:p-4">
       <div className="flex flex-wrap items-center gap-2 md:gap-3">
-        <span className="text-sm font-medium text-stone-500">Listen</span>
+        <span className="text-sm font-medium text-muted">Listen</span>
         <ReciterSelector
           audioData={audioData}
           selectedReciter={selectedReciter}
@@ -393,7 +393,7 @@ export function SurahReadingView({
             <p
               dir="rtl"
               lang="ar"
-              className={`${fontClass} text-2xl md:text-[2rem] text-gray-900 leading-loose`}
+              className={`${fontClass} text-2xl md:text-[2rem] text-ink leading-loose`}
               aria-label="Bismillah ir-Rahman ir-Raheem"
             >
               بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
@@ -482,9 +482,9 @@ export function SurahReadingView({
     </div>
   ) : (
     /* ── Translation — continuous scroll ── */
-    <div className="space-y-2 rounded-2xl bg-gray-50/70 px-3 py-4 md:space-y-4 md:px-8 md:py-6">
+    <div className="space-y-2 rounded-2xl bg-surface-warm/70 px-3 py-4 md:space-y-4 md:px-8 md:py-6">
       {showBismillah && (
-        <p className="text-center text-sm md:text-base italic text-gray-500 pb-3 border-b border-gray-200 mb-4">
+        <p className="text-center text-sm md:text-base italic text-muted pb-3 border-b border-line mb-4">
           In the Name of Allah—the Most Compassionate, Most Merciful
         </p>
       )}
@@ -493,12 +493,12 @@ export function SurahReadingView({
           key={ayah.ayahNo}
           id={`ayah-${surahNumber}-${ayah.ayahNo}`}
           className={cn(
-            'rounded-xl px-3 py-2 text-sm leading-7 text-gray-800 transition-colors duration-300 md:text-xl md:leading-10',
+            'rounded-xl px-3 py-2 text-sm leading-7 text-ink transition-colors duration-300 md:text-xl md:leading-10',
             sharedPlayback?.activeAyahNumber === ayah.ayahNo &&
-              'bg-emerald-100/80 text-gray-900 ring-1 ring-emerald-200'
+              'bg-emerald-100/80 text-ink ring-1 ring-emerald-200'
           )}
         >
-          <span className="font-semibold text-gray-900">{ayah.ayahNo}.</span>{' '}
+          <span className="font-semibold text-ink">{ayah.ayahNo}.</span>{' '}
           {ayah.translation}
         </p>
       ))}
@@ -560,7 +560,7 @@ export function SurahReadingView({
                 <Link
                   href={`/quran/${surahNumber}?ayah=${selectedAyahNo}`}
                   onClick={() => setSelectedAyahNo(null)}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-stone-100 px-4 py-2.5 text-sm font-medium text-stone-700 hover:bg-stone-200 transition-colors"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-line-soft px-4 py-2.5 text-sm font-medium text-ink-soft hover:bg-line transition-colors"
                 >
                   <ExternalLink className="h-4 w-4" />
                   Verse view
@@ -577,7 +577,7 @@ export function SurahReadingView({
           <button
             type="button"
             onClick={() => setFocusMode(false)}
-            className="fixed top-4 right-4 z-[60] inline-flex items-center gap-1.5 rounded-full bg-white/80 border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 shadow-md hover:bg-white hover:text-gray-900 backdrop-blur-sm transition-colors"
+            className="fixed top-4 right-4 z-[60] inline-flex items-center gap-1.5 rounded-full bg-surface/80 border border-line px-3 py-1.5 text-xs font-medium text-ink-soft shadow-md hover:bg-surface hover:text-ink backdrop-blur-sm transition-colors"
           >
             <X className="h-3.5 w-3.5" />
             Exit focus

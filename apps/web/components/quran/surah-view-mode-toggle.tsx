@@ -36,7 +36,7 @@ export function SurahViewModeToggle({
   return (
     <div
       className={cn(
-        'inline-flex rounded-2xl border border-gray-200 bg-gray-100/90 p-1 shadow-sm',
+        'inline-flex rounded-2xl border border-line bg-line-soft/90 p-1 shadow-sm',
         className
       )}
       role="tablist"
@@ -56,8 +56,8 @@ export function SurahViewModeToggle({
             className={cn(
               'inline-flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-xs font-semibold transition-colors md:gap-2 md:px-4 md:text-sm',
               isActive
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-surface text-ink shadow-sm'
+                : 'text-ink-soft hover:text-ink'
             )}
           >
             <Icon className="h-4 w-4" />

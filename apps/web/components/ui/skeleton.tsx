@@ -10,7 +10,7 @@ interface SkeletonProps {
 export function Skeleton({ className }: SkeletonProps) {
   return (
     <div
-      className={cn('animate-pulse rounded-md bg-gray-100', className)}
+      className={cn('animate-pulse rounded-md bg-line-soft', className)}
       aria-hidden="true"
     />
   );
@@ -19,7 +19,7 @@ export function Skeleton({ className }: SkeletonProps) {
 /** Skeleton for a single surah card */
 export function SurahCardSkeleton() {
   return (
-    <div className="rounded-2xl border border-gray-100 p-4 md:p-5 space-y-3" aria-hidden="true">
+    <div className="rounded-2xl border border-line-soft p-4 md:p-5 space-y-3" aria-hidden="true">
       <div className="flex items-start justify-between">
         <div className="space-y-2 flex-1">
           <Skeleton className="h-4 w-24" />
@@ -46,7 +46,7 @@ export function SurahListSkeleton({ count = 12 }: { count?: number }) {
 /** Skeleton for a single ayah row */
 export function AyahSkeleton() {
   return (
-    <div className="py-6 border-b border-gray-100 space-y-4" aria-hidden="true">
+    <div className="py-6 border-b border-line-soft space-y-4" aria-hidden="true">
       {/* Arabic text */}
       <Skeleton className="h-8 w-3/4 ml-auto" />
       <Skeleton className="h-8 w-1/2 ml-auto" />
@@ -61,7 +61,7 @@ export function AyahSkeleton() {
 /** Skeleton for surah detail page */
 export function SurahPageSkeleton() {
   return (
-    <div className="min-h-screen bg-white" aria-label="Loading surah...">
+    <div className="min-h-screen bg-surface" aria-label="Loading surah...">
       <div className="max-w-4xl mx-auto px-4 py-8 md:py-20 space-y-8">
         {/* Header */}
         <div className="space-y-3 text-center">

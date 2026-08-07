@@ -24,28 +24,28 @@ export function QuranGraphic({ className }: QuranGraphicProps) {
               stroke="currentColor"
               strokeWidth="1"
               fill="none"
-              className="text-gray-800"
+              className="text-ink"
             />
             <path
               d="M200 150 L250 200 L200 250 L150 200 Z"
               stroke="currentColor"
               strokeWidth="1"
               fill="none"
-              className="text-gray-800"
+              className="text-ink"
             />
             <path
               d="M200 250 L250 300 L200 350 L150 300 Z"
               stroke="currentColor"
               strokeWidth="1"
               fill="none"
-              className="text-gray-800"
+              className="text-ink"
             />
             <path
               d="M200 350 L250 400 L200 450 L150 400 Z"
               stroke="currentColor"
               strokeWidth="1"
               fill="none"
-              className="text-gray-800"
+              className="text-ink"
             />
           </svg>
         </div>
@@ -74,7 +74,7 @@ export function QuranGraphic({ className }: QuranGraphicProps) {
               </div>
 
               {/* Pages Edge Effect */}
-              <div className="absolute -right-2 top-0 bottom-0 w-3 bg-gradient-to-r from-gray-100 to-gray-200 rounded-r-lg shadow-lg"></div>
+              <div className="absolute -right-2 top-0 bottom-0 w-3 bg-gradient-to-r from-line-soft to-line rounded-r-lg shadow-lg"></div>
             </div>
 
             {/* Glow Effect */}
@@ -92,10 +92,10 @@ export function QuranGraphic({ className }: QuranGraphicProps) {
 
         {/* Inspirational Text */}
         <div className="mt-12 text-center space-y-2">
-          <p className="text-gray-700 text-lg font-medium italic">
+          <p className="text-ink-soft text-lg font-medium italic">
             "And We have certainly made the Quran easy for remembrance"
           </p>
-          <p className="text-gray-500 text-sm">
+          <p className="text-muted text-sm">
             — Al-Qamar 54:17
           </p>
         </div>

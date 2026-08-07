@@ -23,9 +23,9 @@ export default async function DashboardPage() {
             <SignOutButton />
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-gray-600">Welcome, {user.name}!</p>
-          <p className="text-sm text-gray-500 mt-2">Email: {user.email}</p>
+        <div className="bg-surface rounded-lg shadow p-6">
+          <p className="text-ink-soft">Welcome, {user.name}!</p>
+          <p className="text-sm text-muted mt-2">Email: {user.email}</p>
         </div>
       </div>
     </div>

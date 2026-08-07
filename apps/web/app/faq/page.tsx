@@ -40,12 +40,12 @@ export default function FAQPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <main className="min-h-screen bg-white pt-32 pb-20">
+    <main className="min-h-screen bg-surface pt-32 pb-20">
       <Container>
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-16">
             <Heading level={1} className="text-4xl md:text-5xl font-bold mb-6">Frequently Asked Questions</Heading>
-            <Text className="text-lg text-gray-600">
+            <Text className="text-lg text-ink-soft">
               Find answers to common questions about using Quran.co.in, our sources, and our mission.
             </Text>
           </div>
@@ -54,13 +54,13 @@ export default function FAQPage() {
             {faqs.map((faq, index) => (
               <Card 
                 key={index} 
-                className={`overflow-hidden border border-gray-100 transition-all ${openIndex === index ? 'shadow-md border-gray-200' : 'hover:border-gray-200'}`}
+                className={`overflow-hidden border border-line-soft transition-all ${openIndex === index ? 'shadow-md border-line' : 'hover:border-line'}`}
               >
                 <button
                   onClick={() => setOpenIndex(openIndex === index ? null : index)}
                   className="w-full p-6 text-left flex items-center justify-between gap-4 group"
                 >
-                  <span className="text-lg font-bold text-gray-900 group-hover:text-black transition-colors">
+                  <span className="text-lg font-bold text-ink group-hover:text-ink transition-colors">
                     {faq.question}
                   </span>
                   <div className={`shrink-0 transition-transform duration-300 ${openIndex === index ? 'rotate-180' : ''}`}>
@@ -71,7 +71,7 @@ export default function FAQPage() {
                 <div 
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${openIndex === index ? 'max-h-96' : 'max-h-0'}`}
                 >
-                  <div className="p-6 pt-0 text-gray-600 leading-relaxed border-t border-gray-50 bg-gray-50/30">
+                  <div className="p-6 pt-0 text-ink-soft leading-relaxed border-t border-line-soft bg-surface-warm/30">
                     {faq.answer}
                   </div>
                 </div>
@@ -83,11 +83,11 @@ export default function FAQPage() {
           <div className="mt-16 p-8 bg-emerald-50 rounded-3xl border border-emerald-100 flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <Heading level={4} className="text-xl font-bold mb-2">Still have questions?</Heading>
-              <Text className="text-gray-600">Can't find the answer you're looking for? Please chat to our friendly team.</Text>
+              <Text className="text-ink-soft">Can't find the answer you're looking for? Please chat to our friendly team.</Text>
             </div>
             <a 
               href="/contact" 
-              className="px-6 py-3 bg-white text-gray-900 font-bold rounded-xl border border-gray-200 hover:shadow-sm transition-all whitespace-nowrap"
+              className="px-6 py-3 bg-surface text-ink font-bold rounded-xl border border-line hover:shadow-sm transition-all whitespace-nowrap"
             >
               Get in touch
             </a>

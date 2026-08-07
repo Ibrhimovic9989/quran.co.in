@@ -104,43 +104,43 @@ export function TafsirContent({ content, className }: TafsirContentProps) {
           // Style paragraphs. The tafsir-* wrapper divs are top-level blocks
           // rendered directly by rehypeRaw, so paragraphs are plain text here.
           p: ({ children }) => (
-            <p className="mb-4 leading-relaxed text-gray-700 last:mb-0">
+            <p className="mb-4 leading-relaxed text-ink-soft last:mb-0">
               {children}
             </p>
           ),
           // Style headings
           h2: ({ children }) => (
-            <h2 className="text-black text-xl font-semibold mt-6 mb-3 first:mt-0">
+            <h2 className="text-ink text-xl font-semibold mt-6 mb-3 first:mt-0">
               {children}
             </h2>
           ),
           h3: ({ children }) => (
-            <h3 className="text-black text-lg font-semibold mt-4 mb-2">
+            <h3 className="text-ink text-lg font-semibold mt-4 mb-2">
               {children}
             </h3>
           ),
           // Style strong text
           strong: ({ children }) => (
-            <strong className="text-black font-semibold">{children}</strong>
+            <strong className="text-ink font-semibold">{children}</strong>
           ),
           // Style emphasis
           em: ({ children }) => (
-            <em className="text-gray-700 italic">{children}</em>
+            <em className="text-ink-soft italic">{children}</em>
           ),
           // Style blockquotes
           blockquote: ({ children }) => (
-            <blockquote className="border-l-4 border-gray-300 pl-4 my-4 italic text-gray-700">
+            <blockquote className="border-l-4 border-line pl-4 my-4 italic text-ink-soft">
               {children}
             </blockquote>
           ),
           // Style lists
           ul: ({ children }) => (
-            <ul className="list-disc list-inside mb-4 space-y-2 text-gray-700">
+            <ul className="list-disc list-inside mb-4 space-y-2 text-ink-soft">
               {children}
             </ul>
           ),
           ol: ({ children }) => (
-            <ol className="list-decimal list-inside mb-4 space-y-2 text-gray-700">
+            <ol className="list-decimal list-inside mb-4 space-y-2 text-ink-soft">
               {children}
             </ol>
           ),
@@ -151,11 +151,11 @@ export function TafsirContent({ content, className }: TafsirContentProps) {
           code: ({ children, className }) => {
             const isInline = !className;
             return isInline ? (
-              <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm text-gray-800">
+              <code className="bg-line-soft px-1.5 py-0.5 rounded text-sm text-ink">
                 {children}
               </code>
             ) : (
-              <code className="block bg-gray-100 p-4 rounded mb-4 overflow-x-auto text-sm text-gray-800">
+              <code className="block bg-line-soft p-4 rounded mb-4 overflow-x-auto text-sm text-ink">
                 {children}
               </code>
             );
