@@ -4,6 +4,7 @@
 
 import type { Metadata } from 'next';
 import { HeroSection } from '@/components/ui/hero-section';
+import { DevReelBanner } from '@/components/ui/dev-reel-banner';
 
 export const metadata: Metadata = {
   title: 'Quran.co.in — Read the Holy Quran Online, Free',
@@ -28,6 +29,9 @@ import { CTASection } from '@/components/ui/cta-section';
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-surface">
+      {/* Developer series announcement — click to watch the intro reel */}
+      <DevReelBanner />
+
       {/* Hero Section with 3D Quran Scene - Full width, no container */}
       <HeroSection />
 
