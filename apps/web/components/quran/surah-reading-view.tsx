@@ -195,8 +195,11 @@ export function SurahReadingView({
         }
       </button>
 
+      <details className="min-w-0 w-full rounded-xl border border-line bg-surface p-3">
+        <summary className="cursor-pointer text-xs font-semibold text-ink-soft">Text & display options</summary>
+        <div className="mt-3 flex flex-wrap gap-2">
       {/* Arabic / Transliteration / Translation toggle */}
-      <div className="inline-flex shrink-0 rounded-full border border-line bg-surface p-1">
+      <div className="inline-flex max-w-full flex-wrap rounded-full border border-line bg-surface p-1">
         {([
           { id: 'arabic', label: 'Arabic', beta: false },
           { id: 'transliteration', label: 'Translit', beta: true },
@@ -293,6 +296,8 @@ export function SurahReadingView({
           Focus
         </button>
       )}
+        </div>
+      </details>
     </div>
   );
 
@@ -323,7 +328,7 @@ export function SurahReadingView({
     <div className="mushaf-paper rounded-2xl md:rounded-3xl px-4 py-8 md:px-12 md:py-12">
 
       {/* Surah header — shown once at top */}
-      <div className="mb-6 md:mb-10 text-center">
+      <div className={focusMode ? "mb-6 text-center" : "hidden"}>
         {/* Top rule */}
         <div className="mb-4 flex items-center gap-2">
           <div className="h-px flex-1 bg-gold/40" />
@@ -525,7 +530,7 @@ export function SurahReadingView({
             onClick={() => setSelectedAyahNo(null)}
           />
           {/* Bottom sheet */}
-          <div className="fixed inset-x-0 bottom-20 z-50 px-2 animate-in slide-in-from-bottom-4 duration-200 md:bottom-0 md:px-0">
+          <div className="fixed inset-x-0 bottom-0 z-50 px-2 pb-[env(safe-area-inset-bottom)] animate-in slide-in-from-bottom-4 duration-200 md:bottom-0 md:px-0">
             <div className="mx-auto max-w-lg rounded-2xl border border-line bg-surface px-5 py-4 shadow-card-hover md:rounded-b-none md:rounded-t-2xl">
               <div className="mb-3 flex items-center justify-between">
                 <p className="font-heading text-[13px] font-bold tracking-[-0.025em] text-ink">

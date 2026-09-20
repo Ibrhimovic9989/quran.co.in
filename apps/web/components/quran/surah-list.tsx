@@ -5,11 +5,9 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { SurahCard } from './surah-card';
-import { Container } from '@/components/ui/container';
 import { Heading, Text } from '@/components/ui/typography';
 import { Button, Spinner } from '@/components/ui/atoms';
 import { LoadingMessage } from '@/components/ui/loading-message';
-import { RevelationLegendModal } from '@/components/ui/revelation-legend-modal';
 import type { SurahInfo } from '@/types/quran-api';
 
 interface SurahListProps {
@@ -44,16 +42,16 @@ export function SurahList({ surahs, searchQuery = '' }: SurahListProps) {
 
     return surahs.filter((surah) => {
       // Search by surah number
-      if (surah.surahNo.toString().includes(normalizedQuery)) return true;
+      if (normalizedQuery && surah.surahNo.toString().includes(normalizedQuery)) return true;
 
       // Search by surah name (Latin / transliteration-like) e.g. "Al-Mujadila"
-      if (normalizeSearchText(surah.surahName ?? '').includes(normalizedQuery)) {
+      if (normalizedQuery && normalizeSearchText(surah.surahName ?? '').includes(normalizedQuery)) {
         return true;
       }
 
       // Search by surah name (English translation)
       if (
-        normalizeSearchText(surah.surahNameTranslation ?? '').includes(
+        normalizedQuery && normalizeSearchText(surah.surahNameTranslation ?? '').includes(
           normalizedQuery
         )
       ) {
@@ -115,32 +113,11 @@ export function SurahList({ surahs, searchQuery = '' }: SurahListProps) {
   }, [hasMore, isLoading, loadMore]);
 
   return (
-    <Container>
-      <div className="py-6 md:py-20">
-        {/* Header — Arabic first, quiet meta */}
-        <div className="mb-6 md:mb-12 text-center">
-          <p lang="ar" dir="rtl" className="font-arabic text-4xl leading-[1.7] text-ink md:text-6xl">
-            القرآن الكريم
-          </p>
-          <Heading
-            level={1}
-            className="mt-2 font-reading text-lg font-medium text-ink-soft md:mt-3 md:text-2xl"
-          >
-            The Noble Quran
-          </Heading>
-          <Text className="mt-1 text-xs text-ink-muted md:text-sm">
-            {searchQuery
-              ? `${filteredSurahs.length} of ${surahs.length} sūrahs`
-              : `114 sūrahs · 6,236 āyāt`}
-          </Text>
-          <div className="ayah-divider mx-auto mt-5 max-w-xs md:mt-7" />
-          <div className="mt-3 flex justify-center">
-            <RevelationLegendModal />
-          </div>
-        </div>
-
+    <div>
+      <div>
+        <p className="mb-3 text-xs text-muted">{filteredSurahs.length} {filteredSurahs.length === 1 ? 'chapter' : 'chapters'}</p>
         {/* Surahs Grid - Mobile optimized */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
           {visibleSurahs.map((surah) => (
             <SurahCard key={surah.surahNo} surah={surah} />
           ))}
@@ -199,6 +176,6 @@ export function SurahList({ surahs, searchQuery = '' }: SurahListProps) {
           </div>
         )}
       </div>
-    </Container>
+    </div>
   );
 }

@@ -58,7 +58,9 @@ export function QuranPageClient({ surahs }: QuranPageClientProps) {
   return (
     <BookmarksProvider>
       <div className="min-h-screen bg-paper">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 md:py-8">
+        <div className="max-w-[1040px] mx-auto px-4 sm:px-6 py-6 md:py-8">
+          <h1 className="font-heading text-2xl font-bold tracking-tight">Read Quran</h1>
+          <p className="mb-6 mt-1 text-sm text-muted">Choose a chapter to begin.</p>
           {/* Continue Reading */}
           <ContinueReading />
 

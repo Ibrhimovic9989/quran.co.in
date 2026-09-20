@@ -3,113 +3,110 @@
 @tailwind utilities;
 
 :root {
-  /* ── Calm palette — cool paper, teal action, pastel tints ────────
-     Ported from Namaz.app: white cards float on a faintly blue page,
-     one teal carries every action, pastels carry meaning (never text). */
-  --paper: #f5fbfd;          /* page background — a breath of blue */
-  --surface: #ffffff;        /* cards */
-  --surface-warm: #f7fcfd;   /* second-level card variant */
-  --ink: #213e4a;            /* deep slate-teal text — never pure black */
-  --ink-soft: #3d5763;       /* secondary text */
-  --muted: #58717c;          /* tertiary text, captions */
-  --line: #dcebef;           /* borders, hairlines */
+  /* Matches Namaz.app/app/calm.css: blue paper, teal actions and pastel cards. */
+  color-scheme: light;
+  --paper: #f5fbfd;
+  --surface: #ffffff;
+  --surface-warm: #f7fcfd;
+  --ink: #213e4a;
+  --ink-soft: #3d5763;
+  --muted: #58717c;
+  --line: #dcebef;
   --line-soft: #eaf4f7;
-
-  /* ── Teal — the single action accent ────────────────────────────── */
   --accent: #007e87;
   --accent-strong: #00636d;
-  --accent-soft: #e0f6f4;    /* tint backgrounds */
-  --accent-ring: rgba(0, 126, 135, 0.35);
-
-  /* ── Pastel tints — category tiles and quiet callouts ───────────── */
+  --accent-soft: #e0f6f4;
+  --accent-ring: rgba(0, 126, 135, 0.25);
   --tint-sage: #e0f6f4;
   --tint-sky: #e7f3ff;
   --tint-peach: #ffe6d8;
   --tint-sun: #fff2bc;
   --tint-lavender: #eeebff;
-
-  /* ── Ornament — hairlines and ayah medallions.
-     Kept as tokens (the shapes stay) but tuned to the calm palette;
-     --gold-text is the only one that may carry text. ─────────────── */
   --gold: #8fb6bb;
   --gold-soft: #d7eaee;
   --gold-text: #4a6b73;
-
-  /* ── Night — deep reading surfaces (today page, players) ────────── */
   --night: #08171c;
   --night-surface: #0e2028;
   --night-ink: #e4f1f4;
   --night-gold: #6fc3c9;
-
   --background: var(--paper);
   --foreground: var(--ink);
-
-  /* Seasonal theme tokens (default = current look) */
-  --mushaf-paper-bg: #fbfdfd;
+  --mushaf-paper-bg: #ffffff;
   --mushaf-border-color: #9ec9cd;
-  --mushaf-border-color-alpha: #9ec9cd55;
-  --mushaf-border-glow: rgba(20, 70, 84, 0.12);
-  --focus-overlay-bg: #f5fbfd;
+  --mushaf-border-color-alpha: #9ec9cd40;
+  --mushaf-border-glow: rgba(20, 70, 84, 0.06);
+  --focus-overlay-bg: var(--paper);
 }
 
-/* ── Reading themes — CSS-var overlays (persisted via data-theme) ── */
-
-/* Night: deep blue-teal, cool ivory ink — genuinely dark */
-html[data-theme='night'] {
-  --paper: #08171c;
-  --surface: #0e2028;
-  --surface-warm: #0c1c23;
-  --ink: #e4f1f4;
-  --ink-soft: #b9d2d8;
-  --muted: #86a3ab;
-  --line: #1c3640;
-  --line-soft: #162c35;
-  --accent: #29b0b8;
-  --accent-strong: #4ec9cf;
-  --accent-soft: #10323a;
-  --accent-ring: rgba(41, 176, 184, 0.35);
-  --tint-sage: #10323a;
-  --tint-sky: #14283a;
-  --tint-peach: #33221b;
-  --tint-sun: #322c14;
-  --tint-lavender: #221f33;
-  --gold: #5f9aa2;
-  --gold-soft: #143039;
-  --gold-text: #8fc3cb;
-  --mushaf-paper-bg: #0c1c23;
-  --mushaf-border-color: #2b5763;
-  --mushaf-border-color-alpha: #2b576355;
-  --mushaf-border-glow: rgba(0, 0, 0, 0.3);
-  --focus-overlay-bg: #08171c;
-  color-scheme: dark;
-}
-
-/* Sepia: parchment reading — warm page, same teal action */
+/* Warm ivory keeps sepia comfortable without a yellow cast on every surface. */
 html[data-theme='sepia'] {
-  --paper: #f3e9d7;
-  --surface: #faf3e3;
-  --surface-warm: #f7efdd;
-  --ink: #433422;
-  --ink-soft: #5d4c36;
-  --muted: #8a7859;
-  --line: #e2d3b8;
-  --line-soft: #ece0c9;
-  --accent: #0b6b70;
-  --accent-strong: #08545a;
-  --accent-soft: #e4eeea;
-  --accent-ring: rgba(11, 107, 112, 0.35);
-  --tint-sage: #e4eeea;
-  --tint-sky: #e6edf0;
-  --tint-peach: #f6e3d3;
-  --tint-sun: #f7ecc8;
-  --tint-lavender: #eae6f0;
-  --gold: #b79a6a;
-  --gold-soft: #e7d9ba;
-  --gold-text: #6b5320;
-  --mushaf-paper-bg: #faf3e3;
-  --mushaf-border-color: #c9ab78;
-  --mushaf-border-color-alpha: #c9ab7855;
-  --focus-overlay-bg: #f3e9d7;
+  color-scheme: light;
+  --paper: #f7f3ec;
+  --surface: #fffdf8;
+  --surface-warm: #f2ede3;
+  --ink: #3e3930;
+  --ink-soft: #5d574c;
+  --muted: #756d60;
+  --line: #e4ddcf;
+  --line-soft: #eee8dc;
+  --accent: #52694a;
+  --accent-strong: #3c5036;
+  --accent-soft: #eaf0e1;
+  --accent-ring: rgba(82, 105, 74, 0.25);
+  --tint-sage: #eaf0e1;
+  --tint-sky: #eaf0f1;
+  --tint-peach: #f6e9df;
+  --tint-sun: #f5edda;
+  --tint-lavender: #eee9ef;
+  --gold: #b9aa8c;
+  --gold-soft: #f0e8d7;
+  --gold-text: #786644;
+  --mushaf-paper-bg: #fffcf5;
+  --mushaf-border-color: #cfbea0;
+  --mushaf-border-color-alpha: #cfbea040;
+  --mushaf-border-glow: rgba(94, 76, 43, 0.05);
+  --focus-overlay-bg: var(--paper);
+}
+
+html[data-theme='night'] {
+  color-scheme: dark;
+  --paper: #14201c;
+  --surface: #1c2b25;
+  --surface-warm: #203129;
+  --ink: #edf3ee;
+  --ink-soft: #cad7cb;
+  --muted: #a3b6a7;
+  --line: #34473b;
+  --line-soft: #293c30;
+  --accent: #89c9a7;
+  --accent-strong: #a7dabd;
+  --accent-soft: #273e31;
+  --accent-ring: rgba(167, 218, 189, 0.3);
+  --tint-sage: #273e31;
+  --tint-sky: #263944;
+  --tint-peach: #45332c;
+  --tint-sun: #403c27;
+  --tint-lavender: #343247;
+  --gold: #9daa84;
+  --gold-soft: #333e2d;
+  --gold-text: #c0cfa6;
+  --mushaf-paper-bg: #1c2b25;
+  --mushaf-border-color: #52624b;
+  --mushaf-border-color-alpha: #52624b40;
+  --mushaf-border-glow: rgba(0, 0, 0, 0.15);
+  --focus-overlay-bg: var(--paper);
+}
+
+.navbar-logo {
+  display: block;
+  width: 148px;
+  height: auto;
+}
+html[data-theme='night'] .bg-accent.text-white {
+  color: #14201c;
+}
+html[data-theme='night'] .navbar-logo {
+  filter: brightness(0) invert(0.95);
 }
 
 html {
@@ -260,7 +257,7 @@ body {
 /* ─── Seasonal Themes ─────────────────────────────── */
 
 /* Ramadan — deeper teal on the calm page */
-body.theme-ramadan {
+html:not([data-theme='sepia']):not([data-theme='night']) body.theme-ramadan {
   --background: #f2fbfb;
   --foreground: var(--ink);
   --mushaf-paper-bg: #f7fdfc;
@@ -270,7 +267,7 @@ body.theme-ramadan {
   --focus-overlay-bg: #f2fbfb;
 }
 
-body.theme-ramadan::before {
+html:not([data-theme='sepia']):not([data-theme='night']) body.theme-ramadan::before {
   content: '';
   position: fixed;
   inset: 0;
@@ -283,7 +280,7 @@ body.theme-ramadan::before {
 }
 
 /* Eid ul Fitr — peach and lavender, celebratory */
-body.theme-eid-ul-fitr {
+html:not([data-theme='sepia']):not([data-theme='night']) body.theme-eid-ul-fitr {
   --background: #fdf7f4;
   --foreground: var(--ink);
   --mushaf-paper-bg: #fffaf7;
@@ -293,7 +290,7 @@ body.theme-eid-ul-fitr {
   --focus-overlay-bg: #fdf7f4;
 }
 
-body.theme-eid-ul-fitr::before {
+html:not([data-theme='sepia']):not([data-theme='night']) body.theme-eid-ul-fitr::before {
   content: '';
   position: fixed;
   inset: 0;
@@ -306,7 +303,7 @@ body.theme-eid-ul-fitr::before {
 }
 
 /* Eid ul Adha — sage and sky (sacrifice, pilgrimage) */
-body.theme-eid-ul-adha {
+html:not([data-theme='sepia']):not([data-theme='night']) body.theme-eid-ul-adha {
   --background: #f3fbf8;
   --foreground: var(--ink);
   --mushaf-paper-bg: #f8fdfb;
@@ -316,7 +313,7 @@ body.theme-eid-ul-adha {
   --focus-overlay-bg: #f3fbf8;
 }
 
-body.theme-eid-ul-adha::before {
+html:not([data-theme='sepia']):not([data-theme='night']) body.theme-eid-ul-adha::before {
   content: '';
   position: fixed;
   inset: 0;

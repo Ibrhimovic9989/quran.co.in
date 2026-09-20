@@ -19,46 +19,14 @@ export const metadata: Metadata = {
     description: 'Read, listen, and understand the Holy Quran. Arabic text, English translation, audio recitation, tafsir, and AI-powered search across all 6,236 ayahs.',
   },
 };
-import { HomeClientSection } from '@/components/ui/home-client-section';
-import { ValueProposition } from '@/components/ui/value-proposition';
-import { FeaturesShowcase } from '@/components/ui/features-showcase';
-import { BenefitsSection } from '@/components/ui/benefits-section';
-import { HowItWorks } from '@/components/ui/how-it-works';
-import { TrustIndicators } from '@/components/ui/trust-indicators';
-import { CTASection } from '@/components/ui/cta-section';
-
-export default function HomePage() {
+export default function Home() {
   return (
-    <main className="min-h-screen bg-surface">
-      {/* Duʿā request for Ḥāfiẓ Umar and his family */}
-      <DuaBanner />
-
-      {/* Developer series announcement — click to watch the intro reel */}
-      <DevReelBanner />
-
-      {/* Hero Section with 3D Quran Scene - Full width, no container */}
+    <main className="bg-paper">
       <HeroSection />
-
-      {/* Time-based greeting + Continue Reading card (client, localStorage-driven) */}
-      <HomeClientSection />
-
-      {/* Value Proposition Section */}
-      <ValueProposition />
-
-      {/* Features Showcase Section */}
-      <FeaturesShowcase />
-
-      {/* Benefits Section */}
-      <BenefitsSection />
-
-      {/* How It Works Section */}
-      <HowItWorks />
-
-      {/* Trust Indicators Section */}
-      <TrustIndicators />
-
-      {/* Call-to-Action Section */}
-      <CTASection />
+      <details className="mx-auto mb-8 max-w-[832px] border-y border-line px-4 sm:px-0">
+        <summary className="cursor-pointer py-4 text-xs font-medium text-muted">Community & updates</summary>
+        <div className="pb-4"><DuaBanner /><DevReelBanner /></div>
+      </details>
     </main>
   );
 }

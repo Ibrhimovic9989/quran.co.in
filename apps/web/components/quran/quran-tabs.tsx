@@ -4,7 +4,6 @@
 
 'use client';
 
-import { useState } from 'react';
 import { cn } from '@/lib/utils/cn';
 
 export type QuranViewType = 'surah' | 'juz' | 'revelation';
@@ -23,7 +22,7 @@ const tabs: { id: QuranViewType; label: string }[] = [
 
 export function QuranTabs({ activeView, onViewChange, className }: QuranTabsProps) {
   return (
-    <div className={cn('flex items-center gap-0.5 md:gap-1 border-b border-line/60 mb-4 md:mb-8', className)}>
+    <div role="tablist" aria-label="Browse Quran by" className={cn('flex items-center gap-0.5 md:gap-1 border-b border-line/60 mb-4 md:mb-8', className)}>
       {tabs.map((tab) => {
         const isActive = activeView === tab.id;
         return (

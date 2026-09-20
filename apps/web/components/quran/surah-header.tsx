@@ -51,7 +51,7 @@ export function SurahHeader({
   return (
     <div className="mb-6 md:mb-10">
       {/* ── Hero: the Arabic name is the star ─────────────────────────── */}
-      <div className="arch-top relative overflow-hidden border border-line bg-surface-warm px-5 pb-7 pt-9 text-center shadow-card md:px-8 md:pb-9 md:pt-12">
+      <div className="relative overflow-hidden rounded-2xl border border-line bg-accent-soft px-4 py-5 text-center md:py-6">
         {/* girih texture, whisper-quiet, header only */}
         <div className="girih-bg pointer-events-none absolute inset-0 opacity-[0.045]" aria-hidden />
 
@@ -69,33 +69,35 @@ export function SurahHeader({
           <p
             lang="ar"
             dir="rtl"
-            className="font-mushaf leading-[1.6] text-ink [font-size:3.25rem] md:[font-size:5rem]"
+            className="font-mushaf leading-[1.6] text-ink [font-size:2.5rem] md:[font-size:3.5rem]"
           >
             {surah.surahNameArabicLong}
           </p>
 
           {/* English identity — subordinate, warm serif */}
-          <Heading level={1} className="mt-2 font-reading text-xl font-medium text-ink-soft md:mt-3 md:text-3xl">
+          <Heading level={1} className="mt-2 font-reading text-lg font-medium text-ink-soft md:mt-3 md:text-xl">
             {surah.surahName}
             <span className="text-ink-muted"> — {surah.surahNameTranslation}</span>
           </Heading>
 
-          {/* Revelation period: one quiet footnote, details on demand */}
-          {revelation && (
-            <div className="mt-3 flex items-center justify-center gap-2 text-xs text-ink-muted md:mt-4">
-              <span title={APPROXIMATION_NOTE} className="cursor-help">
-                {PERIOD_LABELS[revelation.period]} · {revelation.yearCE} CE
-              </span>
-              <RevelationLegendModal className="!m-0" />
-            </div>
-          )}
+
         </div>
       </div>
 
       {/* ── Controls row: mode toggle + listen ────────────────────────── */}
-      <div className="mt-4 flex flex-col items-stretch gap-3 md:mt-5 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center justify-center gap-2 md:justify-start">
+      <div className="mt-4 flex flex-col items-stretch gap-3 md:mt-5 ">
+        <div className="flex flex-wrap items-center gap-2">
           <SurahViewModeToggle mode={mode} onModeChange={onModeChange} />
+          {mode === 'verse' && hasAudio && (
+            <AudioPlayer audioData={surah.audio} surahNo={surah.surahNo} selectedReciter={selectedReciter} onReciterChange={onReciterChange} enableSharedPlayback minimal />
+          )}
+          {mode === 'verse' && <details className="w-full rounded-xl border border-line bg-surface p-3">
+            <summary className="cursor-pointer text-xs font-semibold text-ink-soft">Reading options</summary>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {hasAudio && <div className="flex w-full min-w-0 items-center gap-2">
+                <ReciterSelector audioData={surah.audio} selectedReciter={selectedReciter} onReciterChange={onReciterChange} minimal className="min-w-0 flex-1" />
+                <RepeatControl />
+              </div>}
           {mode === 'verse' && onFocusToggle && (
             <button
               onClick={onFocusToggle}
@@ -149,29 +151,15 @@ export function SurahHeader({
               Mushaf
             </Link>
           )}
+              {revelation && <div className="mt-2 flex w-full flex-wrap items-center gap-2 border-t border-line pt-3 text-xs text-muted">
+                <span title={APPROXIMATION_NOTE}>{PERIOD_LABELS[revelation.period]} · {revelation.yearCE} CE</span>
+                <RevelationLegendModal />
+              </div>}
+            </div>
+          </details>}
         </div>
 
-        {mode === 'verse' && hasAudio && (
-          <div className="flex flex-wrap items-center justify-center gap-2 rounded-full border border-line bg-surface px-3 py-2 shadow-card md:justify-end">
-            <ReciterSelector
-              audioData={surah.audio}
-              selectedReciter={selectedReciter}
-              onReciterChange={onReciterChange}
-              hideLabel
-              minimal
-              className="min-w-[11rem] flex-1 md:max-w-xs md:flex-none"
-            />
-            <RepeatControl />
-            <AudioPlayer
-              audioData={surah.audio}
-              surahNo={surah.surahNo}
-              selectedReciter={selectedReciter}
-              onReciterChange={onReciterChange}
-              enableSharedPlayback={true}
-              minimal
-            />
-          </div>
-        )}
+
       </div>
     </div>
   );

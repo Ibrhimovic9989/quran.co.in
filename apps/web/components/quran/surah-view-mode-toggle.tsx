@@ -18,7 +18,7 @@ const modes: Array<{
 }> = [
   {
     id: 'verse',
-    label: 'Verse by Verse',
+    label: 'Verses',
     icon: Rows3,
   },
   {
@@ -54,7 +54,7 @@ export function SurahViewModeToggle({
             aria-selected={isActive}
             onClick={() => onModeChange(item.id)}
             className={cn(
-              'inline-flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-xs font-semibold transition-colors md:gap-2 md:px-4 md:text-sm',
+              'inline-flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-xs font-semibold transition-colors md:gap-2 md:px-3 md:text-sm',
               isActive
                 ? 'bg-surface text-ink shadow-sm'
                 : 'text-ink-soft hover:text-ink'

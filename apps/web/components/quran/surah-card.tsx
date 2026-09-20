@@ -10,7 +10,6 @@ import { Heading, Text } from '@/components/ui/typography';
 import { cn } from '@/lib/utils/cn';
 import Link from 'next/link';
 import type { SurahInfo } from '@/types/quran-api';
-import { getRevelationInfo, PERIOD_LABELS, PERIOD_DESCRIPTIONS, APPROXIMATION_NOTE } from '@/lib/data/revelation-periods';
 
 interface SurahCardProps {
   surah: SurahInfo & { surahNo: number };
@@ -19,7 +18,6 @@ interface SurahCardProps {
 
 export function SurahCard({ surah, className }: SurahCardProps) {
   const [loading, setLoading] = useState(false);
-  const revelation = getRevelationInfo(surah.surahNo);
 
   return (
     <Link
@@ -32,16 +30,16 @@ export function SurahCard({ surah, className }: SurahCardProps) {
     >
       <Card
         className={cn(
-          'relative overflow-hidden rounded-2xl border border-line bg-surface',
+          'p-3.5 relative overflow-hidden rounded-2xl border border-line bg-surface',
           'transition-all duration-200 ease-out hover:border-accent/30 hover:shadow-card',
           'group/card cursor-pointer',
           loading && 'opacity-70',
           className
         )}
       >
-        <div className="flex items-center gap-3 md:gap-4">
+        <div className="flex items-center gap-2.5 md:gap-3">
           {/* Gold diamond medallion */}
-          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center md:h-12 md:w-12">
+          <div className="relative flex h-8 w-8 shrink-0 items-center justify-center md:h-10 md:w-10">
             <span className="absolute inset-0 rounded-full bg-accent-soft transition-colors duration-200 group-hover/card:bg-tint-sky" />
             <span className="relative font-heading text-sm font-bold text-accent-strong md:text-base">
               {surah.surahNo}
@@ -61,14 +59,7 @@ export function SurahCard({ surah, className }: SurahCardProps) {
             </Text>
             <Text className="mt-1 text-[11px] text-ink-muted md:text-xs">
               {surah.totalAyah} āyāt · {surah.revelationPlace === 'Mecca' ? 'Meccan' : 'Medinan'}
-              {revelation && (
-                <span
-                  title={`${PERIOD_DESCRIPTIONS[revelation.period]}\n\n${APPROXIMATION_NOTE}`}
-                  className="cursor-help"
-                >
-                  {' '}· {PERIOD_LABELS[revelation.period]}
-                </span>
-              )}
+
             </Text>
           </div>
 
@@ -76,7 +67,7 @@ export function SurahCard({ surah, className }: SurahCardProps) {
           <p
             lang="ar"
             dir="rtl"
-            className="shrink-0 font-arabic text-2xl leading-[1.6] text-ink transition-colors duration-300 group-hover/card:text-accent md:text-[1.75rem]"
+            className="max-w-[32%] break-words font-arabic text-xl leading-[1.6] text-ink transition-colors duration-300 group-hover/card:text-accent md:text-[1.75rem]"
           >
             {surah.surahNameArabic}
           </p>

@@ -384,8 +384,8 @@ export function SurahDisplay({ surah, mushafPage = null, tafsirs }: SurahDisplay
   return (
     <BookmarksProvider>
       <SurahPlaybackProvider surahNo={surah.surahNo} totalAyahs={surah.totalAyah}>
-        <Container>
-          <div className="py-6 md:py-20">
+        <Container className="max-w-[960px]">
+          <div className="py-4 md:py-8">
             <Breadcrumb
               className="mb-4 md:mb-6"
               items={[

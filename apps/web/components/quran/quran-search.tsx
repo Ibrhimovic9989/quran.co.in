@@ -4,7 +4,6 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
 import { Search, X } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import type { QuranViewType } from './quran-tabs';
@@ -23,7 +22,7 @@ export function QuranSearch({
   className 
 }: QuranSearchProps) {
   const placeholderText = {
-    surah: 'Search surah name, number, or a topic like "patience"…',
+    surah: 'Search Quran…',
     juz: 'Search by Juz number or surah name…',
     revelation: 'Search by surah name or revelation order…',
   };
@@ -33,12 +32,13 @@ export function QuranSearch({
       <div className="relative">
         <Search className="absolute left-2.5 md:left-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-muted" />
         <input
-          type="text"
+          type="search"
+          aria-label="Search Quran"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder={placeholderText[activeView]}
           className={cn(
-            'w-full pl-8 md:pl-10 pr-8 md:pr-10 py-2 md:py-3 text-xs md:text-base',
+            'w-full min-h-11 pl-9 pr-10 py-2 text-base',
             'border border-line rounded-lg md:rounded-lg',
             'bg-surface text-ink',
             'placeholder:text-muted',
