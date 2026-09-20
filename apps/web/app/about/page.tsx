@@ -19,12 +19,12 @@ import { BookOpen, Heart, Shield, Globe } from 'lucide-react';
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-paper pb-16 pt-10 md:pt-14">
+    <main className="min-h-screen bg-paper pb-12 pt-6 md:pt-10">
       <Container>
         {/* Header Section */}
-        <div className="mb-12 max-w-3xl md:mb-16">
-          <Heading level={1} className="font-heading text-[clamp(30px,4vw,44px)] font-bold leading-[1.2] tracking-[-0.035em] text-ink">
-            Our Mission: To Make the Quran Accessible to All
+        <div className="mb-6 max-w-3xl md:mb-8">
+          <Heading level={1} className="font-heading text-[24px] md:text-[30px] font-bold leading-[1.2] tracking-[-0.035em] text-ink">
+            About Quran.co.in
           </Heading>
           <Text className="mt-4 max-w-2xl text-[15px] leading-[1.75] text-muted">
             Quran.co.in is dedicated to providing a modern, beautiful, and authentic 
@@ -34,9 +34,9 @@ export default function AboutPage() {
         </div>
 
         {/* Vision/Values Grid */}
-        <div className="mb-16 grid gap-3 md:grid-cols-2">
-          <Card className="rounded-2xl border border-line bg-surface p-6 shadow-none transition-all hover:border-accent/30 hover:shadow-card">
-            <div className="mb-5 grid h-11 w-11 place-items-center rounded-full bg-tint-sage text-ink-soft">
+        <div className="mb-6 grid gap-3 md:grid-cols-2">
+          <Card className="rounded-2xl border border-line bg-surface p-4 md:p-6 shadow-none transition-all hover:border-accent/30 hover:shadow-card">
+            <div className="mb-3 grid h-9 w-11 place-items-center rounded-full bg-tint-sage text-ink-soft">
               <Shield className="h-5 w-5" strokeWidth={1.6} />
             </div>
             <Heading level={3} className="font-heading text-[17px] font-bold tracking-[-0.025em] text-ink">Authenticity First</Heading>
@@ -47,8 +47,8 @@ export default function AboutPage() {
             </Text>
           </Card>
 
-          <Card className="rounded-2xl border border-line bg-surface p-6 shadow-none transition-all hover:border-accent/30 hover:shadow-card">
-            <div className="mb-5 grid h-11 w-11 place-items-center rounded-full bg-tint-sky text-ink-soft">
+          <Card className="rounded-2xl border border-line bg-surface p-4 md:p-6 shadow-none transition-all hover:border-accent/30 hover:shadow-card">
+            <div className="mb-3 grid h-9 w-11 place-items-center rounded-full bg-tint-sky text-ink-soft">
               <Heart className="h-5 w-5" strokeWidth={1.6} />
             </div>
             <Heading level={3} className="font-heading text-[17px] font-bold tracking-[-0.025em] text-ink">User-Centric Design</Heading>
@@ -58,8 +58,8 @@ export default function AboutPage() {
             </Text>
           </Card>
 
-          <Card className="rounded-2xl border border-line bg-surface p-6 shadow-none transition-all hover:border-accent/30 hover:shadow-card">
-            <div className="mb-5 grid h-11 w-11 place-items-center rounded-full bg-tint-lavender text-ink-soft">
+          <Card className="rounded-2xl border border-line bg-surface p-4 md:p-6 shadow-none transition-all hover:border-accent/30 hover:shadow-card">
+            <div className="mb-3 grid h-9 w-11 place-items-center rounded-full bg-tint-lavender text-ink-soft">
               <Globe className="h-5 w-5" strokeWidth={1.6} />
             </div>
             <Heading level={3} className="font-heading text-[17px] font-bold tracking-[-0.025em] text-ink">Global Reach</Heading>
@@ -70,8 +70,8 @@ export default function AboutPage() {
             </Text>
           </Card>
 
-          <Card className="rounded-2xl border border-line bg-surface p-6 shadow-none transition-all hover:border-accent/30 hover:shadow-card">
-            <div className="mb-5 grid h-11 w-11 place-items-center rounded-full bg-tint-peach text-ink-soft">
+          <Card className="rounded-2xl border border-line bg-surface p-4 md:p-6 shadow-none transition-all hover:border-accent/30 hover:shadow-card">
+            <div className="mb-3 grid h-9 w-11 place-items-center rounded-full bg-tint-peach text-ink-soft">
               <BookOpen className="h-5 w-5" strokeWidth={1.6} />
             </div>
             <Heading level={3} className="font-heading text-[17px] font-bold tracking-[-0.025em] text-ink">Lifelong Learning</Heading>

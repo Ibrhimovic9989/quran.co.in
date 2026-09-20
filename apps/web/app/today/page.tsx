@@ -205,6 +205,7 @@ export default function TodayPage() {
   return (
     <main className="min-h-screen bg-paper pb-16 pt-8 md:pt-12">
       <Container>
+        <h1 className="mx-auto mb-4 max-w-2xl font-heading text-2xl font-bold text-ink md:text-3xl">Today’s verse</h1>
         <div className="mx-auto flex max-w-2xl flex-col items-center py-4 text-center">
 
           {/* Ayah card */}
@@ -217,7 +218,7 @@ export default function TodayPage() {
           ) : ayah ? (
             <>
               {/* ── Shareable content (captured by html-to-image) ── */}
-              <div data-share-card className="w-full max-w-2xl space-y-7 rounded-[22px] bg-night px-6 py-9 md:px-10 md:py-12">
+              <div data-share-card className="w-full max-w-2xl space-y-5 rounded-2xl bg-night px-4 py-5 md:px-10 md:py-12">
                 {/* Header badge */}
                 <div className="mb-2">
                   <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-night-gold/25 bg-night-surface px-3.5 py-1.5 text-[11px] font-semibold text-night-gold">
@@ -230,7 +231,7 @@ export default function TodayPage() {
                 </div>
 
                 {/* Arabic text */}
-                <div className="rounded-[18px] border border-night-gold/15 bg-night-surface px-6 py-8 md:px-8 md:py-10">
+                <div className="rounded-[18px] border border-night-gold/15 bg-night-surface px-3 py-4 md:px-8 md:py-10">
                   {/* Decorative rule */}
                   <div className="flex items-center gap-3 mb-6">
                     <div className="h-px flex-1 bg-night-gold/25" />
@@ -266,7 +267,7 @@ export default function TodayPage() {
 
                 {/* Translation */}
                 {ayah.translationText && (
-                  <blockquote className="px-2 text-[17px] font-light leading-9 text-night-ink/90 md:text-[22px] md:leading-10">
+                  <blockquote className="px-2 text-[15px] font-normal leading-7 text-night-ink/90 md:text-[22px] md:leading-10">
                     &ldquo;{ayah.translationText}&rdquo;
                   </blockquote>
                 )}
@@ -289,6 +290,8 @@ export default function TodayPage() {
                     Read in context
                   </Link>
 
+                </div>
+                <details className="mt-4 rounded-xl border border-line bg-surface p-3"><summary className="cursor-pointer text-sm font-medium text-muted">Share this verse</summary><div className="mt-3 flex flex-wrap justify-center gap-2">
                   {/* Copy */}
                   <button
                     onClick={handleCopy}
@@ -344,6 +347,7 @@ export default function TodayPage() {
                   </a>
                 </div>
 
+                </details>
                 {/* Refresh */}
                 <button
                   onClick={load}
@@ -355,7 +359,7 @@ export default function TodayPage() {
               </div>
             </>
           ) : (
-            <p className="text-[13px] text-muted">Unable to load today&apos;s verse. Please try again.</p>
+            <div role="status" className="rounded-xl border border-line bg-surface p-5 text-sm text-muted"><p>Unable to load today&apos;s verse.</p><button onClick={load} className="mt-3 min-h-11 font-semibold text-accent-strong">Try again</button></div>
           )}
 
           {/* Bottom links */}

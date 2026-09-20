@@ -91,11 +91,11 @@ export default function HelpCenterPage() {
   return (
     <main className="min-h-screen bg-paper">
       {/* Search Header */}
-      <div className="border-b border-line bg-surface pb-10 pt-10 md:pt-14">
+      <div className="border-b border-line bg-surface pb-6 pt-6 md:pt-10">
         <Container>
           <div className="max-w-3xl">
-            <Heading level={1} className="font-heading text-[clamp(28px,3.6vw,40px)] font-bold leading-[1.2] tracking-[-0.035em] text-ink">
-              How can we help you?
+            <Heading level={1} className="font-heading text-[24px] md:text-[30px] font-bold leading-[1.2] tracking-[-0.035em] text-ink">
+              Help & guidance
             </Heading>
             <div className="relative mt-5 max-w-2xl">
               <input
@@ -133,7 +133,7 @@ export default function HelpCenterPage() {
         </Container>
       </div>
 
-      <Container className="py-10 md:py-14">
+      <Container className="py-6 md:py-10">
         <div className="mb-5 flex items-center justify-between">
           <Heading level={2} className="font-heading text-[19px] font-bold tracking-[-0.025em] text-ink">
             {query ? `Results for "${query}"` : 'Browse by Category'}

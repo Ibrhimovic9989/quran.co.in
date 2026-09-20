@@ -76,7 +76,7 @@ export default function LearnPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-paper pb-24 pt-8 md:pt-12">
+    <main className="min-h-screen bg-paper pb-12 pt-6 md:pt-10">
       <div className="mx-auto max-w-3xl px-4">
         {view.t === 'hub' && <Hub done={done} onOpen={(i) => setView({ t: 'lesson', i })} />}
         {view.t === 'lesson' && (
@@ -100,14 +100,12 @@ function Hub({ done, onOpen }: { done: Set<string>; onOpen: (i: number) => void 
   const pct = Math.round((count / LEARN_LESSONS.length) * 100);
   return (
     <>
-      <p className="text-xs font-bold uppercase tracking-widest text-gold-text">From transliteration to the script</p>
-      <h1 className="mt-2 flex items-center gap-3 font-heading text-[clamp(28px,3.4vw,38px)] font-bold tracking-[-0.035em] text-ink">
+
+      <h1 className="mt-2 flex items-center gap-3 font-heading text-[24px] md:text-[30px] font-bold tracking-[-0.035em] text-ink">
         <GraduationCap className="text-accent" size={30} /> Learn to Read
       </h1>
       <p className="mt-3 max-w-2xl leading-relaxed text-ink-soft">
-        If you read the Qurʾān through English letters, this is the way off them. Step by step — the letters, their
-        sounds, the vowels — until you read the script itself. Transliteration got you here; these lessons help you
-        leave it behind.
+        Learn Arabic letters and sounds, one small lesson at a time.
       </p>
 
       <div className="mt-6 rounded-2xl border border-line bg-accent-soft p-5">
@@ -124,8 +122,8 @@ function Hub({ done, onOpen }: { done: Set<string>; onOpen: (i: number) => void 
       </div>
 
       {STAGES.map(([label, from, to]) => (
-        <div key={label} className="mt-8">
-          <p className="text-xs font-bold uppercase tracking-widest text-gold-text">{label}</p>
+        <details key={label} open={from === 1} className="mt-4 rounded-2xl border border-line bg-surface p-4">
+          <summary className="cursor-pointer text-sm font-semibold text-ink">{label}<span className="ml-2 text-xs font-normal text-muted">{to - from + 1} lessons</span></summary>
           <div className="mt-3 space-y-3">
             {LEARN_LESSONS.slice(from - 1, to).map((l) => {
               const i = l.number - 1;
@@ -134,7 +132,7 @@ function Hub({ done, onOpen }: { done: Set<string>; onOpen: (i: number) => void 
                 <button
                   key={l.slug}
                   onClick={() => onOpen(i)}
-                  className="flex w-full items-center gap-4 rounded-2xl border border-line bg-surface p-4 text-left transition-all hover:border-accent/30 hover:shadow-card"
+                  className="flex w-full items-center gap-3 rounded-xl border border-line bg-surface p-3 text-left transition-all hover:border-accent/30 hover:shadow-card"
                 >
                   <span
                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
@@ -152,7 +150,7 @@ function Hub({ done, onOpen }: { done: Set<string>; onOpen: (i: number) => void 
               );
             })}
           </div>
-        </div>
+        </details>
       ))}
 
       <p className="mt-8 text-xs leading-relaxed text-ink-muted">
@@ -162,7 +160,7 @@ function Hub({ done, onOpen }: { done: Set<string>; onOpen: (i: number) => void 
           : 'Spoken audio for each letter is on the way.'}
       </p>
 
-      <LearnSeoContent />
+      <details className="mt-6 border-t border-line pt-4"><summary className="cursor-pointer text-sm font-medium text-muted">About this course & common questions</summary><LearnSeoContent /></details>
     </>
   );
 }
@@ -216,7 +214,7 @@ function LearnSeoContent() {
     inLanguage: 'en',
   };
   return (
-    <section className="mt-14 border-t border-line pt-10">
+    <section className="mt-5">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) }} />
 

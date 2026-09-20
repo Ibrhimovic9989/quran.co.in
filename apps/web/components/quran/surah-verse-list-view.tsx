@@ -72,7 +72,7 @@ export function SurahVerseListView({
   const showBismillah = surahNumber !== SURAH_FATIHA && surahNumber !== SURAH_WITHOUT_BISMILLAH;
 
   return (
-    <div className="space-y-4 md:space-y-8">
+    <div className="space-y-3 md:space-y-4">
       {showBismillah && <BismillahHeader />}
       {loadedAyahs.english.slice(0, visibleAyahs).map((translation, index) => {
         const ayahNo = index + 1;
@@ -82,7 +82,6 @@ export function SurahVerseListView({
         return (
           <div
             key={ayahNo}
-            id={`ayah-${surahNumber}-${ayahNo}`}
             className={
               focusMode &&
               sharedPlayback?.activeAyahNumber != null &&

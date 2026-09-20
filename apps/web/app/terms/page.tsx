@@ -22,11 +22,11 @@ export default function TermsPage() {
     <main className="min-h-screen bg-surface pt-32 pb-20">
       <Container>
         <div className="max-w-3xl mx-auto prose prose-gray">
-          <Heading level={1} className="text-4xl font-bold mb-4">Terms of Service</Heading>
+          <Heading level={1} className="text-2xl md:text-3xl font-bold mb-4">Terms of Service</Heading>
           <Text className="text-sm text-muted mb-12 italic">Last updated: {lastUpdated}</Text>
 
           <section className="mb-10">
-            <Heading level={2} className="text-2xl font-bold mb-4">1. Agreement to Terms</Heading>
+            <Heading level={2} className="text-xl md:text-2xl font-bold mb-4">1. Agreement to Terms</Heading>
             <Text className="text-ink-soft mb-4">
               By accessing or using Quran.co.in, you agree to be bound by these Terms of Service 
               and all applicable laws and regulations. If you do not agree with any of these terms, 
@@ -35,7 +35,7 @@ export default function TermsPage() {
           </section>
 
           <section className="mb-10">
-            <Heading level={2} className="text-2xl font-bold mb-4">2. Use License</Heading>
+            <Heading level={2} className="text-xl md:text-2xl font-bold mb-4">2. Use License</Heading>
             <Text className="text-ink-soft mb-4">
               Permission is granted to use Quran.co.in for personal, non-commercial, and educational 
               purposes. This is the grant of a license, not a transfer of title, and under this 
@@ -50,7 +50,7 @@ export default function TermsPage() {
           </section>
 
           <section className="mb-10">
-            <Heading level={2} className="text-2xl font-bold mb-4">3. Disclaimer</Heading>
+            <Heading level={2} className="text-xl md:text-2xl font-bold mb-4">3. Disclaimer</Heading>
             <Text className="text-ink-soft mb-4">
               The materials on Quran.co.in are provided on an 'as is' basis. Quran.co.in makes no 
               warranties, expressed or implied, and hereby disclaims and negates all other warranties 
@@ -61,7 +61,7 @@ export default function TermsPage() {
           </section>
 
           <section className="mb-10">
-            <Heading level={2} className="text-2xl font-bold mb-4">4. Limitations</Heading>
+            <Heading level={2} className="text-xl md:text-2xl font-bold mb-4">4. Limitations</Heading>
             <Text className="text-ink-soft mb-4">
               In no event shall Quran.co.in or its suppliers be liable for any damages 
               (including, without limitation, damages for loss of data or profit, or due to 
@@ -71,7 +71,7 @@ export default function TermsPage() {
           </section>
 
           <section className="mb-10">
-            <Heading level={2} className="text-2xl font-bold mb-4">5. Accuracy of Materials</Heading>
+            <Heading level={2} className="text-xl md:text-2xl font-bold mb-4">5. Accuracy of Materials</Heading>
             <Text className="text-ink-soft mb-4">
               While we strive for 100% accuracy in our translations and recitations, the materials 
               appearing on Quran.co.in could include technical, typographical, or photographic errors. 
@@ -81,7 +81,7 @@ export default function TermsPage() {
           </section>
 
           <section className="mb-10">
-            <Heading level={2} className="text-2xl font-bold mb-4">6. Links</Heading>
+            <Heading level={2} className="text-xl md:text-2xl font-bold mb-4">6. Links</Heading>
             <Text className="text-ink-soft mb-4">
               Quran.co.in has not reviewed all of the sites linked to its website and is not 
               responsible for the contents of any such linked site. The inclusion of any link does 
@@ -90,7 +90,7 @@ export default function TermsPage() {
           </section>
 
           <section className="mb-10">
-            <Heading level={2} className="text-2xl font-bold mb-4">7. Modifications</Heading>
+            <Heading level={2} className="text-xl md:text-2xl font-bold mb-4">7. Modifications</Heading>
             <Text className="text-ink-soft mb-4">
               Quran.co.in may revise these terms of service for its website at any time without notice. 
               By using this website you are agreeing to be bound by the then current version 

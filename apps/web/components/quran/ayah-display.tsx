@@ -7,6 +7,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useSession } from '@/components/auth/auth-client';
 import { ChevronDown, ChevronRight, Sparkles, Loader2, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
+import { useReadingPreferences } from './reading-preferences';
 import { Card } from '@/components/ui/card';
 import { Text } from '@/components/ui/typography';
 import { Select } from '@/components/ui/atoms';
@@ -60,10 +61,14 @@ export function AyahDisplay({
 }: AyahDisplayProps) {
   const { data: session, status } = useSession();
   const [showTafsir, setShowTafsir] = useState(false);
-  const [showTranslit, setShowTranslit] = useState(false);
+  const [tafsirLoading, setTafsirLoading] = useState(false);
+  const [tafsirError, setTafsirError] = useState(false);
+  const reading = useReadingPreferences();
+  const [localTranslit, setShowTranslit] = useState(false);
+  const showTranslit = reading?.preferences.pronunciation ?? localTranslit;
 
   useEffect(() => {
-    if (localStorage.getItem(TRANSLIT_KEY) === 'true') setShowTranslit(true);
+    try { if (localStorage.getItem(TRANSLIT_KEY) === 'true') setShowTranslit(true); } catch { /* Optional preference. */ }
   }, []);
   const [tafsir, setTafsir] = useState<TafsirResponse | undefined>(initialTafsir);
 
@@ -107,7 +112,8 @@ export function AyahDisplay({
     } catch { /* silent */ }
     finally { setSimilarLoadingMore(false); }
   }, [ayah.surahNo, ayah.ayahNo, similarResults.length]);
-  const [selectedTranslation, setSelectedTranslation] = useState<TranslationLanguage>('english');
+  const [localTranslation, setSelectedTranslation] = useState<TranslationLanguage>('english');
+  const selectedTranslation = reading?.preferences.translation ?? localTranslation;
   const rootRef = useRef<HTMLDivElement | null>(null);
   const hasTrackedRef = useRef(false);
 
@@ -163,7 +169,7 @@ export function AyahDisplay({
   }, [status, session, ayah.surahNo, ayah.ayahNo]);
 
   useEffect(() => {
-    if (!isActive) return;
+    if (!isActive || reading?.preferences.autoScroll === false) return;
     const element = rootRef.current;
     if (!element) return;
 
@@ -172,7 +178,7 @@ export function AyahDisplay({
     }, 120);
 
     return () => window.clearTimeout(timer);
-  }, [isActive]);
+  }, [isActive, reading?.preferences.autoScroll]);
 
   const availableTranslations: TranslationLanguage[] = [];
   if (ayah.english) availableTranslations.push('english');
@@ -204,22 +210,20 @@ export function AyahDisplay({
     <div ref={rootRef} id={`ayah-${ayah.surahNo}-${ayah.ayahNo}`}>
       <Card 
         className={cn(
-          'relative border border-line bg-surface',
+          'relative border border-line bg-surface p-4 sm:p-6',
           'transition-colors duration-200',
           isActive && 'border-accent/40 bg-accent-soft/40 ring-1 ring-accent/25',
           className
         )}
       >
         <div className="space-y-4 md:space-y-5">
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             {showNumber ? (
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-gold-text">
                   {ayah.surahNo}:{ayah.ayahNo}
                 </p>
-                <p className="truncate text-xs text-ink-muted md:text-sm">
-                  {ayah.surahNameTranslation}
-                </p>
+
               </div>
             ) : (
               <div />
@@ -258,7 +262,7 @@ export function AyahDisplay({
           ) : words && words.length > 0 ? (
             <WordByWordText words={words} />
           ) : (
-          <p className="text-right font-arabic text-[1.9rem] leading-[2.1] text-ink md:text-[2.5rem] md:leading-[2.2]" dir="rtl" lang="ar">
+          <p style={{ fontSize: reading ? ({ regular: 30, large: 36, larger: 42 }[reading.preferences.arabicSize]) : undefined, overflowWrap: 'anywhere' }} className="text-right font-arabic text-[1.9rem] leading-[2.1] text-ink md:text-[2.5rem] md:leading-[2.2]" dir="rtl" lang="ar">
             {ayah.arabic1}
             <span className="inline-flex items-center justify-center align-middle mx-1.5">
               <span className="relative inline-flex items-center justify-center w-7 h-7 md:w-9 md:h-9">
@@ -280,8 +284,8 @@ export function AyahDisplay({
             </p>
           )}
 
-          <div className="space-y-3">
-            {hasMultipleTranslations && (
+          {selectedTranslation !== 'none' && <div className="space-y-2">
+            {!reading && hasMultipleTranslations && (
               <div className="max-w-[10rem]">
                 <Select
                   value={selectedTranslation}
@@ -295,10 +299,11 @@ export function AyahDisplay({
               </div>
             )}
 
-            <Text className="font-reading text-base leading-8 text-ink-soft md:text-lg md:leading-9">
-              {getCurrentTranslation()}
-            </Text>
-          </div>
+            {reading && <p className="text-[11px] font-medium text-muted">{languageNames[selectedTranslation as TranslationLanguage]}</p>}
+            <p lang={selectedTranslation === 'urdu' ? 'ur' : selectedTranslation === 'bengali' ? 'bn' : selectedTranslation === 'turkish' ? 'tr' : selectedTranslation === 'uzbek' ? 'uz' : 'en'} dir={selectedTranslation === 'urdu' ? 'rtl' : 'ltr'} className="font-reading text-[15px] leading-[1.9] text-ink-soft sm:text-base">
+              {getCurrentTranslation() || 'This translation is not available for this verse.'}
+            </p>
+          </div>}
 
           <div className="border-t border-line-soft pt-3 space-y-2">
             {hasAudio && !showInlineAudioControl && (
@@ -314,15 +319,16 @@ export function AyahDisplay({
               />
             )}
 
-            {/* Action buttons row — equal columns */}
-            <div className="grid grid-cols-3 gap-1">
+            <details className="group">
+              <summary className="cursor-pointer py-2 text-xs font-medium text-accent-strong">Understand this verse</summary>
+            <div className="mt-2 flex flex-wrap gap-2">
               {/* Transliteration */}
-              {ayah.arabic2 ? (
+              {!reading && ayah.arabic2 ? (
                 <button
                   onClick={() => {
                     const next = !showTranslit;
                     setShowTranslit(next);
-                    localStorage.setItem(TRANSLIT_KEY, String(next));
+                    try { localStorage.setItem(TRANSLIT_KEY, String(next)); } catch { /* Session only. */ }
                   }}
                   className={cn(
                     'flex flex-col items-center gap-0.5 rounded-xl px-1 py-2 text-xs font-medium transition-colors duration-200',
@@ -335,30 +341,31 @@ export function AyahDisplay({
                   <span className="leading-none">Translit</span>
                   
                 </button>
-              ) : <div />}
+               ) : null}
 
               {/* Tafsir */}
               <button
+                disabled={tafsirLoading}
+                aria-expanded={showTafsir}
                 onClick={async () => {
-                  if (!showTafsir && !tafsir) {
-                    try {
-                      const response = await fetch(
-                        backendUrl(`/api/quran/tafsir/${ayah.surahNo}/${ayah.ayahNo}`)
-                      );
-                      if (response.ok) {
-                        const data = await response.json();
-                        setTafsir(data.tafsir);
-                      }
-                    } catch (error) {
-                      console.error('Error fetching tafsir:', error);
-                    }
-                  }
-                  setShowTafsir(!showTafsir);
+                  if (showTafsir) { setShowTafsir(false); return; }
+                  setShowTafsir(true);
+                  if (tafsir) return;
+                  setTafsirLoading(true);
+                  setTafsirError(false);
+                  try {
+                    const response = await fetch(backendUrl(`/api/quran/tafsir/${ayah.surahNo}/${ayah.ayahNo}`));
+                    if (!response.ok) throw new Error('Unable to load explanation');
+                    const data = await response.json();
+                    if (!data.tafsir?.tafsirs?.length) throw new Error('No explanation available');
+                    setTafsir(data.tafsir);
+                  } catch { setTafsirError(true); }
+                  finally { setTafsirLoading(false); }
                 }}
                 className="flex flex-col items-center gap-0.5 rounded-xl px-1 py-2 text-xs font-medium text-ink-muted transition-colors duration-200 hover:bg-accent-soft/50 hover:text-ink"
               >
                 {showTafsir ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                <span className="leading-none">Tafsir</span>
+                <span className="leading-none">Explanation (tafsir)</span>
               </button>
 
               {/* Similar verses */}
@@ -374,11 +381,13 @@ export function AyahDisplay({
                   : showSimilar
                     ? <ChevronDown className="h-4 w-4" />
                     : <Sparkles className="h-4 w-4" />}
-                <span className="leading-none">Similar</span>
+                <span className="leading-none">Related verses</span>
               </button>
             </div>
-          </div>
 
+
+          {showTafsir && tafsirLoading && <p role="status" className="py-3 text-sm text-muted">Loading explanation…</p>}
+          {showTafsir && tafsirError && <p role="status" className="py-3 text-sm text-muted">The explanation could not be loaded. Close and reopen it to try again.</p>}
           {showTafsir && tafsir && (
             <TafsirDisplay tafsir={tafsir} className="mt-2 md:mt-4" />
           )}
@@ -399,6 +408,7 @@ export function AyahDisplay({
                   ))}
                 </div>
               )}
+              {!similarLoading && similarResults.length === 0 && <p role="status" className="px-3 py-4 text-sm text-muted">No related verses are available right now. Try again later.</p>}
               {!similarLoading && similarResults.length > 0 && (
                 <>
                   <ul className="divide-y divide-line-soft">
@@ -444,6 +454,8 @@ export function AyahDisplay({
               )}
             </div>
           )}
+            </details>
+          </div>
         </div>
       </Card>
     </div>

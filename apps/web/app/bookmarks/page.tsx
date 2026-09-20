@@ -146,14 +146,14 @@ export default function BookmarksPage() {
     <BookmarksProvider>
       <main className="min-h-screen bg-paper">
         <Container>
-          <div className="mx-auto max-w-2xl py-8 md:py-12">
+          <div className="mx-auto max-w-2xl py-6 md:py-10">
             <div className="mb-7">
               <div className="mb-2 flex items-center gap-3">
                 <div className="grid h-10 w-10 place-items-center rounded-full bg-tint-sun text-ink-soft">
                   <Bookmark className="h-5 w-5" strokeWidth={1.6} />
                 </div>
-                <Heading level={1} className="font-heading text-[clamp(24px,3vw,32px)] font-bold tracking-[-0.035em] text-ink">
-                  My Bookmarks
+                <Heading level={1} className="font-heading text-[24px] md:text-[30px] font-bold tracking-[-0.035em] text-ink">
+                  Saved verses
                 </Heading>
               </div>
               <Text className="text-[13px] leading-[1.7] text-muted">

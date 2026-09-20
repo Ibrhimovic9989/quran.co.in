@@ -94,20 +94,20 @@ export default function ContactPage() {
   const errorClass = 'border-red-300 focus:ring-red-100';
 
   return (
-    <main className="min-h-screen bg-paper pb-16 pt-10 md:pt-14">
+    <main className="min-h-screen bg-paper pb-12 pt-6 md:pt-10">
       <Container>
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
           {/* Left: Contact Info */}
           <div>
-            <Heading level={1} className="font-heading text-[clamp(28px,3.6vw,40px)] font-bold leading-[1.2] tracking-[-0.035em] text-ink">
+            <Heading level={1} className="font-heading text-[24px] md:text-[30px] font-bold leading-[1.2] tracking-[-0.035em] text-ink">
               Get in Touch
             </Heading>
-            <Text className="mb-10 mt-3.5 max-w-lg text-[15px] leading-[1.75] text-muted">
+            <Text className="mb-5 mt-3 max-w-lg text-[15px] leading-[1.75] text-muted">
               Have questions, feedback, or want to report an issue? We&apos;d love to hear from you.
               Our team typically responds within 24–48 hours.
             </Text>
 
-            <div className="space-y-4">
+            <details className="rounded-xl border border-line p-4"><summary className="cursor-pointer text-sm font-medium text-muted">Other ways to reach us</summary><div className="mt-4 space-y-4">
               <div className="flex gap-4 rounded-2xl border border-line bg-surface p-5">
                 <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-tint-sage text-ink-soft">
                   <Mail className="h-5 w-5" strokeWidth={1.6} />
@@ -144,7 +144,7 @@ export default function ContactPage() {
                   <Text className="mt-0.5 text-[11px] text-muted">Global Community — Serving from several regions</Text>
                 </div>
               </div>
-            </div>
+            </div></details>
           </div>
 
           {/* Right: Contact Form */}

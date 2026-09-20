@@ -37,7 +37,7 @@ export function SurahNavigation({
                 onClick={() => handleNavigation(`/quran/${prevSurahNo}`)}
               >
                 <ChevronLeft className="h-4 w-4" />
-                <span className="text-xs md:text-sm">Previous Surah ({prevSurahNo})</span>
+                <span className="text-xs md:text-sm">Previous · {prevSurahNo}</span>
               </Button>
             </div>
           ) : (
@@ -52,7 +52,7 @@ export function SurahNavigation({
                 className="w-full flex items-center justify-center gap-2"
                 onClick={() => handleNavigation(`/quran/${nextSurahNo}`)}
               >
-                <span className="text-xs md:text-sm">Next Surah ({nextSurahNo})</span>
+                <span className="text-xs md:text-sm">Next · {nextSurahNo}</span>
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
@@ -61,7 +61,9 @@ export function SurahNavigation({
           )}
         </div>
 
-        <div className="flex flex-1 gap-2 md:gap-3">
+        <details className="flex-1">
+          <summary className="cursor-pointer py-3 text-xs text-muted">Browse in revelation order</summary>
+          <div className="flex gap-2">
           {prevRevelationSurah ? (
             <div className="flex-1">
               <Button 
@@ -93,7 +95,8 @@ export function SurahNavigation({
           ) : (
             <div className="flex-1" />
           )}
-        </div>
+          </div>
+        </details>
       </div>
     </div>
   );

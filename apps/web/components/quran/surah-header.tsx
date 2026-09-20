@@ -1,6 +1,6 @@
 'use client';
 
-import { Heading, Text } from '@/components/ui/typography';
+import { ReadingPreferenceControls, type TranslationLanguage } from './reading-preferences';
 import { AudioPlayer } from './audio-player';
 import { ReciterSelector } from '@/components/ui/molecules';
 import { SurahViewModeToggle, type SurahDisplayMode } from './surah-view-mode-toggle';
@@ -49,39 +49,14 @@ export function SurahHeader({
   const revelation = getRevelationInfo(surah.surahNo);
 
   return (
-    <div className="mb-6 md:mb-10">
-      {/* ── Hero: the Arabic name is the star ─────────────────────────── */}
-      <div className="relative overflow-hidden rounded-2xl border border-line bg-accent-soft px-4 py-5 text-center md:py-6">
-        {/* girih texture, whisper-quiet, header only */}
-        <div className="girih-bg pointer-events-none absolute inset-0 opacity-[0.045]" aria-hidden />
-
-        <div className="relative">
-          {/* Quiet kicker line */}
-          <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.22em] text-gold-text md:mb-4 md:text-xs">
-            Sūrah {surah.surahNo}
-            <span className="mx-2 text-gold">✦</span>
-            {surah.revelationPlace === 'Mecca' ? 'Meccan' : 'Medinan'}
-            <span className="mx-2 text-gold">✦</span>
-            {surah.totalAyah} Āyāt
-          </p>
-
-          {/* THE Arabic name — mushaf script, generous scale */}
-          <p
-            lang="ar"
-            dir="rtl"
-            className="font-mushaf leading-[1.6] text-ink [font-size:2.5rem] md:[font-size:3.5rem]"
-          >
-            {surah.surahNameArabicLong}
-          </p>
-
-          {/* English identity — subordinate, warm serif */}
-          <Heading level={1} className="mt-2 font-reading text-lg font-medium text-ink-soft md:mt-3 md:text-xl">
-            {surah.surahName}
-            <span className="text-ink-muted"> — {surah.surahNameTranslation}</span>
-          </Heading>
-
-
+    <div className="mb-5 md:mb-7">
+      <div className="flex items-center justify-between gap-4 border-b border-line pb-5">
+        <div className="min-w-0">
+          <p className="text-xs text-muted">Chapter {surah.surahNo} · {surah.totalAyah} verses</p>
+          <h1 className="mt-2 font-heading text-[22px] font-bold tracking-tight text-ink sm:text-3xl">{surah.surahName}</h1>
+          <p className="mt-1 text-sm text-ink-soft">{surah.surahNameTranslation}</p>
         </div>
+        <p lang="ar" dir="rtl" className="max-w-[42%] break-words font-mushaf text-[28px] leading-[1.7] text-accent-strong sm:text-4xl">{surah.surahNameArabic}</p>
       </div>
 
       {/* ── Controls row: mode toggle + listen ────────────────────────── */}
@@ -92,8 +67,11 @@ export function SurahHeader({
             <AudioPlayer audioData={surah.audio} surahNo={surah.surahNo} selectedReciter={selectedReciter} onReciterChange={onReciterChange} enableSharedPlayback minimal />
           )}
           {mode === 'verse' && <details className="w-full rounded-xl border border-line bg-surface p-3">
-            <summary className="cursor-pointer text-xs font-semibold text-ink-soft">Reading options</summary>
-            <div className="mt-3 flex flex-wrap gap-2">
+            <summary className="cursor-pointer text-xs font-semibold text-ink-soft">Reading & audio settings</summary>
+            <div className="mt-4 grid gap-5 sm:grid-cols-2">
+              <ReadingPreferenceControls languages={(['english', 'bengali', 'urdu', 'turkish', 'uzbek'] as TranslationLanguage[]).filter(language => surah[language]?.some(Boolean))} />
+              <div className="flex flex-wrap content-start gap-2">
+                <h2 className="mb-1 w-full text-sm font-semibold text-ink">Listening & learning</h2>
               {hasAudio && <div className="flex w-full min-w-0 items-center gap-2">
                 <ReciterSelector audioData={surah.audio} selectedReciter={selectedReciter} onReciterChange={onReciterChange} minimal className="min-w-0 flex-1" />
                 <RepeatControl />
@@ -101,6 +79,7 @@ export function SurahHeader({
           {mode === 'verse' && onFocusToggle && (
             <button
               onClick={onFocusToggle}
+              aria-pressed={focusMode}
               title="Focus mode — dims everything but the ayah being recited"
               className={
                 focusMode
@@ -115,6 +94,7 @@ export function SurahHeader({
           {mode === 'verse' && onWordByWordToggle && (
             <button
               onClick={onWordByWordToggle}
+              aria-pressed={wordByWord}
               title="Word by word — tap any word to hear it and see its meaning"
               className={
                 wordByWord
@@ -129,6 +109,7 @@ export function SurahHeader({
           {mode === 'verse' && onTajweedToggle && (
             <button
               onClick={onTajweedToggle}
+              aria-pressed={tajweed}
               title="Tajwīd colors — tap any colored letter to learn its rule"
               className={
                 tajweed
@@ -155,6 +136,7 @@ export function SurahHeader({
                 <span title={APPROXIMATION_NOTE}>{PERIOD_LABELS[revelation.period]} · {revelation.yearCE} CE</span>
                 <RevelationLegendModal />
               </div>}
+              </div>
             </div>
           </details>}
         </div>

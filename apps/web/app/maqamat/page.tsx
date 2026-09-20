@@ -20,7 +20,7 @@ function feedbackFor(score: number): string {
 export default function MaqamatPage() {
   const [view, setView] = useState<View>({ t: 'hub' });
   return (
-    <main className="min-h-screen bg-paper pb-24 pt-8 md:pt-12">
+    <main className="min-h-screen bg-paper pb-12 pt-6 md:pt-10">
       <div className="mx-auto max-w-3xl px-4">
         {view.t === 'hub' && <Hub onOpen={(i) => setView({ t: 'lesson', i })} onCompare={() => setView({ t: 'compare' })} />}
         {view.t === 'lesson' && <Lesson lesson={MAQAM_LESSONS[view.i]} onBack={() => setView({ t: 'hub' })} />}
@@ -34,14 +34,13 @@ function Hub({ onOpen, onCompare }: { onOpen: (i: number) => void; onCompare: ()
   return (
     <>
       <p className="text-xs font-bold uppercase tracking-widest text-gold-text">The melodies of recitation</p>
-      <h1 className="mt-2 font-heading text-[clamp(28px,3.4vw,38px)] font-bold tracking-[-0.035em] text-ink">Maqāmāt</h1>
+      <h1 className="mt-2 font-heading text-[24px] md:text-[30px] font-bold tracking-[-0.035em] text-ink">Maqāmāt</h1>
       <p className="mt-3 max-w-2xl leading-relaxed text-ink-soft">
-        Maqāmāt are the melodies of recitation. Every reciter moves the voice through three levels — and
-        each maqām is a different path through them. Here you don’t just listen; you learn the shape.
+        Explore recitation styles. Listen, follow the melody, then practise.
       </p>
 
-      <div className="mt-6 rounded-2xl border border-line bg-accent-soft p-5">
-        <h2 className="font-heading text-[17px] font-bold tracking-[-0.025em] text-ink">The three registers</h2>
+      <details className="mt-5 rounded-xl border border-line bg-accent-soft p-4">
+        <summary className="cursor-pointer text-sm font-semibold text-ink">How the melody works</summary>
         <dl className="mt-3 space-y-2 text-sm">
           {[
             ['High', 'The peak — reaching out, the emotional climax.'],
@@ -57,7 +56,7 @@ function Hub({ onOpen, onCompare }: { onOpen: (i: number) => void; onCompare: ()
         <p className="mt-3 text-xs leading-relaxed text-ink-muted">
           A maqām climbs low → high, then resolves home. Its scale and path give it its feeling.
         </p>
-      </div>
+      </details>
 
       <p className="mt-8 text-xs font-bold uppercase tracking-widest text-gold-text">Lessons</p>
       <p className="mt-1 text-sm text-ink-muted">Each teaches one maqām on Sūrah Al-Fātiḥah — watch the shape, hear a master recite it.</p>
@@ -72,7 +71,7 @@ function Hub({ onOpen, onCompare }: { onOpen: (i: number) => void; onCompare: ()
               </div>
               <span className="font-arabic text-2xl text-gold-text" dir="rtl">{l.arabic}</span>
             </div>
-            <div className="mt-3"><MaqamRibbon phrases={l.phrases} height={96} /></div>
+            <div className="mt-3 hidden sm:block"><MaqamRibbon phrases={l.phrases} height={72} /></div>
             <div className="mt-3 flex items-center justify-between gap-3">
               <p className="text-sm text-ink-muted line-clamp-2">{l.shape}</p>
               <span className="shrink-0 text-sm font-semibold text-accent">Start →</span>
@@ -86,7 +85,7 @@ function Hub({ onOpen, onCompare }: { onOpen: (i: number) => void; onCompare: ()
         See the shapes side by side
       </button>
 
-      <p className="mt-10 text-xs font-bold uppercase tracking-widest text-gold-text">All eight modes</p>
+      <details className="mt-6 border-t border-line pt-4"><summary className="cursor-pointer text-sm font-medium text-muted">Explore all eight modes</summary>
       <p className="mt-1 text-sm text-ink-muted">The full teaching canon. More guided lessons coming.</p>
       <ul className="mt-3 space-y-3">
         {MAQAMAT.map((m) => (
@@ -99,9 +98,9 @@ function Hub({ onOpen, onCompare }: { onOpen: (i: number) => void; onCompare: ()
             <span className="font-arabic text-lg text-gold-text" dir="rtl">{m.arabic}</span>
           </li>
         ))}
-      </ul>
+      </ul></details>
 
-      <MaqamatSeoContent />
+      <details className="mt-4 border-t border-line pt-4"><summary className="cursor-pointer text-sm font-medium text-muted">About recitation styles & common questions</summary><MaqamatSeoContent /></details>
     </>
   );
 }
@@ -137,7 +136,7 @@ function MaqamatSeoContent() {
     })),
   };
   return (
-    <section className="mt-14 border-t border-line pt-10">
+    <section className="mt-5">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <h2 className="font-heading text-[22px] font-bold tracking-[-0.03em] text-ink">Learning the melodies of Qurʾān recitation</h2>
       <p className="mt-3 max-w-2xl leading-relaxed text-ink-soft">

@@ -34,6 +34,9 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
+  // Development bundles use stable URLs and must never be served from cache.
+  if (location.hostname === 'localhost' || location.hostname === '[::1]' || /^127\./.test(location.hostname)) return;
+
   // Skip non-GET and cross-origin
   if (request.method !== 'GET' || url.origin !== location.origin) return;
 

@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { ExternalLink, Loader2, ChevronLeft, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Loader2, Search, Circle, Compass, ShieldCheck, HandHeart, RotateCcw, Hourglass, Flower2, HeartHandshake, BadgeCheck, Scale, Wheat, BookOpen, UsersRound, Gift, Sprout, Sunrise, type LucideIcon } from 'lucide-react';
 import { QURAN_TOPICS, type QuranTopic } from '@/lib/data/quran-topics';
-import { cn } from '@/lib/utils/cn';
 import { backendUrl } from '@/lib/api/backend';
 
 interface TopicResult {
@@ -13,153 +12,88 @@ interface TopicResult {
   arabicText: string;
   translationText: string | null;
   englishName: string;
-  englishNameTranslation: string | null;
-  similarity: number;
+}
+const TOPIC_ICONS: Record<string, LucideIcon> = {
+  tawhid: Circle, salah: Compass, tawakkul: ShieldCheck, dua: HandHeart,
+  tawbah: RotateCcw, sabr: Hourglass, shukr: Flower2, forgiveness: HeartHandshake,
+  sidq: BadgeCheck, justice: Scale, rizq: Wheat, knowledge: BookOpen,
+  parents: UsersRound, charity: Gift, jannah: Sprout, akhirah: Sunrise,
+};
+
+function TopicIcon({ id }: { id: string }) {
+  const Icon = TOPIC_ICONS[id] ?? BookOpen;
+  return <Icon aria-hidden="true" size={19} strokeWidth={1.65} className="shrink-0 text-accent-strong" />;
 }
 
-// Category tiles carry the pastel voice — the tint is decoration, never the text.
-const TINTS = ['bg-tint-sage', 'bg-tint-sky', 'bg-tint-peach', 'bg-tint-sun', 'bg-tint-lavender'];
-const TINT_BY_ID = new Map(QURAN_TOPICS.map((t, i) => [t.id, TINTS[i % TINTS.length]]));
-const tintFor = (id: string) => TINT_BY_ID.get(id) ?? TINTS[0];
-
 export default function TopicsPage() {
-  const [activeTopic, setActiveTopic] = useState<QuranTopic | null>(null);
+  const [active, setActive] = useState<QuranTopic | null>(null);
+  const [query, setQuery] = useState('');
   const [results, setResults] = useState<TopicResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const resultsRef = useRef<HTMLDivElement>(null);
+  const [error, setError] = useState(false);
+  const request = useRef<AbortController | null>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
+  const backButton = useRef<HTMLButtonElement>(null);
+  useEffect(() => () => request.current?.abort(), []);
+  useEffect(() => { if (active) backButton.current?.focus(); }, [active]);
 
-  const loadTopic = useCallback(async (topic: QuranTopic) => {
-    setActiveTopic(topic);
-    setResults([]);
-    setLoading(true);
-    setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  async function loadTopic(topic: QuranTopic) {
+    request.current?.abort();
+    const controller = new AbortController();
+    request.current = controller;
+    setActive(topic); setResults([]); setLoading(true); setError(false);
     try {
-      const res = await fetch(
-        backendUrl(`/api/search/semantic?q=${encodeURIComponent(topic.query)}&limit=10`)
-      );
-      const data = await res.json();
-      setResults(data.results ?? []);
-    } catch { /* silent */ }
-    finally { setLoading(false); }
-  }, []);
-
+      const response = await fetch(backendUrl(`/api/search/semantic?q=${encodeURIComponent(topic.query)}&limit=10`), { signal: controller.signal });
+      if (!response.ok) throw new Error('Topic unavailable');
+      const data = await response.json();
+      if (!controller.signal.aborted) setResults(data.results ?? []);
+    } catch {
+      if (!controller.signal.aborted) setError(true);
+    } finally {
+      if (!controller.signal.aborted) setLoading(false);
+    }
+  }
+  const filtered = QURAN_TOPICS.filter(topic => `${topic.label} ${topic.arabic} ${topic.description}`.toLowerCase().includes(query.toLowerCase().trim()));
   return (
-    <div className="min-h-screen bg-paper">
-      <div className="mx-auto max-w-5xl px-4 py-8 md:py-12">
-
-        {/* Header */}
-        <div className="mb-7 md:mb-9">
-          <h1 className="font-heading text-[clamp(26px,3.2vw,34px)] font-bold leading-[1.2] tracking-[-0.035em] text-ink">
-            Explore by Topic
-          </h1>
-          <p className="mt-3 max-w-xl text-[15px] leading-[1.7] text-muted">
-            Browse Quranic ayahs organized by theme. Powered by semantic search across all 6,236 verses.
-          </p>
-        </div>
-
-        {/* Topic grid */}
-        <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-          {QURAN_TOPICS.map((topic) => (
-            <button
-              key={topic.id}
-              onClick={() => loadTopic(topic)}
-              className={cn(
-                'rounded-2xl border border-line p-4 text-left text-ink transition-all duration-200',
-                'hover:shadow-card',
-                tintFor(topic.id),
-                activeTopic?.id === topic.id && 'border-accent/40 shadow-card'
-              )}
-            >
-              <div className="mb-2 text-2xl">{topic.emoji}</div>
-              <div className="font-heading text-[13px] font-bold leading-tight tracking-[-0.02em]">{topic.label}</div>
-              <div className="font-arabic text-sm opacity-70 mt-0.5">{topic.arabic}</div>
-              <div className="mt-1 text-[11px] leading-tight text-ink-soft">{topic.description}</div>
-            </button>
-          ))}
-        </div>
-
-        {/* Results panel */}
-        {activeTopic && (
-          <div ref={resultsRef} className="overflow-hidden rounded-2xl border border-line bg-surface">
-            {/* Panel header */}
-            <div className={cn('flex items-center justify-between border-b border-line px-5 py-4 text-ink', tintFor(activeTopic.id))}>
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">{activeTopic.emoji}</span>
-                <div>
-                  <h2 className="font-heading text-[15px] font-bold leading-tight tracking-[-0.02em]">
-                    {activeTopic.label}
-                    <span className="font-arabic ml-2 font-normal opacity-70">{activeTopic.arabic}</span>
-                  </h2>
-                  <p className="mt-0.5 text-[11px] text-ink-soft">{activeTopic.description}</p>
-                </div>
-              </div>
-              <button
-                onClick={() => { setActiveTopic(null); setResults([]); }}
-                className="rounded-full p-1.5 text-ink-soft transition-colors hover:bg-surface/60"
-                aria-label="Close"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            {/* Loading */}
-            {loading && (
-              <div className="flex flex-col items-center justify-center gap-3 py-16">
-                <Loader2 className="h-5 w-5 animate-spin text-accent" />
-                <p className="text-[13px] text-muted">Finding the most relevant ayahs…</p>
-              </div>
-            )}
-
-            {/* Results */}
-            {!loading && results.length > 0 && (
-              <ul className="divide-y divide-line-soft">
-                {results.map((r, i) => (
-                  <li key={`${r.surahNumber}:${r.ayahNumber}`}>
-                    <Link
-                      href={`/quran/${r.surahNumber}`}
-                      className="group flex gap-4 px-5 py-4 transition-colors hover:bg-surface-warm"
-                    >
-                      {/* Rank */}
-                      <div className="w-6 shrink-0 text-center">
-                        <span className="font-heading text-[11px] font-bold text-muted">{i + 1}</span>
-                      </div>
-
-                      {/* Content */}
-                      <div className="min-w-0 flex-1 space-y-1.5">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-[11px] font-semibold text-muted">
-                            {r.englishName}
-                            {r.englishNameTranslation && (
-                              <span className="font-normal text-muted"> · {r.englishNameTranslation}</span>
-                            )}
-                            <span className="ml-2 font-bold text-accent-strong">{r.surahNumber}:{r.ayahNumber}</span>
-                          </span>
-                          <div className="flex shrink-0 items-center gap-1">
-                            <span className="text-[10px] text-muted">{Math.round(r.similarity * 100)}%</span>
-                            <ExternalLink className="h-3 w-3 text-muted transition-colors group-hover:text-accent" />
-                          </div>
-                        </div>
-                        <p lang="ar" dir="rtl" className="font-arabic text-right text-lg leading-relaxed text-ink">
-                          {r.arabicText}
-                        </p>
-                        {r.translationText && (
-                          <p className="text-[13px] leading-[1.75] text-ink-soft">{r.translationText}</p>
-                        )}
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {!loading && results.length === 0 && (
-              <div className="py-12 text-center text-[13px] text-muted">
-                No results found. Try another topic.
-              </div>
-            )}
+    <main className="min-h-screen bg-paper">
+      <div className="mx-auto max-w-3xl px-4 py-6 md:py-10">
+        <h1 ref={heading} tabIndex={-1} className="font-heading text-2xl font-bold tracking-tight text-ink md:text-3xl">Explore topics</h1>
+        <p className="mt-2 text-sm leading-relaxed text-muted">Find verses about what matters to you.</p>
+        {!active ? <>
+          <label className="relative mt-5 block">
+            <span className="sr-only">Find a topic</span>
+            <Search aria-hidden="true" className="absolute left-3 top-3 h-4 w-4 text-muted" />
+            <input value={query} onChange={event => setQuery(event.target.value)} placeholder="Find a topic" className="h-11 w-full rounded-xl border border-line bg-surface pl-10 pr-3 text-sm text-ink" />
+          </label>
+          <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {filtered.map((topic) => <button key={topic.id} onClick={() => void loadTopic(topic)} className="flex min-h-16 items-center gap-2 rounded-xl border border-line bg-surface p-3 text-left transition-colors hover:border-accent/40">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-accent-soft/60"><TopicIcon id={topic.id} /></span>
+              <span className="text-[13px] font-semibold leading-snug text-ink">{topic.label}</span>
+            </button>)}
           </div>
-        )}
+          {filtered.length === 0 && <p role="status" className="py-8 text-center text-sm text-muted">No topics match. Try another word.</p>}
+        </> : <section className="mt-5">
+          <button ref={backButton} onClick={() => { request.current?.abort(); setActive(null); requestAnimationFrame(() => heading.current?.focus()); }} className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-accent-strong"><ArrowLeft size={16} /> All topics</button>
+          <div className="mb-4 rounded-xl bg-accent-soft p-4">
+            <h2 className="flex items-center gap-2.5 text-lg font-semibold text-ink"><TopicIcon id={active.id} />{active.label}</h2>
+            <p className="mt-1 text-sm leading-relaxed text-ink-soft">{active.description}</p>
+          </div>
+          <div aria-live="polite">
+            {loading && <p role="status" className="flex items-center justify-center gap-2 py-12 text-sm text-muted"><Loader2 size={18} className="animate-spin" /> Finding verses…</p>}
+            {error && <div className="rounded-xl border border-line bg-surface p-5 text-sm text-muted"><p>We couldn’t load these verses.</p><button onClick={() => void loadTopic(active)} className="mt-3 min-h-11 font-semibold text-accent-strong">Try again</button></div>}
+            {!loading && !error && results.length === 0 && <p className="py-8 text-sm text-muted">No verses found. Try another topic.</p>}
+          </div>
+          <ul className="space-y-3">
+            {results.map(result => <li key={`${result.surahNumber}:${result.ayahNumber}`}>
+              <Link href={`/quran/${result.surahNumber}?ayah=${result.ayahNumber}`} className="block rounded-2xl border border-line bg-surface p-4 hover:border-accent/40">
+                <div className="flex items-center justify-between gap-3 text-xs font-semibold text-accent-strong"><span>{result.englishName} · {result.surahNumber}:{result.ayahNumber}</span><ArrowRight aria-hidden="true" size={14} /></div>
+                <p lang="ar" dir="rtl" className="mt-4 break-words font-arabic text-2xl leading-loose text-ink">{result.arabicText}</p>
+                {result.translationText && <p className="mt-3 text-sm leading-relaxed text-ink-soft">{result.translationText}</p>}
+              </Link>
+            </li>)}
+          </ul>
+        </section>}
       </div>
-    </div>
+    </main>
   );
 }

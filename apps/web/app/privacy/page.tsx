@@ -22,11 +22,11 @@ export default function PrivacyPage() {
     <main className="min-h-screen bg-surface pt-32 pb-20">
       <Container>
         <div className="max-w-3xl mx-auto prose prose-gray">
-          <Heading level={1} className="text-4xl font-bold mb-4">Privacy Policy</Heading>
+          <Heading level={1} className="text-2xl md:text-3xl font-bold mb-4">Privacy Policy</Heading>
           <Text className="text-sm text-muted mb-12 italic">Last updated: {lastUpdated}</Text>
 
           <section className="mb-10">
-            <Heading level={2} className="text-2xl font-bold mb-4">1. Introduction</Heading>
+            <Heading level={2} className="text-xl md:text-2xl font-bold mb-4">1. Introduction</Heading>
             <Text className="text-ink-soft mb-4">
               At Quran.co.in, we respect your privacy and are committed to protecting your personal data. 
               This privacy policy will inform you as to how we look after your personal data when you visit 
@@ -35,7 +35,7 @@ export default function PrivacyPage() {
           </section>
 
           <section className="mb-10">
-            <Heading level={2} className="text-2xl font-bold mb-4">2. The Data We Collect</Heading>
+            <Heading level={2} className="text-xl md:text-2xl font-bold mb-4">2. The Data We Collect</Heading>
             <Text className="text-ink-soft mb-4">
               We may collect, use, store and transfer different kinds of personal data about you which 
               we have grouped together as follows:
@@ -49,7 +49,7 @@ export default function PrivacyPage() {
           </section>
 
           <section className="mb-10">
-            <Heading level={2} className="text-2xl font-bold mb-4">3. How We Use Your Data</Heading>
+            <Heading level={2} className="text-xl md:text-2xl font-bold mb-4">3. How We Use Your Data</Heading>
             <Text className="text-ink-soft mb-4">
               We will only use your personal data when the law allows us to. Most commonly, we will use your 
               personal data in the following circumstances:
@@ -63,7 +63,7 @@ export default function PrivacyPage() {
           </section>
 
           <section className="mb-10">
-            <Heading level={2} className="text-2xl font-bold mb-4">4. Data Security</Heading>
+            <Heading level={2} className="text-xl md:text-2xl font-bold mb-4">4. Data Security</Heading>
             <Text className="text-ink-soft mb-4">
               We have put in place appropriate security measures to prevent your personal data from being 
               accidentally lost, used or accessed in an unauthorized way, altered or disclosed. 
@@ -73,7 +73,7 @@ export default function PrivacyPage() {
           </section>
 
           <section className="mb-10">
-            <Heading level={2} className="text-2xl font-bold mb-4">5. Data Retention</Heading>
+            <Heading level={2} className="text-xl md:text-2xl font-bold mb-4">5. Data Retention</Heading>
             <Text className="text-ink-soft mb-4">
               We will only retain your personal data for as long as necessary to fulfill the purposes we 
               collected it for, including for the purposes of satisfying any legal, accounting, or 
@@ -82,7 +82,7 @@ export default function PrivacyPage() {
           </section>
 
           <section className="mb-10">
-            <Heading level={2} className="text-2xl font-bold mb-4">6. Your Legal Rights</Heading>
+            <Heading level={2} className="text-xl md:text-2xl font-bold mb-4">6. Your Legal Rights</Heading>
             <Text className="text-ink-soft mb-4">
               Under certain circumstances, you have rights under data protection laws in relation to your 
               personal data, including the right to request access, correction, erasure, or restriction of 

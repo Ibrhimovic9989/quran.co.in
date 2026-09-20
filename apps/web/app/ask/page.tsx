@@ -429,13 +429,10 @@ export default function AskPage() {
 
         {/* Header */}
         <div className="mb-6">
-          <div className="mb-4 grid h-11 w-11 place-items-center rounded-full bg-accent-soft text-accent">
-            <Sparkles className="h-5 w-5" strokeWidth={1.6} />
-          </div>
-          <h1 className="font-heading text-[clamp(26px,3.2vw,34px)] font-bold leading-[1.2] tracking-[-0.035em] text-ink">Ask the Quran</h1>
+          <h1 className="font-heading text-[24px] md:text-[30px] font-bold leading-[1.2] tracking-[-0.035em] text-ink">Ask the Quran</h1>
           <p className="mt-3 max-w-xl text-[15px] leading-[1.7] text-muted">
             {mode === 'focused'
-              ? 'Get answers grounded in semantically matched ayahs — every response is cited.'
+              ? 'Explore a question with references to Quranic verses.'
               : 'Ask about any surah, ayah, or topic. The full Quran is open to you.'}
           </p>
         </div>
@@ -444,6 +441,7 @@ export default function AskPage() {
         <div className="mb-7 flex">
           <div className="inline-flex items-center gap-1 rounded-full border border-line bg-surface p-1">
             <button
+              aria-pressed={mode === 'focused'}
               onClick={() => switchMode('focused')}
               className={cn(
                 'inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition-all',
@@ -453,6 +451,7 @@ export default function AskPage() {
               <Focus className="h-3.5 w-3.5" /> Focused
             </button>
             <button
+              aria-pressed={mode === 'open'}
               onClick={() => switchMode('open')}
               className={cn(
                 'inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition-all',
@@ -470,18 +469,8 @@ export default function AskPage() {
           {/* Suggested questions */}
           {messages.length === 0 && (
             <>
-              <div className={cn(
-                'mb-4 w-fit rounded-full border px-3 py-1.5 text-[11px] font-medium',
-                mode === 'focused'
-                  ? 'border-line bg-accent-soft text-accent-strong'
-                  : 'border-gold-soft bg-gold-soft text-gold-text'
-              )}>
-                {mode === 'focused'
-                  ? 'Answers are drawn from semantically related ayahs'
-                  : 'Ask about any specific ayah, surah, or Quranic topic'}
-              </div>
               <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                {SUGGESTED[mode].map((s) => (
+                {SUGGESTED[mode].slice(0, 4).map((s) => (
                   <button
                     key={s}
                     onClick={() => ask(s)}
@@ -597,7 +586,7 @@ export default function AskPage() {
 
         {/* Input — fixed to viewport so it's always visible.
             On mobile, lift above the bottom tab bar (~3.5rem + safe-area); flush on md+. */}
-        <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] md:bottom-0 left-0 right-0 z-40 bg-gradient-to-t from-paper via-paper/95 to-transparent px-4 pb-4 pt-2">
+        <div className="fixed bottom-0 pb-[max(1rem,env(safe-area-inset-bottom))] left-0 right-0 z-40 bg-gradient-to-t from-paper via-paper/95 to-transparent px-4 pb-4 pt-2">
           <div className="mx-auto max-w-3xl">
           <div className={cn(
             'overflow-hidden rounded-2xl border bg-surface shadow-card transition-all',
@@ -606,6 +595,7 @@ export default function AskPage() {
               : 'border-line focus-within:border-gold/50 focus-within:ring-2 focus-within:ring-gold-soft'
           )}>
             <textarea
+              aria-label="Your question"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -619,8 +609,8 @@ export default function AskPage() {
               rows={2}
               className="w-full resize-none bg-transparent px-4 pb-2 pt-4 text-[14px] text-ink placeholder:text-muted focus:outline-none"
             />
-            <div className="flex items-center justify-between px-3 pb-3">
-              <p className="text-[11px] text-muted">Enter to send · Shift+Enter for new line</p>
+            <div className="flex items-center justify-end gap-3 px-3 pb-3 sm:justify-between">
+              <p className="hidden text-[11px] text-muted sm:block">Enter to send · Shift+Enter for new line</p>
               <button
                 onClick={() => (signedIn ? ask(input) : signIn('google', { callbackUrl: '/ask' }))}
                 disabled={loading || (signedIn && !input.trim())}

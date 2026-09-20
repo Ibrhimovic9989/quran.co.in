@@ -129,11 +129,11 @@ export default function ProfilePage() {
 
   return (
     <main className="min-h-screen bg-paper">
-      <Container>
+      <Container className="max-w-3xl">
         <div className="py-6 md:py-12">
           {/* Header */}
           <div className="mb-7">
-            <Heading level={1} className="font-heading text-[clamp(26px,3.2vw,34px)] font-bold tracking-[-0.035em] text-ink">
+            <Heading level={1} className="font-heading text-[24px] md:text-[30px] font-bold tracking-[-0.035em] text-ink">
               Profile
             </Heading>
             <Text className="mt-2 text-[13px] leading-[1.7] text-muted">
@@ -148,7 +148,7 @@ export default function ProfilePage() {
               <div className="flex items-start gap-4 md:gap-6 mb-6">
                 {/* Avatar */}
                 <div className="flex-shrink-0">
-                  <div className={`flex h-16 w-16 items-center justify-center rounded-full border border-line ${avatarColor} md:h-20 md:w-20`}>
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-full border border-line ${avatarColor} md:h-20 md:w-20`}>
                     {session.user.image ? (
                       <img
                         src={session.user.image}
@@ -189,7 +189,7 @@ export default function ProfilePage() {
                       <Mail className="h-4 w-4 text-accent" strokeWidth={1.7} />
                       <div>
                         <Text className="text-[13px] font-semibold text-ink">Email</Text>
-                        <Text className="text-[11px] text-muted">{session.user.email}</Text>
+                        <Text className="break-all text-[13px] text-muted">{session.user.email}</Text>
                       </div>
                     </div>
                   </div>
@@ -223,7 +223,7 @@ export default function ProfilePage() {
           <Card className="rounded-2xl border border-line bg-surface p-0 shadow-none">
             <div className="p-5 md:p-6">
               <Heading level={3} className="mb-4 font-heading text-[17px] font-bold tracking-[-0.025em] text-ink">
-                Account Actions
+                Account
               </Heading>
               <div className="space-y-3">
                 <Button

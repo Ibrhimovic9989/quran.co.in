@@ -29,7 +29,7 @@ export function Heading({
 }: HeadingProps) {
   const baseClasses = 'font-heading text-ink font-semibold tracking-[-0.025em]';
   const levelClasses = {
-    1: 'text-3xl md:text-4xl leading-tight',
+    1: 'text-2xl md:text-3xl leading-tight',
     2: 'text-2xl md:text-3xl leading-tight',
     3: 'text-xl leading-snug',
     4: 'text-lg leading-snug',

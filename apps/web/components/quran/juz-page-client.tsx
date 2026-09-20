@@ -13,6 +13,7 @@ import { Heading, Text } from "@/components/ui/typography";
 import { Button, Spinner } from "@/components/ui/atoms";
 import { LoadingMessage } from "@/components/ui/loading-message";
 import { ReciterSelector } from "@/components/ui/molecules";
+import { ReadingPreferencesProvider, ReadingPreferenceControls, type TranslationLanguage } from "./reading-preferences";
 import { AyahDisplay } from "./ayah-display";
 import { BookmarksProvider } from "./bookmarks-provider";
 import { cn } from "@/lib/utils/cn";
@@ -149,8 +150,8 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
     : [];
 
   return (
-    <BookmarksProvider>
-      <Container>
+    <ReadingPreferencesProvider><BookmarksProvider>
+      <Container className="max-w-3xl">
         <div className="py-6 md:py-12">
         {/* Header - Mobile optimized */}
         <div className="mb-6 md:mb-8">
@@ -179,14 +180,15 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
 
           {/* Reciter Selection - Mobile optimized */}
           {availableReciters.length > 0 && (
-            <div className="rounded-2xl border border-line bg-surface p-3 md:p-4">
+            <details className="rounded-xl border border-line bg-surface p-4"><summary className="cursor-pointer text-sm font-medium text-ink-soft">Reading & audio settings</summary><div className="mt-4 space-y-4">
+              <ReadingPreferenceControls languages={(["english", "bengali", "urdu", "turkish", "uzbek"] as TranslationLanguage[]).filter(language => ayahs.some(ayah => Boolean(ayah[language])))} />
               <ReciterSelector
                 audioData={ayahs.length > 0 ? ayahs[0].audio : {}}
                 selectedReciter={selectedReciter}
                 onReciterChange={setSelectedReciter}
                 className="max-w-md"
               />
-            </div>
+            </div></details>
           )}
         </div>
 
@@ -297,7 +299,7 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
                     }}
                   >
                     <ChevronLeft className="w-4 h-4" />
-                    <span className="text-xs md:text-sm">Previous Juz ({juzNumber - 1})</span>
+                    <span className="text-xs md:text-sm">Previous · {juzNumber - 1}</span>
                   </Button>
                 </div>
               ) : (
@@ -315,7 +317,7 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
                       setTimeout(() => window.scrollTo(0, 0), 100);
                     }}
                   >
-                    <span className="text-xs md:text-sm">Next Juz ({juzNumber + 1})</span>
+                    <span className="text-xs md:text-sm">Next · {juzNumber + 1}</span>
                     <ChevronRight className="w-4 h-4" />
                   </Button>
                 </div>
@@ -327,6 +329,6 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
         )}
         </div>
       </Container>
-    </BookmarksProvider>
+    </BookmarksProvider></ReadingPreferencesProvider>
   );
 }

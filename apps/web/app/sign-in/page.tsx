@@ -85,7 +85,7 @@ function SignInContent() {
             <div className="space-y-5 p-6 md:p-8">
               {/* Header - Mobile optimized */}
               <div className="space-y-2">
-                <Heading level={1} className="font-heading text-[clamp(24px,3vw,32px)] font-bold leading-[1.2] tracking-[-0.035em] text-ink">
+                <Heading level={1} className="font-heading text-[24px] md:text-[30px] font-bold leading-[1.2] tracking-[-0.035em] text-ink">
                   Welcome Back
                 </Heading>
                 <Text className="text-[13px] leading-[1.7] text-muted">

@@ -1,5 +1,6 @@
 'use client';
 
+import { useReadingPreferences } from './reading-preferences';
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { ChevronDown, ChevronUp, Play, Maximize2, X, Bookmark, BookmarkCheck, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
@@ -118,6 +119,7 @@ export function SurahReadingView({
   });
 
   const sharedPlayback = useOptionalSurahPlayback();
+  const readingPreferences = useReadingPreferences();
   const { info } = useToast();
   const { isBookmarked, toggle: toggleBookmark } = useBookmarks();
   const [selectedAyahNo, setSelectedAyahNo] = useState<number | null>(null);
@@ -172,12 +174,12 @@ export function SurahReadingView({
   // Scroll active ayah into view
   useEffect(() => {
     const activeAyah = sharedPlayback?.activeAyahNumber;
-    if (!activeAyah) return;
+    if (!activeAyah || readingPreferences?.preferences.autoScroll === false) return;
     const el = document.getElementById(`ayah-${surahNumber}-${activeAyah}`);
     if (!el) return;
     const t = window.setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 120);
     return () => window.clearTimeout(t);
-  }, [sharedPlayback?.activeAyahNumber, surahNumber]);
+  }, [sharedPlayback?.activeAyahNumber, surahNumber, readingPreferences?.preferences.autoScroll]);
 
   const controlsBar = (
     <div className="mb-4 flex flex-wrap items-center gap-2">

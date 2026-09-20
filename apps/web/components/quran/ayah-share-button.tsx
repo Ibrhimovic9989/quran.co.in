@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Code2, Copy, Facebook, Link2, MessageCircle, Send, Share2, X, XIcon } from 'lucide-react';
 import { Button } from '@/components/ui/atoms';
@@ -44,6 +44,7 @@ export function AyahShareButton({
   translationText,
   iconOnly = false,
 }: AyahShareButtonProps) {
+  const dialogRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [copyMessage, setCopyMessage] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
@@ -81,7 +82,16 @@ export function AyahShareButton({
   useEffect(() => {
     if (!isOpen) return;
 
+    const previousFocus = document.activeElement as HTMLElement | null;
+    dialogRef.current?.querySelector<HTMLButtonElement>('button')?.focus();
     const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Tab') {
+        const controls = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], input, select, textarea, [tabindex="0"]') || []).filter(element => element.getClientRects().length > 0);
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      }
       if (event.key === 'Escape') {
         setIsOpen(false);
       }
@@ -94,6 +104,7 @@ export function AyahShareButton({
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', onKeyDown);
+      previousFocus?.focus();
     };
   }, [isOpen]);
 
@@ -217,7 +228,8 @@ export function AyahShareButton({
             onClick={closeDialog}
           >
             <div
-              className="relative max-h-[85vh] w-full overflow-y-auto rounded-t-[1.75rem] border border-line bg-surface px-4 pb-5 pt-4 shadow-card-hover md:mx-auto md:max-h-[calc(100vh-2rem)] md:max-w-2xl md:rounded-[2rem] md:px-8 md:pb-8 md:pt-8"
+              ref={dialogRef}
+              className="relative max-h-[85dvh] w-full overflow-y-auto rounded-t-[1.75rem] border border-line bg-surface px-4 pb-5 pt-4 shadow-card-hover md:mx-auto md:max-h-[calc(100vh-2rem)] md:max-w-2xl md:rounded-[2rem] md:px-8 md:pb-8 md:pt-8"
               onClick={(event) => event.stopPropagation()}
             >
               <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-line md:hidden" />
@@ -231,8 +243,8 @@ export function AyahShareButton({
               </button>
 
               <div className="mx-auto max-w-xl text-center">
-                <h2 className="pr-10 font-heading text-xl font-bold tracking-[-0.025em] text-ink md:pr-0 md:text-3xl">
-                  Send this Ayah
+                <h2 className="pr-10 font-heading text-lg font-bold tracking-[-0.025em] text-ink md:pr-0 md:text-2xl">
+                  Share this verse
                 </h2>
                 <p className="mt-1 text-[11px] uppercase tracking-[0.16em] text-ink-muted md:mt-3 md:text-xs">
                   {shareTitle}

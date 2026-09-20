@@ -6,6 +6,7 @@
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { ReadingPreferencesProvider } from './reading-preferences';
 import { Container } from '@/components/ui/container';
 import { Text } from '@/components/ui/typography';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
@@ -123,16 +124,16 @@ export function SurahDisplay({ surah, mushafPage = null, tafsirs }: SurahDisplay
   const [visibleAyahs, setVisibleAyahs] = useState(Math.min(INITIAL_AYAHS, surah.totalAyah, surah.english.length));
   const [isLoading, setIsLoading] = useState(false);
   const RECITER_KEY = 'preferred-reciter';
-  const [selectedReciter, setSelectedReciter] = useState<string | null>(() => {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem(RECITER_KEY) ?? null;
-  });
-
+  const [selectedReciter, setSelectedReciter] = useState<string | null>(() => Object.keys(surah.audio || {})[0] || null);
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(RECITER_KEY);
+      if (saved && surah.audio?.[saved]) setSelectedReciter(saved);
+    } catch { /* The default reciter remains usable without storage. */ }
+  }, [surah.audio]);
   const handleReciterChange = useCallback((reciterId: string) => {
     setSelectedReciter(reciterId);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(RECITER_KEY, reciterId);
-    }
+    try { localStorage.setItem(RECITER_KEY, reciterId); } catch { /* Session only. */ }
   }, []);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const hasScrolledRef = useRef(false);
@@ -382,6 +383,7 @@ export function SurahDisplay({ surah, mushafPage = null, tafsirs }: SurahDisplay
   }, [surah.surahNo]);
 
   return (
+    <ReadingPreferencesProvider>
     <BookmarksProvider>
       <SurahPlaybackProvider surahNo={surah.surahNo} totalAyahs={surah.totalAyah}>
         <Container className="max-w-[960px]">
@@ -473,5 +475,6 @@ export function SurahDisplay({ surah, mushafPage = null, tafsirs }: SurahDisplay
         </Container>
       </SurahPlaybackProvider>
     </BookmarksProvider>
+    </ReadingPreferencesProvider>
   );
 }

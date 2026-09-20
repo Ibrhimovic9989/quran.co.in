@@ -40,11 +40,11 @@ export default function FAQPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <main className="min-h-screen bg-paper pb-16 pt-10 md:pt-14">
+    <main className="min-h-screen bg-paper pb-12 pt-6 md:pt-10">
       <Container>
         <div className="mx-auto max-w-3xl">
           <div className="mb-8 md:mb-10">
-            <Heading level={1} className="font-heading text-[clamp(28px,3.6vw,40px)] font-bold leading-[1.2] tracking-[-0.035em] text-ink">Frequently Asked Questions</Heading>
+            <Heading level={1} className="font-heading text-[24px] md:text-[30px] font-bold leading-[1.2] tracking-[-0.035em] text-ink">Common questions</Heading>
             <Text className="mt-3.5 max-w-xl text-[15px] leading-[1.7] text-muted">
               Find answers to common questions about using Quran.co.in, our sources, and our mission.
             </Text>
