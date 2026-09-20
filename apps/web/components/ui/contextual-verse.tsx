@@ -24,8 +24,8 @@ const typeIcons = {
 };
 
 const variantStyles = {
-  subtle: 'bg-surface-warm border border-line',
-  prominent: 'bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200',
+  subtle: 'bg-surface border border-line',
+  prominent: 'bg-tint-sky border border-line',
   minimal: 'bg-transparent border-0',
 };
 
@@ -49,19 +49,19 @@ export function ContextualVerse({
 
   return (
     <div className={cn(
-      'rounded-lg p-4 md:p-6 transition-all duration-300',
+      'rounded-2xl p-4 md:p-6 transition-all duration-300',
       variantStyles[variant],
       className
     )}>
       <div className="flex items-start gap-4">
         {showIcon && Icon && (
           <div className={cn(
-            'flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center',
-            variant === 'prominent' 
-              ? 'bg-blue-100 text-blue-600' 
-              : 'bg-line-soft text-ink-soft'
+            'grid h-10 w-10 shrink-0 place-items-center rounded-full',
+            variant === 'prominent'
+              ? 'bg-surface text-accent'
+              : 'bg-accent-soft text-accent-strong'
           )}>
-            <Icon className="w-5 h-5" />
+            <Icon className="h-5 w-5" strokeWidth={1.6} />
           </div>
         )}
         
@@ -73,19 +73,19 @@ export function ContextualVerse({
           )}
           
           <Text className={cn(
-            'leading-relaxed',
-            variant === 'prominent' 
-              ? 'text-ink text-base md:text-lg italic' 
-              : 'text-ink-soft text-sm md:text-base'
+            'leading-[1.75]',
+            variant === 'prominent'
+              ? 'text-ink text-[15px] md:text-base'
+              : 'text-ink-soft text-[13px] md:text-[15px]'
           )}>
             "{verse.text}"
           </Text>
           
           <Text className={cn(
-            'text-xs md:text-sm font-medium',
-            variant === 'prominent' 
-              ? 'text-blue-700' 
-              : 'text-ink-soft'
+            'text-[11px] font-medium uppercase tracking-[0.14em]',
+            variant === 'prominent'
+              ? 'text-accent-strong'
+              : 'text-ink-muted'
           )}>
             — {verse.source}
           </Text>

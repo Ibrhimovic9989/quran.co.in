@@ -1,13 +1,13 @@
 // Call-to-Action Section Component
 // Converts visitors to users - drives exploration and sign-ups
 // Follows Atomic Design - Organism component
-// Senior Frontend/UI-UX Implementation
+// Repainted to the calm language: a centred closing note, one teal primary
+// action and a hairline secondary — no shimmer, no gradient wash.
 
 'use client';
 
 import { Container } from './container';
 import { Heading, Text } from './typography';
-import { ShimmerButton } from './atoms';
 import { ArrowRight, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils/cn';
@@ -18,77 +18,66 @@ interface CTASectionProps {
 
 export function CTASection({ className }: CTASectionProps) {
   return (
-    <section className={cn("w-full py-8 md:py-16 lg:py-20 bg-gradient-to-b from-surface-warm/50 to-surface", className)}>
-      <Container>
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Headline - Mobile optimized */}
+    <section className={cn("w-full bg-surface py-12 md:py-16 lg:py-20", className)}>
+      <Container className="max-w-[960px]">
+        {/* The closing note stays centred — it reads better as an invitation */}
+        <div className="mx-auto max-w-2xl text-center">
+          {/* Headline */}
           <Heading 
             level={2} 
-            className="text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-ink mb-3 md:mb-4 leading-tight"
+            className="font-heading text-[clamp(24px,3.4vw,36px)] font-bold leading-[1.25] tracking-[-0.03em] text-ink"
           >
             Begin Your Journey{' '}
-            <span className="bg-gradient-to-r from-ink via-ink-soft to-ink bg-clip-text text-transparent whitespace-nowrap">
+            <span className="whitespace-nowrap text-accent">
               Today
             </span>
           </Heading>
 
-          {/* Subheadline - Mobile optimized */}
-          <Text className="text-sm md:text-lg lg:text-xl text-ink-soft max-w-2xl mx-auto mb-2 md:mb-3 leading-relaxed">
+          {/* Subheadline */}
+          <Text className="mx-auto mt-3.5 text-[14px] leading-[1.75] text-muted md:text-[15px]">
             Start reading, listening, and studying the Holy Quran now. No sign-up required to explore.
           </Text>
-          <Text className="text-xs md:text-base text-ink-soft max-w-2xl mx-auto mb-6 md:mb-8 italic">
+          <Text className="mx-auto mt-2 text-[13px] leading-[1.75] text-ink-soft md:text-sm">
             The Prophet ﷺ said: <span>"Read the Quran, for it will come as an intercessor for its reciters on the Day of Resurrection."</span>
           </Text>
 
-          {/* CTAs - Mobile optimized */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 md:gap-4 mb-6 md:mb-10">
+          {/* CTAs */}
+          <div className="mt-7 flex flex-col items-center justify-center gap-2.5 sm:flex-row md:mt-8">
             {/* Primary CTA */}
-            <Link href="/quran" className="group w-full sm:w-auto">
-              <ShimmerButton
-                background="rgba(0, 0, 0, 1)"
-                shimmerColor="#ffffff"
-                borderRadius="8px"
-                className="w-full sm:w-auto text-white font-semibold px-5 py-2.5 md:px-8 md:py-4 text-sm md:text-base hover:scale-105 transition-transform duration-200"
-              >
-                <span className="flex items-center justify-center gap-2 relative z-10">
-                  Explore the Quran
-                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
-                </span>
-              </ShimmerButton>
+            <Link
+              href="/quran"
+              className="group inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-accent px-5 py-3 text-xs font-semibold text-white transition-colors hover:bg-accent-strong sm:w-auto"
+            >
+              Explore the Quran
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
 
             {/* Secondary CTA */}
-            <Link href="/sign-in" className="w-full sm:w-auto">
-              <ShimmerButton
-                background="rgba(255, 255, 255, 1)"
-                shimmerColor="#000000"
-                borderRadius="8px"
-                className="w-full sm:w-auto text-ink font-semibold px-5 py-2.5 md:px-8 md:py-4 text-sm md:text-base border-2 border-line hover:border-line transition-colors"
-              >
-                <span className="flex items-center justify-center gap-2 relative z-10">
-                  <UserPlus className="w-4 h-4 md:w-5 md:h-5" />
-                  Create Account
-                </span>
-              </ShimmerButton>
+            <Link
+              href="/sign-in"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-[10px] border border-line bg-surface px-5 py-3 text-xs font-semibold text-accent-strong transition-colors hover:border-accent/40 hover:bg-accent-soft sm:w-auto"
+            >
+              <UserPlus className="h-4 w-4" />
+              Create Account
             </Link>
           </div>
 
-          {/* Value Reinforcement - Mobile optimized */}
-          <div className="flex flex-wrap items-center justify-center gap-3 md:gap-6 text-xs md:text-sm text-ink-soft">
-            <div className="flex items-center gap-1.5 md:gap-2">
-              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-night rounded-full"></div>
+          {/* Value Reinforcement */}
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[11px] uppercase tracking-[0.14em] text-muted md:mt-9">
+            <div className="flex items-center gap-2">
+              <div className="h-1.5 w-1.5 rounded-full bg-accent"></div>
               <span className="font-medium">Free</span>
             </div>
-            <div className="flex items-center gap-1.5 md:gap-2">
-              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-night rounded-full"></div>
+            <div className="flex items-center gap-2">
+              <div className="h-1.5 w-1.5 rounded-full bg-accent"></div>
               <span className="font-medium">Complete</span>
             </div>
-            <div className="flex items-center gap-1.5 md:gap-2">
-              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-night rounded-full"></div>
+            <div className="flex items-center gap-2">
+              <div className="h-1.5 w-1.5 rounded-full bg-accent"></div>
               <span className="font-medium">Authentic</span>
             </div>
-            <div className="flex items-center gap-1.5 md:gap-2">
-              <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-night rounded-full"></div>
+            <div className="flex items-center gap-2">
+              <div className="h-1.5 w-1.5 rounded-full bg-accent"></div>
               <span className="font-medium">Accessible</span>
             </div>
           </div>

@@ -164,14 +164,14 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
           </Button>
 
           <div className="flex items-center gap-2 md:gap-4 mb-4 md:mb-6">
-            <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-              <BookOpen className="w-6 h-6 md:w-8 md:h-8 text-white" />
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border border-line bg-accent-soft text-accent-strong md:h-16 md:w-16">
+              <BookOpen className="h-6 w-6 md:h-7 md:w-7" strokeWidth={1.6} />
             </div>
             <div>
-              <Heading level={1} className="text-2xl md:text-4xl font-bold text-ink mb-1 md:mb-2 leading-tight">
+              <Heading level={1} className="mb-1 md:mb-2">
                 Juz {juzNumber}
               </Heading>
-              <Text className="text-ink-soft text-xs md:text-base">
+              <Text className="text-[11px] uppercase tracking-[0.14em] text-ink-muted md:text-xs">
                 {ayahs.length} Ayahs • {Object.keys(ayahsBySurah).length} Surahs
               </Text>
             </div>
@@ -179,7 +179,7 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
 
           {/* Reciter Selection - Mobile optimized */}
           {availableReciters.length > 0 && (
-            <div className="bg-surface-warm border border-line rounded-lg p-3 md:p-4">
+            <div className="rounded-2xl border border-line bg-surface p-3 md:p-4">
               <ReciterSelector
                 audioData={ayahs.length > 0 ? ayahs[0].audio : {}}
                 selectedReciter={selectedReciter}
@@ -200,7 +200,7 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
 
         {error && !isInitialLoading && (
           <div className="text-center py-8 md:py-16">
-            <Text className="text-red-600 mb-3 md:mb-4 text-sm md:text-base">{error}</Text>
+            <Text className="mb-3 text-[13px] text-red-600 md:mb-4 md:text-sm">{error}</Text>
             <Button
               onClick={() => fetchJuzPage(0)}
               variant="primary"
@@ -224,10 +224,10 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
                 return (
                   <div key={surahNo} className="space-y-3 md:space-y-4">
                     {/* Surah Header - Mobile optimized */}
-                    <div className="bg-gradient-to-r from-surface-warm to-line-soft rounded-lg p-3 md:p-4 border border-line">
+                    <div className="rounded-2xl border border-line bg-surface p-3 md:p-4">
                       <div className="flex items-center justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <Heading level={3} className="text-base md:text-xl font-bold text-ink mb-1 leading-tight">
+                        <div className="min-w-0 flex-1">
+                          <Heading level={3} className="mb-1 text-base md:text-xl">
                             {firstAyah.surahNameTranslation} ({surahNo})
                           </Heading>
                           <Text className="text-sm md:text-lg font-arabic text-ink-soft leading-tight">
@@ -235,8 +235,8 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
                           </Text>
                         </div>
                         {surahRange && (
-                          <div className="text-right flex-shrink-0">
-                            <Text className="text-xs md:text-sm text-ink-soft whitespace-nowrap">
+                          <div className="flex-shrink-0 text-right">
+                            <Text className="whitespace-nowrap text-[11px] text-ink-muted md:text-xs">
                               Ayahs {surahRange.startAyah} - {surahRange.endAyah}
                             </Text>
                           </div>
@@ -264,7 +264,7 @@ export function JuzPageClient({ juzNumber }: JuzPageClientProps) {
 
         {!isInitialLoading && !error && ayahs.length === 0 && (
           <div className="text-center py-8 md:py-16">
-            <Text className="text-ink-soft text-sm md:text-base">No ayahs found for this Juz.</Text>
+            <Text className="text-[13px] text-ink-muted md:text-sm">No ayahs found for this Juz.</Text>
           </div>
         )}
 

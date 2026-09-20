@@ -27,7 +27,7 @@ export function RevelationLegendModal({ className }: { className?: string }) {
         type="button"
         onClick={() => setOpen(true)}
         className={cn(
-          'inline-flex items-center gap-1.5 text-xs text-muted hover:text-ink transition-colors',
+          'inline-flex items-center gap-1.5 text-[11px] text-ink-muted transition-colors hover:text-accent-strong',
           className
         )}
         aria-label="Learn about revelation periods"
@@ -44,7 +44,7 @@ export function RevelationLegendModal({ className }: { className?: string }) {
           {/* Sheet / Modal */}
           <div className={cn(
             // Mobile: full-width bottom sheet with rounded top corners
-            'w-full bg-surface rounded-t-3xl shadow-2xl',
+            'w-full rounded-t-3xl border border-line bg-surface shadow-card-hover',
             // Desktop: centered card
             'md:rounded-2xl md:max-w-lg md:w-full md:mx-4',
             // Animate up on mobile
@@ -57,10 +57,10 @@ export function RevelationLegendModal({ className }: { className?: string }) {
 
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-line-soft">
-              <h2 className="text-base font-bold text-ink">Revelation Periods</h2>
+              <h2 className="font-heading text-[15px] font-bold tracking-[-0.025em] text-ink">Revelation Periods</h2>
               <button
                 onClick={() => setOpen(false)}
-                className="p-2 -mr-1 rounded-full text-muted hover:text-ink-soft hover:bg-line-soft active:bg-line transition-colors"
+                className="-mr-1 rounded-full p-2 text-ink-muted transition-colors hover:bg-accent-soft/60 hover:text-accent-strong active:bg-line"
                 aria-label="Close"
               >
                 <X className="w-5 h-5" />
@@ -69,7 +69,7 @@ export function RevelationLegendModal({ className }: { className?: string }) {
 
             {/* Body — scrollable, safe area aware */}
             <div className="px-5 py-4 space-y-5 overflow-y-auto max-h-[70vh] pb-safe">
-              <p className="text-sm text-ink-soft leading-relaxed">
+              <p className="text-[13px] leading-[1.75] text-ink-soft">
                 The Quran was revealed over{' '}
                 <span className="font-semibold text-ink">23 years</span> (610–632 CE).
                 Scholars grouped surahs into four periods based on when and where they were revealed:
@@ -95,8 +95,8 @@ export function RevelationLegendModal({ className }: { className?: string }) {
                     </div>
                     {/* Text */}
                     <div className="min-w-0">
-                      <p className="text-[11px] font-semibold text-muted mb-1 leading-none">{header}</p>
-                      <p className="text-sm text-ink-soft leading-relaxed">{body}</p>
+                      <p className="mb-1 text-[11px] font-semibold leading-none text-ink-muted">{header}</p>
+                      <p className="text-[13px] leading-[1.75] text-ink-soft">{body}</p>
                     </div>
                   </div>
                 );
@@ -104,7 +104,7 @@ export function RevelationLegendModal({ className }: { className?: string }) {
 
               {/* Approximation note */}
               <div className="pt-4 border-t border-line-soft">
-                <p className="text-xs text-muted leading-relaxed">
+                <p className="text-[11px] leading-[1.7] text-ink-muted">
                   <span className="font-semibold text-ink-soft">* About the years:</span>{' '}
                   {APPROXIMATION_NOTE}
                 </p>

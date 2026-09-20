@@ -204,7 +204,7 @@ export function AyahDisplay({
     <div ref={rootRef} id={`ayah-${ayah.surahNo}-${ayah.ayahNo}`}>
       <Card 
         className={cn(
-          'relative border border-line bg-surface shadow-card',
+          'relative border border-line bg-surface',
           'transition-colors duration-200',
           isActive && 'border-accent/40 bg-accent-soft/40 ring-1 ring-accent/25',
           className

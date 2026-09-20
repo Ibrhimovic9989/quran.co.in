@@ -140,7 +140,7 @@ export function DevReelBanner() {
               src="/build-on-stack.mp4"
               controls
               playsInline
-              className="mt-8 max-h-[72vh] w-auto max-w-full rounded-2xl bg-black shadow-2xl"
+              className="mt-8 max-h-[72vh] w-auto max-w-full rounded-2xl bg-black shadow-card-hover"
               style={{ aspectRatio: '9 / 16' }}
             />
 
@@ -148,7 +148,7 @@ export function DevReelBanner() {
             <div className="w-full max-w-sm text-center">
               {status === 'done' ? (
                 <p className="inline-flex items-center gap-2 text-sm font-medium text-white">
-                  <Check className="h-4 w-4 text-emerald-400" />
+                  <Check className="h-4 w-4 text-night-gold" />
                   You&apos;re on the list — we&apos;ll email you each drop.
                 </p>
               ) : (

@@ -1,15 +1,14 @@
 // Footer Component
 // Modern footer with newsletter, links, and social media
 // Follows Atomic Design - Organism component
-// Senior Frontend/UI-UX Implementation
+// Repainted to the calm language: quiet chrome text, hairline rules, one
+// teal action — no decorative blurs, no heavy type.
 
 'use client';
 
 import { Container } from '@/components/ui/container';
 import { QuranReminder } from '@/components/ui/quran-reminder';
 import { Heading, Text } from '@/components/ui/typography';
-import { Button } from '@/components/ui/atoms';
-import { Input } from '@/components/ui/atoms';
 import { Send, Mail, BookOpen, HelpCircle, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils/cn';
@@ -60,25 +59,25 @@ export function Footer({ className }: FooterProps) {
   };
 
   return (
-    <footer className={cn("relative w-full border-t border-line bg-paper text-ink transition-colors duration-300", className)}>
-      <Container>
-        <div className="py-12 md:py-16">
-          <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+    <footer className={cn("relative w-full border-t border-line bg-paper text-ink", className)}>
+      <Container className="max-w-[960px]">
+        <div className="py-10 md:py-14">
+          <div className="grid gap-9 md:grid-cols-2 lg:grid-cols-4">
             {/* Newsletter Section */}
-            <div className="relative">
-              <Heading level={3} className="mb-4 text-2xl font-bold tracking-tight text-ink">
+            <div>
+              <Heading level={3} className="font-heading text-[17px] font-bold tracking-[-0.025em] text-ink">
                 Stay Connected
               </Heading>
-              <Text className="mb-6 text-ink-soft">
+              <Text className="mt-2 text-[13px] leading-[1.7] text-muted">
                 Get updates on new features, translations, and resources delivered to your inbox.
               </Text>
               {isSubscribed ? (
-                <div className="flex items-center gap-2 text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-md px-4 py-2.5 text-sm font-medium">
+                <div className="mt-4 flex items-center gap-2 rounded-[10px] border border-accent/30 bg-accent-soft px-4 py-2.5 text-[13px] font-medium text-accent-strong">
                   <CheckCircle className="h-4 w-4 shrink-0" />
                   You&apos;re subscribed! Thanks for joining.
                 </div>
               ) : (
-                <form onSubmit={handleNewsletterSubmit} className="relative" noValidate>
+                <form onSubmit={handleNewsletterSubmit} className="relative mt-4" noValidate>
                   <input
                     type="email"
                     placeholder="Enter your email"
@@ -87,48 +86,46 @@ export function Footer({ className }: FooterProps) {
                     aria-label="Email address for newsletter"
                     aria-invalid={!!emailError}
                     className={cn(
-                      "w-full h-10 px-4 pr-12 rounded-md",
-                      "bg-paper border text-ink",
+                      "h-11 w-full rounded-[10px] px-4 pr-12 text-[13px]",
+                      "border bg-surface text-ink",
                       emailError ? "border-red-400" : "border-line",
                       "placeholder:text-ink-muted",
-                      "focus:outline-none focus:ring-2 focus:ring-ink focus:border-ink",
-                      "disabled:opacity-50 disabled:cursor-not-allowed"
+                      "focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30",
+                      "disabled:cursor-not-allowed disabled:opacity-50"
                     )}
                   />
                   <button
                     type="submit"
                     disabled={isSubmitting}
                     className={cn(
-                      "absolute right-1 top-1 h-8 w-8 rounded-full",
-                      "bg-accent text-white flex items-center justify-center",
-                      "transition-transform hover:scale-105",
-                      "disabled:opacity-50 disabled:cursor-not-allowed",
-                      "focus:outline-none focus:ring-2 focus:ring-ink focus:ring-offset-2"
+                      "absolute right-1.5 top-1.5 h-8 w-8 rounded-full",
+                      "flex items-center justify-center bg-accent text-white",
+                      "transition-colors hover:bg-accent-strong",
+                      "disabled:cursor-not-allowed disabled:opacity-50",
+                      "focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-2"
                     )}
                   >
                     <Send className="h-4 w-4" />
                     <span className="sr-only">Subscribe</span>
                   </button>
                   {emailError && (
-                    <p className="mt-1 text-xs text-red-600">{emailError}</p>
+                    <p className="mt-1.5 text-[11px] text-red-600">{emailError}</p>
                   )}
                 </form>
               )}
-              {/* Decorative Element */}
-              <div className="absolute -right-4 top-0 h-24 w-24 rounded-full bg-accent/10 blur-2xl" />
             </div>
 
             {/* Quick Links */}
             <div>
-              <Heading level={4} className="mb-4 text-lg font-semibold text-ink">
+              <Heading level={4} className="font-heading text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
                 Quick Links
               </Heading>
-              <nav className="space-y-2 text-sm">
+              <nav className="mt-4 space-y-2.5 text-[13px]">
                 {quickLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="block text-ink-soft transition-colors hover:text-ink"
+                    className="block text-ink-soft transition-colors hover:text-accent-strong"
                   >
                     {link.label}
                   </Link>
@@ -138,17 +135,17 @@ export function Footer({ className }: FooterProps) {
 
             {/* Resources */}
             <div>
-              <Heading level={4} className="mb-4 text-lg font-semibold text-ink">
+              <Heading level={4} className="font-heading text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
                 Resources
               </Heading>
-              <nav className="space-y-2 text-sm">
+              <nav className="mt-4 space-y-2.5 text-[13px]">
                 {resources.map((resource) => {
                   const Icon = resource.icon;
                   return (
                     <Link
                       key={resource.href}
                       href={resource.href}
-                      className="flex items-center gap-2 text-ink-soft transition-colors hover:text-ink"
+                      className="flex items-center gap-2 text-ink-soft transition-colors hover:text-accent-strong"
                     >
                       <Icon className="h-4 w-4" />
                       {resource.label}
@@ -159,13 +156,13 @@ export function Footer({ className }: FooterProps) {
             </div>
 
             {/* Contact & Info */}
-            <div className="relative">
-              <Heading level={4} className="mb-4 text-lg font-semibold text-ink">
+            <div>
+              <Heading level={4} className="font-heading text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
                 About
               </Heading>
-              <div className="space-y-3 text-sm text-ink-soft">
+              <div className="mt-4 space-y-3 text-[13px] leading-[1.7] text-muted">
                 <p>
-                  Your gateway to the Holy Quran. Read, listen, and study with authentic translations, 
+                  Your gateway to the Holy Quran. Read, listen, and study with authentic translations,
                   beautiful recitations, and comprehensive commentary.
                 </p>
                 <div className="flex items-center gap-2 text-ink-soft">
@@ -177,27 +174,27 @@ export function Footer({ className }: FooterProps) {
           </div>
 
           {/* Rotating reminder */}
-          <div className="mt-10 border-t border-line-soft pt-6">
+          <div className="mt-9 border-t border-line-soft pt-6">
             <QuranReminder />
           </div>
 
           {/* Bottom Section */}
-          <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-line pt-8 md:flex-row">
-            <Text className="text-sm text-ink-soft text-center md:text-left">
+          <div className="mt-7 flex flex-col items-center justify-between gap-3 border-t border-line pt-7 md:flex-row">
+            <Text className="text-center text-[11px] text-muted md:text-left">
               © {currentYear} Quran.co.in. All rights reserved.
             </Text>
-            <nav className="flex flex-wrap items-center justify-center gap-4 text-sm">
+            <nav className="flex flex-wrap items-center justify-center gap-4 text-[11px]">
               {legalLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-ink-soft transition-colors hover:text-ink"
+                  className="text-muted transition-colors hover:text-accent-strong"
                 >
                   {link.label}
                 </Link>
               ))}
             </nav>
-            <Text className="text-xs text-ink-soft text-center md:text-right max-w-xs">
+            <Text className="max-w-xs text-center text-[11px] text-muted md:text-right">
               Translations and recitations sourced from trusted Islamic scholars and institutions.
             </Text>
           </div>

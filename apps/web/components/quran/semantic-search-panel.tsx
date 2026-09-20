@@ -86,23 +86,23 @@ export function SemanticSearchPanel({ query, className }: SemanticSearchPanelPro
   if (!isTopicQuery(query) && results.length === 0 && !loading) return null;
 
   return (
-    <div className={cn('rounded-xl border border-purple-100 bg-gradient-to-b from-purple-50/60 to-surface overflow-hidden', className)}>
+    <div className={cn('overflow-hidden rounded-2xl border border-line bg-surface', className)}>
       {/* Header */}
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-purple-100 bg-purple-50/80">
-        <Sparkles className="w-4 h-4 text-purple-500 shrink-0" />
-        <span className="text-sm font-semibold text-purple-800">
+      <div className="flex items-center gap-2 border-b border-line bg-tint-lavender px-4 py-3">
+        <Sparkles className="h-4 w-4 shrink-0 text-ink-soft" strokeWidth={1.6} />
+        <span className="font-heading text-[13px] font-bold tracking-[-0.025em] text-ink">
           {loading
             ? 'Searching across all ayahs…'
             : results.length > 0
               ? `${results.length} ayahs related to "${lastQuery}"`
               : `No results for "${lastQuery}"`}
         </span>
-        {loading && <Loader2 className="w-3.5 h-3.5 text-purple-400 animate-spin ml-auto shrink-0" />}
+        {loading && <Loader2 className="ml-auto h-3.5 w-3.5 shrink-0 animate-spin text-ink-muted" />}
       </div>
 
       {/* Error */}
       {error && (
-        <div className="flex items-center gap-2 px-4 py-3 text-sm text-red-600">
+        <div className="flex items-center gap-2 px-4 py-3 text-[13px] text-red-600">
           <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </div>
@@ -110,12 +110,12 @@ export function SemanticSearchPanel({ query, className }: SemanticSearchPanelPro
 
       {/* Loading skeleton */}
       {loading && results.length === 0 && (
-        <div className="divide-y divide-purple-50">
+        <div className="divide-y divide-line-soft">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="px-4 py-4 animate-pulse space-y-2">
-              <div className="h-3 w-32 bg-purple-100 rounded" />
-              <div className="h-4 w-full bg-line-soft rounded" />
-              <div className="h-3 w-3/4 bg-line-soft rounded" />
+            <div key={i} className="animate-pulse space-y-2 px-4 py-4">
+              <div className="h-3 w-32 rounded-full bg-line" />
+              <div className="h-4 w-full rounded-lg bg-line-soft" />
+              <div className="h-3 w-3/4 rounded-full bg-line-soft" />
             </div>
           ))}
         </div>
@@ -123,31 +123,31 @@ export function SemanticSearchPanel({ query, className }: SemanticSearchPanelPro
 
       {/* Results */}
       {!loading && results.length > 0 && (
-        <ul className="divide-y divide-purple-50/70">
+        <ul className="divide-y divide-line-soft">
           {results.map((r) => (
             <li key={`${r.surahNumber}:${r.ayahNumber}`}>
               <Link
                 href={`/quran/${r.surahNumber}?ayah=${r.ayahNumber}`}
-                className="flex flex-col gap-1.5 px-4 py-3.5 hover:bg-purple-50/60 transition-colors group"
+                className="group flex flex-col gap-1.5 px-4 py-3.5 transition-colors hover:bg-accent-soft/40"
               >
                 {/* Meta row */}
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[11px] font-bold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">
+                    <span className="rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-bold text-accent-strong">
                       {r.surahNumber}:{r.ayahNumber}
                     </span>
-                    <span className="text-xs font-medium text-ink-soft">
+                    <span className="text-[11px] font-semibold text-ink-soft">
                       {r.englishName}
                       {r.englishNameTranslation && (
-                        <span className="text-muted font-normal"> · {r.englishNameTranslation}</span>
+                        <span className="font-normal text-ink-muted"> · {r.englishNameTranslation}</span>
                       )}
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="text-[10px] text-purple-400 font-medium">
+                    <span className="text-[10px] font-medium text-ink-muted">
                       {Math.round(r.similarity * 100)}% match
                     </span>
-                    <ExternalLink className="w-3 h-3 text-muted group-hover:text-purple-400 transition-colors" />
+                    <ExternalLink className="h-3 w-3 text-ink-muted transition-colors group-hover:text-accent" />
                   </div>
                 </div>
 
@@ -162,7 +162,7 @@ export function SemanticSearchPanel({ query, className }: SemanticSearchPanelPro
 
                 {/* Translation */}
                 {r.translationText && (
-                  <p className="text-sm text-ink-soft leading-relaxed line-clamp-2">
+                  <p className="line-clamp-2 text-[13px] leading-[1.75] text-ink-soft">
                     {r.translationText}
                   </p>
                 )}
@@ -174,7 +174,7 @@ export function SemanticSearchPanel({ query, className }: SemanticSearchPanelPro
 
       {/* Empty state */}
       {!loading && !error && results.length === 0 && isTopicQuery(debouncedQuery) && (
-        <div className="px-4 py-6 text-center text-sm text-muted">
+        <div className="px-4 py-6 text-center text-[13px] text-ink-muted">
           Try rephrasing your search — e.g. <em>"patience in hardship"</em> or <em>"Allah's mercy"</em>
         </div>
       )}

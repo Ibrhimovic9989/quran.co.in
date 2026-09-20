@@ -20,7 +20,7 @@ export function SignInButton({ className, children }: SignInButtonProps) {
   return (
     <button
       onClick={handleSignIn}
-      className={className || 'px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'}
+      className={className || 'rounded-[10px] bg-accent px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-accent-strong'}
     >
       {children || 'Sign in with Google'}
     </button>

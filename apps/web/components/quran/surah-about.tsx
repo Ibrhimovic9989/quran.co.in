@@ -67,7 +67,7 @@ export function SurahAbout({
     >
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
-      <div className="rounded-2xl border border-line bg-surface p-6 shadow-card md:p-8">
+      <div className="rounded-2xl border border-line bg-surface p-6 md:p-8">
         <h2 className="font-reading text-2xl font-bold text-ink">
           About Surah {surahName} <span className="text-ink-muted">({surahNameTranslation})</span>
         </h2>

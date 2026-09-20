@@ -379,15 +379,17 @@ export function AudioPlayer({
     <div className={cn(minimal ? 'space-y-0' : 'space-y-3', className)}>
       {!minimal && (
         <>
-          <Text className="mb-3 text-sm text-muted">Audio Recitation</Text>
+          <Text className="mb-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-muted">
+            Audio Recitation
+          </Text>
 
           {ayahNo ? (
             <div className="mb-3">
-              <Text className="text-xs text-muted">Plays this ayah only</Text>
+              <Text className="text-[11px] text-ink-muted">Plays this ayah only</Text>
             </div>
           ) : (
             <div className="mb-3">
-              <Text className="text-xs text-muted">Plays entire surah</Text>
+              <Text className="text-[11px] text-ink-muted">Plays entire surah</Text>
             </div>
           )}
         </>
@@ -407,7 +409,7 @@ export function AudioPlayer({
               disabled={isLoadingAudio}
               className={cn(
                 minimal &&
-                  'h-9 rounded-full border-line bg-surface-warm px-3 py-1.5 text-sm text-ink-soft focus:border-line'
+                  'h-9 rounded-full border-line bg-surface px-3 py-1.5 text-[13px] text-ink-soft focus:border-accent/40'
               )}
             />
           </div>
@@ -419,12 +421,12 @@ export function AudioPlayer({
           onClick={handlePlay}
           className={cn(
             minimal &&
-              'rounded-full border-transparent bg-accent px-3 py-1.5 text-sm text-white hover:bg-accent-strong'
+              'rounded-full border-transparent bg-accent px-3.5 py-1.5 text-[13px] font-semibold text-white hover:bg-accent-strong'
           )}
         />
 
         {resumeSeconds !== null && !isPlaying && (
-          <span className="text-xs text-muted italic">
+          <span className="text-[11px] text-ink-muted">
             Resumes from {Math.floor(resumeSeconds / 60)}m {resumeSeconds % 60}s
           </span>
         )}

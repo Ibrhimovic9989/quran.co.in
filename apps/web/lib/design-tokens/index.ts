@@ -49,7 +49,7 @@ export const tokens = {
   
   typography: {
     fontFamily: {
-      sans: ['Inter', 'system-ui', 'sans-serif'],
+      sans: ['var(--font-ui)', 'DM Sans', 'system-ui', 'sans-serif'],
       arabic: ['Amiri', 'serif'],
       mono: ['JetBrains Mono', 'monospace'],
     },

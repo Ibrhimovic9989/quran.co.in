@@ -23,33 +23,33 @@ const BANNER_CONFIG: Record<Exclude<SeasonalTheme, 'none'>, BannerConfig> = {
     englishGreeting: 'Ramadan Mubarak',
     subtext: 'May Allah accept your fasting, prayers, and recitation this blessed month.',
     icon: '🌙',
-    bg: 'bg-gradient-to-r from-emerald-600 to-teal-600',
-    border: 'border-emerald-500',
-    text: 'text-white',
-    subTextColor: 'text-emerald-100',
-    closeColor: 'text-emerald-200 hover:text-white hover:bg-emerald-700',
+    bg: 'bg-tint-sage',
+    border: 'border-line',
+    text: 'text-ink',
+    subTextColor: 'text-ink-soft',
+    closeColor: 'text-ink-muted hover:text-ink hover:bg-surface/70',
   },
   'eid-ul-fitr': {
     arabicGreeting: 'عِيدُ الفِطْرِ مُبَارَكٌ',
     englishGreeting: 'Eid ul Fitr Mubarak',
     subtext: 'Taqabbal Allahu minna wa minkum — May Allah accept from us and from you.',
     icon: '✨',
-    bg: 'bg-gradient-to-r from-amber-500 to-yellow-500',
-    border: 'border-amber-400',
-    text: 'text-white',
-    subTextColor: 'text-amber-100',
-    closeColor: 'text-amber-200 hover:text-white hover:bg-amber-600',
+    bg: 'bg-tint-sun',
+    border: 'border-line',
+    text: 'text-ink',
+    subTextColor: 'text-ink-soft',
+    closeColor: 'text-ink-muted hover:text-ink hover:bg-surface/70',
   },
   'eid-ul-adha': {
     arabicGreeting: 'عِيدُ الأَضْحَى مُبَارَكٌ',
     englishGreeting: 'Eid ul Adha Mubarak',
     subtext: 'May Allah accept the Hajj of the pilgrims and the sacrifices of the believers.',
     icon: '🕌',
-    bg: 'bg-gradient-to-r from-lime-600 to-green-600',
-    border: 'border-lime-500',
-    text: 'text-white',
-    subTextColor: 'text-lime-100',
-    closeColor: 'text-lime-200 hover:text-white hover:bg-lime-700',
+    bg: 'bg-tint-sky',
+    border: 'border-line',
+    text: 'text-ink',
+    subTextColor: 'text-ink-soft',
+    closeColor: 'text-ink-muted hover:text-ink hover:bg-surface/70',
   },
 };
 
@@ -87,8 +87,9 @@ export function SeasonalBanner({ theme }: SeasonalBannerProps) {
       role="banner"
       aria-label={config.englishGreeting}
       className={cn(
-        'relative w-full z-[100] px-4 py-3 md:py-3.5',
+        'relative z-[100] w-full border-b px-4 py-3 md:py-3.5',
         config.bg,
+        config.border,
       )}
     >
       <div className="max-w-4xl mx-auto flex items-center gap-3">
@@ -103,11 +104,11 @@ export function SeasonalBanner({ theme }: SeasonalBannerProps) {
             <span className={cn('font-arabic text-base md:text-lg font-bold leading-snug', config.text)}>
               {config.arabicGreeting}
             </span>
-            <span className={cn('text-sm md:text-base font-semibold', config.text)}>
+            <span className={cn('font-heading text-[13px] md:text-[15px] font-bold tracking-[-0.025em]', config.text)}>
               — {config.englishGreeting}
             </span>
           </div>
-          <p className={cn('text-xs md:text-sm mt-0.5 leading-snug', config.subTextColor)}>
+          <p className={cn('mt-0.5 text-[11px] md:text-xs leading-snug', config.subTextColor)}>
             {config.subtext}
           </p>
         </div>

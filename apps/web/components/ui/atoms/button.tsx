@@ -17,15 +17,15 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary: 'bg-accent text-white border-accent hover:bg-accent-strong',
-  secondary: 'bg-accent-soft text-accent border-transparent hover:bg-accent-soft/70',
-  ghost: 'bg-transparent border border-line hover:border-accent/40 text-ink-soft hover:text-ink',
+  secondary: 'bg-surface text-accent-strong border-line hover:bg-accent-soft/60 hover:border-accent/30',
+  ghost: 'bg-transparent border-transparent text-ink-muted hover:bg-accent-soft/50 hover:text-accent-strong',
   danger: 'bg-red-600 text-white border-red-600 hover:bg-red-700',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2 text-base',
-  lg: 'px-6 py-3 text-lg',
+  sm: 'px-3.5 py-1.5 text-xs',
+  md: 'px-4 py-2 text-[13px]',
+  lg: 'px-6 py-3 text-sm',
 };
 
 export function Button({
@@ -40,7 +40,7 @@ export function Button({
   return (
     <button
       className={cn(
-        'rounded-full border transition-colors font-medium',
+        'inline-flex items-center justify-center rounded-full border font-semibold transition-colors',
         'focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-paper',
         'disabled:opacity-50 disabled:cursor-not-allowed',
         variantClasses[variant],

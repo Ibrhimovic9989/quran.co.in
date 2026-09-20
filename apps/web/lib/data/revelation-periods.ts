@@ -44,10 +44,10 @@ export const APPROXIMATION_NOTE =
   'Exact dates of revelation are not always known with certainty.';
 
 export const PERIOD_COLORS: Record<RevelationPeriod, { badge: string; dot: string }> = {
-  'early-meccan':  { badge: 'bg-orange-50 text-orange-800 border-orange-200',  dot: 'bg-orange-400' },
-  'middle-meccan': { badge: 'bg-amber-50  text-amber-800  border-amber-200',   dot: 'bg-amber-500'  },
-  'late-meccan':   { badge: 'bg-yellow-50 text-yellow-800 border-yellow-200',  dot: 'bg-yellow-500' },
-  'madinan':       { badge: 'bg-emerald-50 text-emerald-800 border-emerald-200', dot: 'bg-emerald-500' },
+  'early-meccan':  { badge: 'bg-tint-peach text-ink-soft border-line',  dot: 'bg-[#e0a684]' },
+  'middle-meccan': { badge: 'bg-tint-sun   text-gold-text border-line', dot: 'bg-[#e3c65a]' },
+  'late-meccan':   { badge: 'bg-tint-sky   text-ink-soft border-line',  dot: 'bg-[#8fb4dd]' },
+  'madinan':       { badge: 'bg-accent-soft text-accent-strong border-line', dot: 'bg-accent' },
 };
 
 // Key: surah number (1-indexed)

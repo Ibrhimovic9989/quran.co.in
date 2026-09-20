@@ -21,6 +21,8 @@ const config: Config = {
           soft: 'var(--ink-soft)',
           muted: 'var(--muted)',
         },
+        // `text-muted` is used widely alongside `text-ink-muted` — same token
+        muted: 'var(--muted)',
         line: {
           DEFAULT: 'var(--line)',
           soft: 'var(--line-soft)',
@@ -34,6 +36,14 @@ const config: Config = {
           DEFAULT: 'var(--gold)',
           soft: 'var(--gold-soft)',
           text: 'var(--gold-text)',
+        },
+        // ── Pastel tints — category tiles, quiet callouts (never text) ──
+        tint: {
+          sage: 'var(--tint-sage)',
+          sky: 'var(--tint-sky)',
+          peach: 'var(--tint-peach)',
+          sun: 'var(--tint-sun)',
+          lavender: 'var(--tint-lavender)',
         },
         night: {
           DEFAULT: 'var(--night)',
@@ -55,8 +65,9 @@ const config: Config = {
         sans: [...tokens.typography.fontFamily.sans],
         arabic: ['var(--font-quran)', 'var(--font-amiri)', 'Noto Naskh Arabic', 'serif'],
         'arabic-display': ['var(--font-amiri)', 'var(--font-quran)', 'serif'],
-        reading: ['var(--font-reading)', 'Lora', 'Georgia', 'serif'],
-        ui: ['var(--font-ui)', 'Inter', 'system-ui', 'sans-serif'],
+        reading: ['var(--font-reading)', 'var(--font-ui)', 'system-ui', 'sans-serif'],
+        heading: ['var(--font-heading)', 'var(--font-ui)', 'system-ui', 'sans-serif'],
+        ui: ['var(--font-ui)', 'DM Sans', 'system-ui', 'sans-serif'],
         mono: [...tokens.typography.fontFamily.mono],
       },
       fontSize: tokens.typography.fontSize,
@@ -74,8 +85,9 @@ const config: Config = {
       borderRadius: tokens.borderRadius,
       boxShadow: {
         ...tokens.shadows,
-        card: '0 1px 2px rgb(28 43 39 / 0.05), 0 8px 24px rgb(28 43 39 / 0.06)',
-        'card-hover': '0 2px 4px rgb(28 43 39 / 0.06), 0 12px 32px rgb(28 43 39 / 0.10)',
+        // Calm elevation: cards sit on the page, they don't hover over it
+        card: '0 1px 2px rgb(33 62 74 / 0.04), 0 6px 18px rgb(33 62 74 / 0.05)',
+        'card-hover': '0 2px 4px rgb(33 62 74 / 0.06), 0 10px 26px rgb(33 62 74 / 0.08)',
       },
       transitionDuration: tokens.transitions,
       screens: tokens.breakpoints,

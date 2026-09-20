@@ -13,8 +13,9 @@ export function Card({ children, className, onClick }: CardProps) {
   return (
     <div
       className={cn(
-        'bg-surface border border-line rounded-lg p-6 shadow-sm',
-        onClick && 'cursor-pointer hover:border-line hover:shadow-md transition-all',
+        // Calm card: hairline border, generous radius, no shadow at rest
+        'bg-surface border border-line rounded-2xl p-5',
+        onClick && 'cursor-pointer transition-all hover:border-accent/30 hover:shadow-card',
         className
       )}
       onClick={onClick}

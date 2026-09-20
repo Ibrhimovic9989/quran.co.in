@@ -64,7 +64,7 @@ export function Quran3D({ className, autoRotate = true }: Quran3DProps) {
       >
         {/* Front Cover */}
         <div
-          className="absolute w-full h-full bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 rounded-lg shadow-2xl border-2 md:border-4 border-emerald-700"
+          className="absolute w-full h-full bg-gradient-to-br from-[color:var(--accent-strong)] via-[color:var(--accent)] to-[color:var(--accent-strong)] rounded-lg shadow-2xl border-2 md:border-4 border-accent"
           style={{
             transform: 'translateZ(10px)',
             boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(16, 185, 129, 0.1)',
@@ -77,22 +77,22 @@ export function Quran3D({ className, autoRotate = true }: Quran3DProps) {
               <div className="text-white font-arabic text-xl md:text-4xl mb-1 md:mb-2" style={{ direction: 'rtl' }}>
                 القرآن الكريم
               </div>
-              <div className="text-emerald-200 text-[8px] md:text-sm font-semibold tracking-wider">
+              <div className="text-white/70 text-[8px] md:text-sm font-semibold tracking-wider">
                 THE HOLY QURAN
               </div>
             </div>
           </div>
           
           {/* Corner Decorations - Smaller on mobile */}
-          <div className="absolute top-2 left-2 md:top-4 md:left-4 w-6 h-6 md:w-12 md:h-12 border border-emerald-400 md:border-2 border-emerald-400 rounded-lg opacity-50"></div>
-          <div className="absolute top-2 right-2 md:top-4 md:right-4 w-6 h-6 md:w-12 md:h-12 border border-emerald-400 md:border-2 border-emerald-400 rounded-lg opacity-50"></div>
-          <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 w-6 h-6 md:w-12 md:h-12 border border-emerald-400 md:border-2 border-emerald-400 rounded-lg opacity-50"></div>
-          <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 w-6 h-6 md:w-12 md:h-12 border border-emerald-400 md:border-2 border-emerald-400 rounded-lg opacity-50"></div>
+          <div className="absolute top-2 left-2 md:top-4 md:left-4 w-6 h-6 md:w-12 md:h-12 border border-white/40 md:border-2 border-white/40 rounded-lg opacity-50"></div>
+          <div className="absolute top-2 right-2 md:top-4 md:right-4 w-6 h-6 md:w-12 md:h-12 border border-white/40 md:border-2 border-white/40 rounded-lg opacity-50"></div>
+          <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 w-6 h-6 md:w-12 md:h-12 border border-white/40 md:border-2 border-white/40 rounded-lg opacity-50"></div>
+          <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 w-6 h-6 md:w-12 md:h-12 border border-white/40 md:border-2 border-white/40 rounded-lg opacity-50"></div>
         </div>
 
         {/* Spine - Smaller on mobile */}
         <div
-          className="absolute w-4 md:w-8 h-full bg-gradient-to-r from-emerald-950 via-emerald-900 to-emerald-950 rounded-l-lg border-l-2 md:border-l-4 border-emerald-600"
+          className="absolute w-4 md:w-8 h-full bg-gradient-to-r from-[color:var(--accent-strong)] via-[color:var(--accent)] to-[color:var(--accent-strong)] rounded-l-lg border-l-2 md:border-l-4 border-accent"
           style={{
             transform: 'rotateY(-90deg) translateZ(10px)',
             left: '-20px',
@@ -100,7 +100,7 @@ export function Quran3D({ className, autoRotate = true }: Quran3DProps) {
           }}
         >
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-emerald-200 text-[6px] md:text-xs font-bold writing-vertical" style={{ transform: 'rotate(180deg)' }}>
+            <div className="text-white/70 text-[6px] md:text-xs font-bold writing-vertical" style={{ transform: 'rotate(180deg)' }}>
               QURAN
             </div>
           </div>
@@ -108,14 +108,14 @@ export function Quran3D({ className, autoRotate = true }: Quran3DProps) {
 
         {/* Back Cover - Smaller on mobile */}
         <div
-          className="absolute w-full h-full bg-gradient-to-br from-emerald-950 via-emerald-900 to-emerald-950 rounded-lg border-2 md:border-4 border-emerald-800"
+          className="absolute w-full h-full bg-gradient-to-br from-[color:var(--accent-strong)] via-[color:var(--accent)] to-[color:var(--accent-strong)] rounded-lg border-2 md:border-4 border-accent-strong"
           style={{
             transform: 'translateZ(-10px)',
             boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)',
           }}
         >
           {/* Decorative Pattern on Back */}
-          <div className="absolute inset-2 md:inset-4 border border-emerald-700 md:border-2 border-emerald-700 rounded-lg opacity-30"></div>
+          <div className="absolute inset-2 md:inset-4 border border-accent md:border-2 border-accent rounded-lg opacity-30"></div>
         </div>
 
         {/* Pages Edge - Smaller on mobile */}

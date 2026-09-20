@@ -99,23 +99,23 @@ export function RevelationOrderView({ surahs, searchQuery = '' }: RevelationOrde
     <section className={cn('w-full py-6 md:py-24 bg-paper')}>
       <Container>
         <div className="max-w-4xl mx-auto text-center mb-6 md:mb-16">
-          <Heading level={1} className="text-2xl md:text-5xl font-bold text-ink mb-3 md:mb-6 leading-tight">
+          <Heading level={1} className="mb-3 md:mb-6">
             Revelation Order
           </Heading>
-          <Text className="text-sm md:text-lg text-ink-soft max-w-2xl mx-auto leading-tight md:leading-relaxed mb-3 md:mb-6">
+          <Text className="mx-auto mb-3 max-w-2xl text-[13px] leading-[1.75] text-ink-soft md:mb-6 md:text-[15px]">
             {searchQuery 
               ? `Found ${surahsByRevelation.length} surahs matching your search`
               : 'This view shows the chronological order of Surahs in the Quran based on when they were revealed to the Prophet Muhammad ﷺ.'
             }
           </Text>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 md:p-4 text-left max-w-3xl mx-auto">
-            <Text className="text-xs md:text-sm text-ink-soft leading-tight md:leading-relaxed">
+          <div className="mx-auto max-w-3xl rounded-2xl border border-line bg-tint-sky p-3 text-left md:p-4">
+            <Text className="text-[11px] leading-[1.7] text-ink-soft md:text-xs">
               <strong>Note:</strong> The chronology is a subject of scholarly opinion and some Surahs were revealed in parts at different times. The ordering here is based on the work of{' '}
               <a
                 href="https://tanzil.net"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 underline transition-colors duration-300"
+                className="text-accent underline underline-offset-2 transition-colors duration-300 hover:text-accent-strong"
               >
                 Tanzil.net
               </a>
@@ -127,7 +127,7 @@ export function RevelationOrderView({ surahs, searchQuery = '' }: RevelationOrde
         {/* Surahs Grid - Same as Surah view but with revelation order number - Mobile optimized */}
         {surahsByRevelation.length === 0 ? (
           <div className="text-center py-6 md:py-12">
-            <Text className="text-ink-soft text-sm md:text-lg">
+            <Text className="text-[13px] text-ink-muted md:text-[15px]">
               No surahs found matching your search. Try a different query.
             </Text>
           </div>
@@ -137,16 +137,16 @@ export function RevelationOrderView({ surahs, searchQuery = '' }: RevelationOrde
               <div key={surah.surahNo} className="relative group">
                 <SurahCard surah={surah} />
                 {/* Revelation Order Badge - Top Left - Mobile optimized */}
-                <div className="absolute top-2 left-2 md:top-3 md:left-3 bg-blue-100 text-blue-800 text-[10px] md:text-xs font-semibold px-1.5 md:px-2 py-0.5 md:py-1 rounded z-10">
+                <div className="absolute left-2 top-2 z-10 rounded-full bg-accent-soft px-2 py-0.5 text-[10px] font-semibold text-accent-strong md:left-3 md:top-3 md:px-2.5 md:py-1 md:text-[11px]">
                   #{surah.revelationOrder}
                 </div>
                 {/* Revelation Place Badge - Bottom Right - Mobile optimized */}
                 <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 z-10">
                   <span className={cn(
-                    'text-[10px] md:text-xs font-medium px-1.5 md:px-2 py-0.5 md:py-1 rounded',
+                    'rounded-full px-2 py-0.5 text-[10px] font-semibold md:px-2.5 md:py-1 md:text-[11px]',
                     surah.revelationPlaceDisplay === 'Meccan'
-                      ? 'bg-amber-100 text-amber-800'
-                      : 'bg-emerald-100 text-emerald-800'
+                      ? 'bg-tint-sun text-gold-text'
+                      : 'bg-tint-sage text-accent-strong'
                   )}>
                     {surah.revelationPlaceDisplay}
                   </span>

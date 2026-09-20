@@ -55,7 +55,7 @@ function toArabicIndicNumber(n: number) {
   return n.toString().replace(/\d/g, (d) => String.fromCharCode(0x0660 + Number(d)));
 }
 
-/** Compact ayah-end medallion — smaller, inline. Amber fill when bookmarked, pulsing ring when targeted. */
+/** Compact ayah-end medallion — smaller, inline. Gold-soft fill when bookmarked, pulsing ring when targeted. */
 function AyahMedallion({ n, bookmarked, pulsing }: { n: number; bookmarked?: boolean; pulsing?: boolean }) {
   return (
     <span
@@ -64,13 +64,13 @@ function AyahMedallion({ n, bookmarked, pulsing }: { n: number; bookmarked?: boo
     >
       <span className="relative inline-flex items-center justify-center w-6 h-6 md:w-8 md:h-8">
         {pulsing && (
-          <span className="absolute inset-0 rounded-full bg-amber-400/50 animate-ping" aria-hidden="true" />
+          <span className="absolute inset-0 animate-ping rounded-full bg-gold/50" aria-hidden="true" />
         )}
-        <svg viewBox="0 0 32 32" className="absolute inset-0 w-full h-full" aria-hidden="true">
-          <circle cx="16" cy="16" r="14.5" fill={bookmarked || pulsing ? '#fef3c7' : 'none'} stroke="#9a7c4f" strokeWidth="1" />
-          <circle cx="16" cy="16" r="11"   fill="none" stroke="#9a7c4f" strokeWidth="0.5" opacity="0.5" />
+        <svg viewBox="0 0 32 32" className="absolute inset-0 h-full w-full" aria-hidden="true">
+          <circle cx="16" cy="16" r="14.5" fill={bookmarked || pulsing ? 'var(--gold-soft)' : 'none'} stroke="var(--gold)" strokeWidth="1" />
+          <circle cx="16" cy="16" r="11"   fill="none" stroke="var(--gold)" strokeWidth="0.5" opacity="0.5" />
         </svg>
-        <span className="relative font-mushaf text-[9px] md:text-[11px] text-amber-900 leading-none select-none">
+        <span className="relative select-none font-mushaf text-[9px] leading-none text-gold-text md:text-[11px]">
           {toArabicIndicNumber(n)}
         </span>
       </span>
@@ -82,11 +82,11 @@ function AyahMedallion({ n, bookmarked, pulsing }: { n: number; bookmarked?: boo
 function PageSeparator({ pageNum }: { pageNum: number }) {
   return (
     <div className="flex items-center gap-3 py-5 md:py-7" role="separator">
-      <div className="flex-1 h-px bg-amber-300/50" />
-      <span className="text-xs md:text-sm text-amber-700/60 font-mushaf tabular-nums">
+      <div className="h-px flex-1 bg-gold/40" />
+      <span className="font-mushaf text-xs tabular-nums text-gold-text md:text-sm">
         {toArabicIndicNumber(pageNum)}
       </span>
-      <div className="flex-1 h-px bg-amber-300/50" />
+      <div className="h-px flex-1 bg-gold/40" />
     </div>
   );
 }
@@ -184,19 +184,19 @@ export function SurahReadingView({
       <button
         type="button"
         onClick={() => setShowAudioControls((v) => !v)}
-        className="inline-flex shrink-0 items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium text-ink-soft shadow-sm transition-colors hover:text-ink"
+        className="inline-flex shrink-0 items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-[13px] font-semibold text-ink-soft transition-colors hover:border-accent/30 hover:text-accent-strong"
         aria-expanded={showAudioControls}
       >
-        <Play className="h-4 w-4 text-teal-600" aria-hidden="true" />
+        <Play className="h-4 w-4 text-accent" aria-hidden="true" />
         Audio
         {showAudioControls
-          ? <ChevronUp className="h-4 w-4 text-muted" aria-hidden="true" />
-          : <ChevronDown className="h-4 w-4 text-muted" aria-hidden="true" />
+          ? <ChevronUp className="h-4 w-4 text-ink-muted" aria-hidden="true" />
+          : <ChevronDown className="h-4 w-4 text-ink-muted" aria-hidden="true" />
         }
       </button>
 
       {/* Arabic / Transliteration / Translation toggle */}
-      <div className="inline-flex shrink-0 rounded-full border border-line bg-line-soft p-1">
+      <div className="inline-flex shrink-0 rounded-full border border-line bg-surface p-1">
         {([
           { id: 'arabic', label: 'Arabic', beta: false },
           { id: 'transliteration', label: 'Translit', beta: true },
@@ -207,15 +207,15 @@ export function SurahReadingView({
             type="button"
             onClick={() => setTextMode(mode.id)}
             className={cn(
-              'rounded-full px-3 py-2 text-sm font-semibold transition-colors flex items-center gap-1',
-              textMode === mode.id ? 'bg-accent text-white' : 'text-ink-soft hover:text-ink'
+              'flex items-center gap-1 rounded-full px-3 py-1.5 text-[13px] font-semibold transition-colors',
+              textMode === mode.id ? 'bg-accent text-white' : 'text-ink-muted hover:text-ink'
             )}
           >
             {mode.label}
             {mode.beta && (
               <span className={cn(
-                'text-[8px] font-bold tracking-wider rounded px-1 py-0.5 leading-none',
-                textMode === mode.id ? 'bg-violet-500 text-white' : 'bg-violet-100 text-violet-600'
+                'rounded px-1 py-0.5 text-[8px] font-bold leading-none tracking-wider',
+                textMode === mode.id ? 'bg-white/25 text-white' : 'bg-tint-lavender text-ink-soft'
               )}>BETA</span>
             )}
           </button>
@@ -224,7 +224,7 @@ export function SurahReadingView({
 
       {/* Font style selector — arabic only */}
       {textMode === 'arabic' && (
-        <div className="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-amber-200 bg-[#fef8ed] p-1">
+        <div className="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-line bg-surface p-1">
           {FONT_STYLES.map((fs) => (
             <button
               key={fs.id}
@@ -232,10 +232,10 @@ export function SurahReadingView({
               onClick={() => handleFontStyleChange(fs.id)}
               title={`${fs.label} script`}
               className={cn(
-                'flex flex-col items-center px-3 py-1 rounded-full text-xs font-semibold transition-all leading-tight',
+                'flex flex-col items-center rounded-full px-3 py-1 text-[11px] font-semibold leading-tight transition-colors',
                 fontStyle === fs.id
-                  ? 'bg-amber-700 text-white shadow-sm'
-                  : 'text-amber-800 hover:bg-amber-100'
+                  ? 'bg-accent text-white'
+                  : 'text-ink-muted hover:bg-accent-soft/60 hover:text-accent-strong'
               )}
             >
               <span>{fs.label}</span>
@@ -253,7 +253,7 @@ export function SurahReadingView({
 
       {/* Font size A− / A+ */}
       {textMode === 'arabic' && (
-        <div className="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-line bg-line-soft px-2 py-1">
+        <div className="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-line bg-surface px-2 py-1">
           <button
             type="button"
             onClick={() => {
@@ -262,7 +262,7 @@ export function SurahReadingView({
             }}
             disabled={fontSize === 'sm'}
             aria-label="Decrease font size"
-            className="w-7 h-7 flex items-center justify-center text-sm font-bold text-ink-soft hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed rounded-full hover:bg-line transition-colors"
+            className="flex h-7 w-7 items-center justify-center rounded-full text-[13px] font-bold text-ink-soft transition-colors hover:bg-accent-soft/60 hover:text-accent-strong disabled:cursor-not-allowed disabled:opacity-30"
           >
             A<span className="text-[9px]">−</span>
           </button>
@@ -274,7 +274,7 @@ export function SurahReadingView({
             }}
             disabled={fontSize === 'xl'}
             aria-label="Increase font size"
-            className="w-7 h-7 flex items-center justify-center text-sm font-bold text-ink-soft hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed rounded-full hover:bg-line transition-colors"
+            className="flex h-7 w-7 items-center justify-center rounded-full text-[13px] font-bold text-ink-soft transition-colors hover:bg-accent-soft/60 hover:text-accent-strong disabled:cursor-not-allowed disabled:opacity-30"
           >
             A<span className="text-[11px]">+</span>
           </button>
@@ -286,7 +286,7 @@ export function SurahReadingView({
         <button
           type="button"
           onClick={() => setFocusMode(true)}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-line-soft px-3 py-2 text-xs font-medium text-ink-soft hover:bg-line hover:text-ink transition-colors"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-2 text-[11px] font-semibold text-ink-muted transition-colors hover:border-accent/30 hover:text-accent-strong"
           aria-label="Enter focus mode"
         >
           <Maximize2 className="h-3.5 w-3.5" />
@@ -297,9 +297,9 @@ export function SurahReadingView({
   );
 
   const audioPanel = showAudioControls && Object.keys(audioData).length > 0 && (
-    <div className="mb-4 rounded-2xl border border-line bg-surface/90 p-3 shadow-sm md:p-4">
+    <div className="mb-4 rounded-2xl border border-line bg-surface p-3 md:p-4">
       <div className="flex flex-wrap items-center gap-2 md:gap-3">
-        <span className="text-sm font-medium text-muted">Listen</span>
+        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-muted">Listen</span>
         <ReciterSelector
           audioData={audioData}
           selectedReciter={selectedReciter}
@@ -325,16 +325,18 @@ export function SurahReadingView({
       {/* Surah header — shown once at top */}
       <div className="mb-6 md:mb-10 text-center">
         {/* Top rule */}
-        <div className="flex items-center gap-2 mb-4">
-          <div className="flex-1 h-px bg-amber-400/50" />
-          <span className="text-amber-500/60 text-sm" aria-hidden="true">✦</span>
-          <div className="flex-1 h-px bg-amber-400/50" />
+        <div className="mb-4 flex items-center gap-2">
+          <div className="h-px flex-1 bg-gold/40" />
+          <span className="text-sm text-gold" aria-hidden="true">✦</span>
+          <div className="h-px flex-1 bg-gold/40" />
         </div>
 
-        <p lang="ar" className={`${fontClass} text-2xl md:text-4xl font-bold text-amber-950 leading-tight`}>
+        <p lang="ar" className={`${fontClass} text-2xl md:text-4xl font-bold text-ink leading-tight`}>
           {surahNameArabic}
         </p>
-        <p className="mt-1.5 text-sm md:text-base text-amber-800/60 italic">{surahNameTranslation}</p>
+        <p className="mt-1.5 text-[11px] uppercase tracking-[0.16em] text-ink-muted md:text-xs">
+          {surahNameTranslation}
+        </p>
 
         {/* Revelation info row */}
         <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
@@ -342,21 +344,21 @@ export function SurahReadingView({
           <span className={cn(
             `${fontClass} text-xs md:text-sm px-3 py-0.5 rounded-full border`,
             isMadinan
-              ? 'border-emerald-300/60 bg-emerald-50/80 text-emerald-800'
-              : 'border-amber-300/60 bg-amber-50/80 text-amber-800'
+              ? 'border-transparent bg-tint-sage text-accent-strong'
+              : 'border-transparent bg-tint-sun text-gold-text'
           )}>
             {isMadinan ? 'مَدَنِيَّة' : 'مَكِّيَّة'}
           </span>
 
           {/* Ayah count */}
-          <span lang="ar" className={`${fontClass} text-xs md:text-sm text-amber-800/60`}>
+          <span lang="ar" className={`${fontClass} text-xs md:text-sm text-ink-muted`}>
             {toArabicIndicNumber(totalAyah)} آيَة
           </span>
 
           {/* Period + year info */}
           {revelation && (
             <>
-              <span className="text-amber-400/40 text-xs">•</span>
+              <span className="text-xs text-gold">•</span>
               <span
                 title={`${PERIOD_DESCRIPTIONS[revelation.period]}\n\n${APPROXIMATION_NOTE}`}
                 className={cn(
@@ -367,11 +369,11 @@ export function SurahReadingView({
                 <span className={cn('w-1.5 h-1.5 rounded-full shrink-0', PERIOD_COLORS[revelation.period].dot)} />
                 {PERIOD_LABELS[revelation.period]}
               </span>
-              <span title={APPROXIMATION_NOTE} className="text-amber-700/60 text-[11px] md:text-xs font-medium cursor-help">
+              <span title={APPROXIMATION_NOTE} className="cursor-help text-[11px] font-medium text-ink-muted md:text-xs">
                 {revelation.yearCE} CE*
               </span>
-              <span className="text-amber-400/40 text-xs">•</span>
-              <span title={APPROXIMATION_NOTE} className="text-amber-700/50 text-[11px] md:text-xs italic cursor-help">
+              <span className="text-xs text-gold">•</span>
+              <span title={APPROXIMATION_NOTE} className="cursor-help text-[11px] text-ink-muted md:text-xs">
                 {revelation.yearProphethood}
               </span>
             </>
@@ -379,10 +381,10 @@ export function SurahReadingView({
         </div>
 
         {/* Bottom rule */}
-        <div className="flex items-center gap-2 mt-4">
-          <div className="flex-1 h-px bg-amber-400/50" />
-          <span className="text-amber-500/60 text-sm" aria-hidden="true">✦</span>
-          <div className="flex-1 h-px bg-amber-400/50" />
+        <div className="mt-4 flex items-center gap-2">
+          <div className="h-px flex-1 bg-gold/40" />
+          <span className="text-sm text-gold" aria-hidden="true">✦</span>
+          <div className="h-px flex-1 bg-gold/40" />
         </div>
       </div>
 
@@ -399,11 +401,11 @@ export function SurahReadingView({
               بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
             </p>
           ) : (
-            <p className="text-lg md:text-2xl italic text-amber-900/80 leading-loose">
+            <p className="text-lg leading-loose text-ink-soft md:text-2xl">
               Bismi Allāhi r-raḥmāni r-raḥīm
             </p>
           )}
-          <p className="mt-1 text-[11px] md:text-xs text-amber-800/55 italic">
+          <p className="mt-1 text-[11px] text-ink-muted md:text-xs">
             In the Name of Allah—the Most Compassionate, Most Merciful
           </p>
         </div>
@@ -413,7 +415,7 @@ export function SurahReadingView({
       {pages.map((pageAyahs, pageIndex) => (
         <div key={pageIndex}>
           {textMode === 'arabic' ? (
-            <div className={`mushaf-text ${fontClass} ${FONT_SIZE_CLASSES[fontSize]} text-[#1c1008]`}>
+            <div className={`mushaf-text ${fontClass} ${FONT_SIZE_CLASSES[fontSize]} text-ink`}>
               {pageAyahs.map((ayah) => (
                 <span
                   key={ayah.ayahNo}
@@ -421,7 +423,7 @@ export function SurahReadingView({
                   className={cn(
                     'inline transition-all duration-300 rounded px-0.5',
                     sharedPlayback?.activeAyahNumber === ayah.ayahNo &&
-                      'bg-emerald-100/80 text-emerald-950 ring-1 ring-emerald-300/60'
+                      'bg-accent-soft ring-1 ring-accent/25'
                   )}
                 >
                   {ayah.arabic}
@@ -437,7 +439,7 @@ export function SurahReadingView({
               ))}
             </div>
           ) : (
-            <div className="mushaf-text text-base md:text-xl leading-[2.4] md:leading-[2.6] text-[#3a2a10] italic">
+            <div className="mushaf-text text-base md:text-xl leading-[2.4] md:leading-[2.6] text-ink-soft italic">
               {pageAyahs.map((ayah) => (
                 <span
                   key={ayah.ayahNo}
@@ -445,7 +447,7 @@ export function SurahReadingView({
                   className={cn(
                     'inline transition-all duration-300 rounded px-0.5',
                     sharedPlayback?.activeAyahNumber === ayah.ayahNo &&
-                      'bg-emerald-100/80 text-emerald-950 ring-1 ring-emerald-300/60'
+                      'bg-accent-soft ring-1 ring-accent/25'
                   )}
                 >
                   {ayah.transliteration}
@@ -472,19 +474,19 @@ export function SurahReadingView({
       {/* Final page number */}
       {pages.length > 0 && (
         <div className="mt-6 flex items-center gap-3">
-          <div className="flex-1 h-px bg-amber-300/50" />
-          <span className="text-xs md:text-sm text-amber-700/60 font-mushaf">
+          <div className="h-px flex-1 bg-gold/40" />
+          <span className="font-mushaf text-xs text-gold-text md:text-sm">
             {toArabicIndicNumber(pages.length)}
           </span>
-          <div className="flex-1 h-px bg-amber-300/50" />
+          <div className="h-px flex-1 bg-gold/40" />
         </div>
       )}
     </div>
   ) : (
     /* ── Translation — continuous scroll ── */
-    <div className="space-y-2 rounded-2xl bg-surface-warm/70 px-3 py-4 md:space-y-4 md:px-8 md:py-6">
+    <div className="space-y-2 rounded-2xl border border-line bg-surface px-3 py-4 md:space-y-4 md:px-8 md:py-6">
       {showBismillah && (
-        <p className="text-center text-sm md:text-base italic text-muted pb-3 border-b border-line mb-4">
+        <p className="mb-4 border-b border-line pb-3 text-center text-[13px] text-ink-muted md:text-sm">
           In the Name of Allah—the Most Compassionate, Most Merciful
         </p>
       )}
@@ -493,12 +495,12 @@ export function SurahReadingView({
           key={ayah.ayahNo}
           id={`ayah-${surahNumber}-${ayah.ayahNo}`}
           className={cn(
-            'rounded-xl px-3 py-2 text-sm leading-7 text-ink transition-colors duration-300 md:text-xl md:leading-10',
+            'rounded-xl px-3 py-2 text-[15px] leading-8 text-ink transition-colors duration-300 md:text-lg md:leading-10',
             sharedPlayback?.activeAyahNumber === ayah.ayahNo &&
-              'bg-emerald-100/80 text-ink ring-1 ring-emerald-200'
+              'bg-accent-soft ring-1 ring-accent/25'
           )}
         >
-          <span className="font-semibold text-ink">{ayah.ayahNo}.</span>{' '}
+          <span className="font-heading font-bold text-accent-strong">{ayah.ayahNo}.</span>{' '}
           {ayah.translation}
         </p>
       ))}
@@ -523,16 +525,16 @@ export function SurahReadingView({
             onClick={() => setSelectedAyahNo(null)}
           />
           {/* Bottom sheet */}
-          <div className="fixed bottom-0 inset-x-0 z-50 animate-in slide-in-from-bottom-4 duration-200">
-            <div className="mx-auto max-w-lg rounded-t-2xl border border-amber-200 bg-[#fdf8ee] px-5 py-4 shadow-2xl">
+          <div className="fixed inset-x-0 bottom-20 z-50 px-2 animate-in slide-in-from-bottom-4 duration-200 md:bottom-0 md:px-0">
+            <div className="mx-auto max-w-lg rounded-2xl border border-line bg-surface px-5 py-4 shadow-card-hover md:rounded-b-none md:rounded-t-2xl">
               <div className="mb-3 flex items-center justify-between">
-                <p className="text-sm font-semibold text-amber-900">
+                <p className="font-heading text-[13px] font-bold tracking-[-0.025em] text-ink">
                   {surahNameTranslation} — Verse {selectedAyahNo}
                 </p>
                 <button
                   type="button"
                   onClick={() => setSelectedAyahNo(null)}
-                  className="rounded-full p-1 text-amber-700 hover:bg-amber-100 transition-colors"
+                  className="rounded-full p-1 text-ink-muted transition-colors hover:bg-accent-soft/60 hover:text-accent-strong"
                   aria-label="Close"
                 >
                   <X className="h-4 w-4" />
@@ -546,10 +548,10 @@ export function SurahReadingView({
                     setSelectedAyahNo(null);
                   }}
                   className={cn(
-                    'flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors',
+                    'flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-2.5 text-[13px] font-semibold transition-colors',
                     isBookmarked(surahNumber, selectedAyahNo)
-                      ? 'bg-amber-200 text-amber-800 hover:bg-amber-300'
-                      : 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+                      ? 'bg-gold-soft text-gold-text hover:bg-gold/30'
+                      : 'bg-tint-sun text-gold-text hover:bg-gold-soft'
                   )}
                 >
                   {isBookmarked(surahNumber, selectedAyahNo)
@@ -560,7 +562,7 @@ export function SurahReadingView({
                 <Link
                   href={`/quran/${surahNumber}?ayah=${selectedAyahNo}`}
                   onClick={() => setSelectedAyahNo(null)}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-line-soft px-4 py-2.5 text-sm font-medium text-ink-soft hover:bg-line transition-colors"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-full border border-line bg-surface px-4 py-2.5 text-[13px] font-semibold text-accent-strong transition-colors hover:bg-accent-soft/60"
                 >
                   <ExternalLink className="h-4 w-4" />
                   Verse view
@@ -577,7 +579,7 @@ export function SurahReadingView({
           <button
             type="button"
             onClick={() => setFocusMode(false)}
-            className="fixed top-4 right-4 z-[60] inline-flex items-center gap-1.5 rounded-full bg-surface/80 border border-line px-3 py-1.5 text-xs font-medium text-ink-soft shadow-md hover:bg-surface hover:text-ink backdrop-blur-sm transition-colors"
+            className="fixed right-4 top-4 z-[60] inline-flex items-center gap-1.5 rounded-full border border-line bg-surface/90 px-3 py-1.5 text-[11px] font-semibold text-ink-soft shadow-card backdrop-blur-sm transition-colors hover:bg-surface hover:text-accent-strong"
           >
             <X className="h-3.5 w-3.5" />
             Exit focus

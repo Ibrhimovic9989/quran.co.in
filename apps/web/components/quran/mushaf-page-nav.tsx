@@ -40,7 +40,7 @@ export function MushafPageNav({ page, surahs }: { page: number; surahs: string[]
         {next ? (
           <Link
             href={`/mushaf/${next}`}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-ink-soft shadow-card transition-colors hover:border-gold/50 hover:text-ink"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-ink-soft shadow-card transition-colors hover:border-accent/30 hover:text-ink"
             aria-label={`Page ${next}`}
           >
             <ChevronLeft className="h-5 w-5" />
@@ -65,7 +65,7 @@ export function MushafPageNav({ page, surahs }: { page: number; surahs: string[]
         {prev ? (
           <Link
             href={`/mushaf/${prev}`}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-ink-soft shadow-card transition-colors hover:border-gold/50 hover:text-ink"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-ink-soft shadow-card transition-colors hover:border-accent/30 hover:text-ink"
             aria-label={`Page ${prev}`}
           >
             <ChevronRight className="h-5 w-5" />

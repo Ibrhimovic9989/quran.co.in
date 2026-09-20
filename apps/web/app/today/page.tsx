@@ -121,17 +121,17 @@ export default function TodayPage() {
       const origBg = card.style.background;
       const origPad = card.style.padding;
       const origRadius = card.style.borderRadius;
-      card.style.background = 'linear-gradient(to bottom, #0d2218 0%, #0a1a12 100%)';
+      card.style.background = 'linear-gradient(to bottom, #0e2028 0%, #08171c 100%)';
       card.style.padding = isMobile ? '40px 24px 32px' : '56px 48px 40px';
       card.style.borderRadius = '0px';
 
       // Inject branding footer
       const footer = document.createElement('div');
       footer.setAttribute('data-tmp', 'true');
-      footer.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding-top:20px;margin-top:24px;border-top:1px solid rgba(16,185,129,0.15);';
+      footer.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding-top:20px;margin-top:24px;border-top:1px solid rgba(111,195,201,0.18);';
       footer.innerHTML = `
-        <span style="font-size:12px;color:rgba(110,231,183,0.5);font-family:system-ui;">Verse of the Day</span>
-        <span style="font-size:14px;font-weight:600;color:rgba(16,185,129,0.6);font-family:system-ui;letter-spacing:0.05em;">quran.co.in</span>
+        <span style="font-size:12px;color:rgba(228,241,244,0.5);font-family:system-ui;">Verse of the Day</span>
+        <span style="font-size:14px;font-weight:600;color:rgba(111,195,201,0.75);font-family:system-ui;letter-spacing:0.05em;">quran.co.in</span>
       `;
       card.appendChild(footer);
 
@@ -159,7 +159,7 @@ export default function TodayPage() {
       const ctx = canvas.getContext('2d')!;
 
       // Fill with the same dark background
-      ctx.fillStyle = '#0d2218';
+      ctx.fillStyle = '#08171c';
       ctx.fillRect(0, 0, IG_W, IG_H);
 
       // Scale content to fit within canvas with padding
@@ -203,87 +203,87 @@ export default function TodayPage() {
     : '';
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#0d2218] via-[#0d2218] to-[#0a1a12]">
+    <main className="min-h-screen bg-paper pb-16 pt-8 md:pt-12">
       <Container>
-        <div className="flex flex-col items-center justify-center min-h-[90vh] py-16 text-center">
+        <div className="mx-auto flex max-w-2xl flex-col items-center py-4 text-center">
 
           {/* Ayah card */}
           {loading ? (
-            <div className="w-full max-w-2xl space-y-6 animate-pulse">
-              <div className="h-32 bg-emerald-900/30 rounded-3xl" />
-              <div className="h-4 bg-emerald-900/20 rounded-full w-3/4 mx-auto" />
-              <div className="h-4 bg-emerald-900/20 rounded-full w-1/2 mx-auto" />
+            <div className="w-full max-w-2xl animate-pulse space-y-4">
+              <div className="h-56 rounded-[22px] bg-line-soft" />
+              <div className="mx-auto h-3.5 w-3/4 rounded-full bg-line-soft" />
+              <div className="mx-auto h-3.5 w-1/2 rounded-full bg-line-soft" />
             </div>
           ) : ayah ? (
             <>
               {/* ── Shareable content (captured by html-to-image) ── */}
-              <div data-share-card className="w-full max-w-2xl space-y-8">
+              <div data-share-card className="w-full max-w-2xl space-y-7 rounded-[22px] bg-night px-6 py-9 md:px-10 md:py-12">
                 {/* Header badge */}
                 <div className="mb-2">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-emerald-800/60 bg-emerald-900/40 px-4 py-1.5 text-xs font-medium text-emerald-300 mb-4">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-night-gold/25 bg-night-surface px-3.5 py-1.5 text-[11px] font-semibold text-night-gold">
+                    <span className="h-1.5 w-1.5 rounded-full bg-night-gold" />
                     {type === 'personalised' ? 'Personalised for you' : 'Verse of the Day'}
                   </div>
                   {formattedDate && (
-                    <p className="text-xs text-emerald-600">{formattedDate}</p>
+                    <p className="text-[11px] text-night-ink/50">{formattedDate}</p>
                   )}
                 </div>
 
                 {/* Arabic text */}
-                <div className="rounded-3xl border border-emerald-800/40 bg-emerald-950/60 px-8 py-10 backdrop-blur-sm shadow-2xl">
+                <div className="rounded-[18px] border border-night-gold/15 bg-night-surface px-6 py-8 md:px-8 md:py-10">
                   {/* Decorative rule */}
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="flex-1 h-px bg-amber-700/30" />
-                    <span className="text-amber-600/50 text-sm">✦</span>
-                    <div className="flex-1 h-px bg-amber-700/30" />
+                    <div className="h-px flex-1 bg-night-gold/25" />
+                    <span className="text-sm text-night-gold/60">✦</span>
+                    <div className="h-px flex-1 bg-night-gold/25" />
                   </div>
 
                   <p
                     dir="rtl"
                     lang="ar"
-                    className="font-mushaf text-3xl md:text-5xl leading-[2] md:leading-[2.1] text-amber-100"
+                    className="font-mushaf text-3xl md:text-5xl leading-[2] md:leading-[2.1] text-night-ink"
                   >
                     {ayah.arabicText}
                     <span className="inline-flex items-center justify-center align-middle mx-2">
                       <span className="relative inline-flex items-center justify-center w-8 h-8 md:w-10 md:h-10">
                         <svg viewBox="0 0 32 32" className="absolute inset-0 w-full h-full" aria-hidden="true">
-                          <circle cx="16" cy="16" r="14.5" fill="none" stroke="#9a7c4f" strokeWidth="1" />
-                          <circle cx="16" cy="16" r="11" fill="none" stroke="#9a7c4f" strokeWidth="0.5" opacity="0.6" />
+                          <circle cx="16" cy="16" r="14.5" fill="none" stroke="#6fc3c9" strokeWidth="1" opacity="0.7" />
+                          <circle cx="16" cy="16" r="11" fill="none" stroke="#6fc3c9" strokeWidth="0.5" opacity="0.45" />
                         </svg>
-                        <span className="relative font-mushaf text-[11px] md:text-[13px] text-amber-300 leading-none select-none">
+                        <span className="relative font-mushaf text-[11px] md:text-[13px] text-night-gold leading-none select-none">
                           {toArabicIndicNumber(ayah.ayahNumber)}
                         </span>
                       </span>
                     </span>
                   </p>
 
-                  <div className="flex items-center gap-3 mt-6">
-                    <div className="flex-1 h-px bg-amber-700/30" />
-                    <span className="text-amber-600/50 text-sm">✦</span>
-                    <div className="flex-1 h-px bg-amber-700/30" />
+                  <div className="mt-6 flex items-center gap-3">
+                    <div className="h-px flex-1 bg-night-gold/25" />
+                    <span className="text-sm text-night-gold/60">✦</span>
+                    <div className="h-px flex-1 bg-night-gold/25" />
                   </div>
                 </div>
 
                 {/* Translation */}
                 {ayah.translationText && (
-                  <blockquote className="text-lg md:text-2xl leading-9 md:leading-10 text-emerald-100/90 italic font-light px-2">
+                  <blockquote className="px-2 text-[17px] font-light leading-9 text-night-ink/90 md:text-[22px] md:leading-10">
                     &ldquo;{ayah.translationText}&rdquo;
                   </blockquote>
                 )}
 
                 {/* Reference */}
-                <p className="text-sm text-emerald-400/80 font-medium">
+                <p className="text-[13px] font-semibold text-night-gold">
                   — {ayah.englishName}{ayah.englishNameTranslation ? ` (${ayah.englishNameTranslation})` : ''}, {ayah.surahNumber}:{ayah.ayahNumber}
                 </p>
               </div>
 
               {/* ── Actions (NOT captured in share image) ── */}
-              <div className="w-full max-w-2xl mt-8">
-                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <div className="mt-7 w-full max-w-2xl">
+                <div className="flex flex-wrap items-center justify-center gap-2.5">
                   {/* Read full surah */}
                   <Link
                     href={`/quran/${ayah.surahNumber}?ayah=${ayah.ayahNumber}`}
-                    className="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-500 transition-colors"
+                    className="inline-flex items-center gap-2 rounded-[10px] bg-accent px-4 py-3 text-xs font-semibold text-white transition-colors hover:bg-accent-strong"
                   >
                     <BookOpen className="h-4 w-4" />
                     Read in context
@@ -292,9 +292,9 @@ export default function TodayPage() {
                   {/* Copy */}
                   <button
                     onClick={handleCopy}
-                    className="inline-flex items-center gap-2 rounded-full border border-emerald-700/60 bg-emerald-900/40 px-4 py-2.5 text-sm font-medium text-emerald-300 hover:bg-emerald-800/40 transition-colors"
+                    className="inline-flex items-center gap-2 rounded-[10px] border border-line bg-surface px-4 py-3 text-xs font-semibold text-accent-strong transition-colors hover:bg-accent-soft"
                   >
-                    {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
+                    {copied ? <Check className="h-4 w-4 text-accent" /> : <Copy className="h-4 w-4" />}
                     {copied ? 'Copied!' : 'Copy verse'}
                   </button>
 
@@ -302,7 +302,7 @@ export default function TodayPage() {
                   <button
                     onClick={handleShareImage}
                     disabled={sharingImage}
-                    className="inline-flex items-center gap-2 rounded-full border border-amber-600/60 bg-amber-900/30 px-4 py-2.5 text-sm font-medium text-amber-300 hover:bg-amber-800/40 transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-[10px] border border-line bg-tint-sun px-4 py-3 text-xs font-semibold text-ink transition-opacity hover:opacity-90 disabled:opacity-50"
                   >
                     {sharingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share2 className="h-4 w-4" />}
                     {sharingImage ? 'Generating…' : 'Share as Image'}
@@ -311,7 +311,7 @@ export default function TodayPage() {
                   {/* Share text */}
                   <button
                     onClick={handleNativeShare}
-                    className="inline-flex items-center gap-2 rounded-full border border-emerald-700/60 bg-emerald-900/40 px-4 py-2.5 text-sm font-medium text-emerald-300 hover:bg-emerald-800/40 transition-colors"
+                    className="inline-flex items-center gap-2 rounded-[10px] border border-line bg-surface px-4 py-3 text-xs font-semibold text-accent-strong transition-colors hover:bg-accent-soft"
                   >
                     <Share2 className="h-4 w-4" />
                     Share
@@ -322,7 +322,7 @@ export default function TodayPage() {
                     href={whatsappUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border border-green-800/60 bg-green-900/30 px-4 py-2.5 text-sm font-medium text-green-300 hover:bg-green-800/40 transition-colors"
+                    className="inline-flex items-center gap-2 rounded-[10px] border border-line bg-surface px-4 py-3 text-xs font-semibold text-ink-soft transition-colors hover:bg-accent-soft hover:text-accent-strong"
                   >
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
@@ -335,7 +335,7 @@ export default function TodayPage() {
                     href={twitterUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border border-sky-800/60 bg-sky-900/30 px-4 py-2.5 text-sm font-medium text-sky-300 hover:bg-sky-800/40 transition-colors"
+                    className="inline-flex items-center gap-2 rounded-[10px] border border-line bg-surface px-4 py-3 text-xs font-semibold text-ink-soft transition-colors hover:bg-accent-soft hover:text-accent-strong"
                   >
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.743l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
@@ -347,7 +347,7 @@ export default function TodayPage() {
                 {/* Refresh */}
                 <button
                   onClick={load}
-                  className="inline-flex items-center gap-1.5 text-xs text-emerald-600 hover:text-emerald-400 transition-colors mt-4"
+                  className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-semibold text-muted transition-colors hover:text-accent-strong"
                 >
                   <RefreshCw className="h-3 w-3" />
                   Refresh
@@ -355,14 +355,14 @@ export default function TodayPage() {
               </div>
             </>
           ) : (
-            <p className="text-emerald-400">Unable to load today&apos;s verse. Please try again.</p>
+            <p className="text-[13px] text-muted">Unable to load today&apos;s verse. Please try again.</p>
           )}
 
           {/* Bottom links */}
-          <div className="mt-16 flex gap-6 text-xs text-emerald-700">
-            <Link href="/quran" className="hover:text-emerald-400 transition-colors">Browse all Surahs</Link>
-            <Link href="/ask" className="hover:text-emerald-400 transition-colors">Ask the Quran</Link>
-            <Link href="/topics" className="hover:text-emerald-400 transition-colors">Explore topics</Link>
+          <div className="mt-12 flex flex-wrap justify-center gap-5 text-[11px] text-muted">
+            <Link href="/quran" className="transition-colors hover:text-accent-strong">Browse all Surahs</Link>
+            <Link href="/ask" className="transition-colors hover:text-accent-strong">Ask the Quran</Link>
+            <Link href="/topics" className="transition-colors hover:text-accent-strong">Explore topics</Link>
           </div>
         </div>
       </Container>

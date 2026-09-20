@@ -1,7 +1,8 @@
 // Benefits Section Component
 // Connects with users' deeper motivations and emotional needs
 // Follows Atomic Design - Organism component
-// Senior Frontend/UI-UX Implementation
+// Repainted to the calm language: white cards, hairline borders, pastel
+// icon chips — no gradient tints behind the text, no lift-on-hover.
 
 'use client';
 
@@ -24,94 +25,86 @@ interface Benefit {
   icon: React.ReactNode;
   title: string;
   description: string;
-  gradient: string;
-  iconBg: string;
+  tint: string;
 }
 
 const benefits: Benefit[] = [
   {
-    icon: <IconHeartHandshake className="w-8 h-8" />,
+    icon: <IconHeartHandshake className="w-5 h-5" />,
     title: 'Spiritual Growth',
     description: "Deepen your connection with Allah's words through daily reflection and study. Experience the transformative power of consistent engagement with the Quran.",
-    gradient: 'from-emerald-50 to-emerald-100/30',
-    iconBg: 'bg-emerald-100',
+    tint: 'bg-tint-sage',
   },
   {
-    icon: <IconBrain className="w-8 h-8" />,
+    icon: <IconBrain className="w-5 h-5" />,
     title: 'Knowledge & Understanding',
     description: 'Gain clarity on complex verses with expert commentary and multiple perspectives. The Prophet ﷺ said: <em>"Seeking knowledge is an obligation upon every Muslim."</em> Understand the deeper meanings and wisdom within each ayah.',
-    gradient: 'from-blue-50 to-blue-100/30',
-    iconBg: 'bg-blue-100',
+    tint: 'bg-tint-sky',
   },
   {
-    icon: <IconDeviceMobile className="w-8 h-8" />,
+    icon: <IconDeviceMobile className="w-5 h-5" />,
     title: 'Convenience & Accessibility',
     description: 'Study at your own pace, anywhere, anytime. No need for multiple books or apps. Everything you need is in one beautiful, accessible platform.',
-    gradient: 'from-purple-50 to-purple-100/30',
-    iconBg: 'bg-purple-100',
+    tint: 'bg-tint-lavender',
   },
   {
-    icon: <IconUsers className="w-8 h-8" />,
+    icon: <IconUsers className="w-5 h-5" />,
     title: 'Community & Learning',
     description: 'Join a community dedicated to understanding and living by the Quran\'s teachings. Share insights and grow together in your spiritual journey.',
-    gradient: 'from-amber-50 to-amber-100/30',
-    iconBg: 'bg-amber-100',
+    tint: 'bg-tint-peach',
   },
 ];
 
 export function BenefitsSection({ className }: BenefitsSectionProps) {
   return (
-    <section className={cn("w-full py-8 md:py-16 lg:py-20 bg-paper", className)}>
-      <Container>
-        {/* Section Header - Mobile optimized */}
-        <div className="max-w-4xl mx-auto text-center mb-8 md:mb-12">
+    <section className={cn("w-full bg-paper py-10 md:py-14 lg:py-16", className)}>
+      <Container className="max-w-[960px]">
+        {/* Section Header — left-aligned */}
+        <div className="max-w-2xl">
           <Heading 
             level={2} 
-            className="text-2xl md:text-4xl lg:text-5xl font-bold text-ink mb-3 md:mb-4 leading-tight"
+            className="font-heading text-[clamp(22px,3vw,30px)] font-bold leading-[1.3] tracking-[-0.03em] text-ink"
           >
             Transform Your Relationship with the{' '}
-            <span className="bg-gradient-to-r from-ink via-ink-soft to-ink bg-clip-text text-transparent whitespace-nowrap">
+            <span className="whitespace-nowrap text-accent">
               Quran
             </span>
           </Heading>
-          <Text className="text-sm md:text-lg text-ink-soft max-w-2xl mx-auto leading-relaxed">
+          <Text className="mt-3 text-[14px] leading-[1.75] text-muted md:text-[15px]">
             More than just reading—experience a deeper connection that enriches your spiritual life and understanding. Allah says: <span className="italic">"So remember Me; I will remember you."</span> — Al-Baqarah 2:152
           </Text>
         </div>
 
-        {/* Benefits Grid - Mobile optimized */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5 lg:gap-6 max-w-5xl mx-auto">
+        {/* Benefits Grid */}
+        <div className="mt-7 grid grid-cols-1 gap-3 md:mt-9 md:grid-cols-2">
           {benefits.map((benefit, index) => (
             <Card
               key={index}
               className={cn(
-                "relative overflow-hidden border border-line hover:border-line",
-                "transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
-                `bg-gradient-to-br ${benefit.gradient}`,
-                "group/benefit"
+                "rounded-2xl border border-line bg-surface p-5 shadow-none",
+                "transition-all duration-200 hover:border-accent/30 hover:shadow-card"
               )}
             >
-              {/* Icon Container - Mobile optimized */}
-              <div className="mb-3 md:mb-5">
+              {/* Icon chip */}
+              <div className="mb-4">
                 <div className={cn(
-                  "inline-flex items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-lg md:rounded-2xl",
-                  benefit.iconBg,
-                  "text-ink shadow-sm group-hover/benefit:scale-110 transition-transform duration-300"
+                  "inline-flex h-10 w-10 items-center justify-center rounded-full text-ink-soft",
+                  benefit.tint
                 )}>
                   {benefit.icon}
                 </div>
               </div>
 
-              {/* Content - Mobile optimized */}
-              <div className="space-y-1.5 md:space-y-3">
-                <Heading level={3} className="text-lg md:text-2xl font-bold text-ink">
+              {/* Content */}
+              <div>
+                <Heading level={3} className="font-heading text-base font-bold tracking-[-0.02em] text-ink md:text-[17px]">
                   {benefit.title}
                 </Heading>
-                <p className="text-xs md:text-base text-ink-soft leading-relaxed" dangerouslySetInnerHTML={{ __html: benefit.description }} />
+                <p
+                  className="mt-1.5 text-xs leading-[1.75] text-muted md:text-[13px]"
+                  dangerouslySetInnerHTML={{ __html: benefit.description }}
+                />
               </div>
-
-              {/* Hover Effect Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-surface/0 to-surface/10 opacity-0 group-hover/benefit:opacity-100 transition-opacity duration-300 pointer-events-none" />
             </Card>
           ))}
         </div>

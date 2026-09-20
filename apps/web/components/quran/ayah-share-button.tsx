@@ -196,7 +196,8 @@ export function AyahShareButton({
         onClick={() => setIsOpen(true)}
         className={cn(
           'flex items-center gap-2',
-          iconOnly && 'h-9 w-9 rounded-full border-0 bg-line-soft p-0 text-ink-soft hover:bg-line'
+          iconOnly &&
+            'h-9 w-9 rounded-full border-line bg-surface p-0 text-ink-muted hover:bg-accent-soft/50 hover:text-accent-strong'
         )}
         aria-label="Send ayah"
         title="Send ayah"
@@ -216,28 +217,30 @@ export function AyahShareButton({
             onClick={closeDialog}
           >
             <div
-              className="relative w-full max-h-[85vh] overflow-y-auto rounded-t-[1.75rem] bg-surface px-4 pb-5 pt-4 shadow-2xl md:mx-auto md:max-h-[calc(100vh-2rem)] md:max-w-2xl md:rounded-[2rem] md:px-8 md:pb-8 md:pt-8"
+              className="relative max-h-[85vh] w-full overflow-y-auto rounded-t-[1.75rem] border border-line bg-surface px-4 pb-5 pt-4 shadow-card-hover md:mx-auto md:max-h-[calc(100vh-2rem)] md:max-w-2xl md:rounded-[2rem] md:px-8 md:pb-8 md:pt-8"
               onClick={(event) => event.stopPropagation()}
             >
               <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-line md:hidden" />
               <button
                 type="button"
                 aria-label="Close send dialog"
-                className="absolute right-3 top-3 z-10 rounded-full bg-surface/90 p-2 text-muted transition-colors hover:bg-line-soft hover:text-ink md:right-4 md:top-4"
+                className="absolute right-3 top-3 z-10 rounded-full bg-surface/90 p-2 text-ink-muted transition-colors hover:bg-accent-soft/60 hover:text-accent-strong md:right-4 md:top-4"
                 onClick={closeDialog}
               >
                 <X className="w-6 h-6 md:w-7 md:h-7" />
               </button>
 
               <div className="mx-auto max-w-xl text-center">
-                <h2 className="pr-10 text-xl font-bold text-ink md:pr-0 md:text-4xl">Send this Ayah</h2>
-                <p className="mt-1 text-sm text-ink-soft md:mt-3 md:text-lg">
+                <h2 className="pr-10 font-heading text-xl font-bold tracking-[-0.025em] text-ink md:pr-0 md:text-3xl">
+                  Send this Ayah
+                </h2>
+                <p className="mt-1 text-[11px] uppercase tracking-[0.16em] text-ink-muted md:mt-3 md:text-xs">
                   {shareTitle}
                 </p>
                 <p className="mt-3 font-arabic text-lg leading-loose text-ink md:mt-4 md:text-3xl">
                   {truncateText(arabicText, 90)}
                 </p>
-                <p className="mt-2 text-sm leading-relaxed text-ink-soft md:mt-3 md:text-base">
+                <p className="mt-2 text-[13px] leading-[1.75] text-ink-soft md:mt-3 md:text-[15px]">
                   {truncateText(translationText, 120)}
                 </p>
               </div>
@@ -251,20 +254,20 @@ export function AyahShareButton({
                       type="button"
                       onClick={() => handleShareOptionClick(option.onClick)}
                       className={cn(
-                        'flex min-h-[84px] flex-col items-center justify-center gap-2 rounded-2xl bg-surface-warm p-3 text-center transition-colors',
-                        'hover:bg-surface-warm focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2'
+                        'flex min-h-[84px] flex-col items-center justify-center gap-2 rounded-2xl border border-line bg-surface p-3 text-center transition-all',
+                        'hover:border-accent/30 hover:shadow-card focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-paper'
                       )}
                     >
                       <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-white md:h-12 md:w-12">
                         <Icon className="h-5 w-5 md:h-6 md:w-6" />
                       </span>
-                      <span className="text-sm font-medium leading-tight text-ink">{option.label}</span>
+                      <span className="text-[11px] font-semibold leading-tight text-ink">{option.label}</span>
                     </button>
                   );
                 })}
               </div>
 
-              <div className="mt-4 rounded-2xl bg-surface-warm px-4 py-3 text-center text-sm text-ink-soft md:mt-6">
+              <div className="mt-4 rounded-2xl border border-line bg-surface-warm px-4 py-3 text-center text-[11px] text-ink-muted md:mt-6">
                 {copyMessage ?? 'Deep link sends open this exact ayah in the app.'}
               </div>
 

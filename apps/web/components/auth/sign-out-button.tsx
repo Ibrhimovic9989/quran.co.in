@@ -23,7 +23,7 @@ export function SignOutButton({
   return (
     <button
       onClick={handleSignOut}
-      className={className || 'px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700'}
+      className={className || 'rounded-[10px] border border-line bg-surface px-4 py-2.5 text-xs font-semibold text-ink-soft transition-colors hover:border-red-200 hover:text-red-600'}
     >
       {children || 'Sign Out'}
     </button>

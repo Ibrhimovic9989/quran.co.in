@@ -258,30 +258,30 @@ export default function AskPage() {
       // Inject branding header
       const header = document.createElement('div');
       header.setAttribute('data-tmp', 'true');
-      header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid #e5e7eb;';
+      header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;margin-bottom:14px;border-bottom:1px solid #dcebef;';
       header.innerHTML = `
         <div style="display:flex;align-items:center;gap:8px;">
-          <div style="width:28px;height:28px;border-radius:8px;background:#f3e8ff;display:flex;align-items:center;justify-content:center;font-size:14px;">✨</div>
-          <span style="font-size:14px;font-weight:700;color:#7c3aed;">Ask the Quran</span>
+          <div style="width:28px;height:28px;border-radius:8px;background:#e0f6f4;display:flex;align-items:center;justify-content:center;font-size:14px;">✨</div>
+          <span style="font-size:14px;font-weight:700;color:#00636d;">Ask the Quran</span>
         </div>
-        <span style="font-size:12px;color:#9ca3af;font-family:system-ui;">quran.co.in</span>
+        <span style="font-size:12px;color:#58717c;font-family:system-ui;">quran.co.in</span>
       `;
       bubble.prepend(header);
 
       // Inject question bubble
       const qDiv = document.createElement('div');
       qDiv.setAttribute('data-tmp', 'true');
-      qDiv.style.cssText = 'background:#1f2937;color:white;border-radius:14px;padding:10px 16px;margin-bottom:16px;font-size:14px;display:inline-block;max-width:90%;line-height:1.5;';
+      qDiv.style.cssText = 'background:#007e87;color:white;border-radius:14px;padding:10px 16px;margin-bottom:16px;font-size:14px;display:inline-block;max-width:90%;line-height:1.5;';
       qDiv.textContent = question;
       header.after(qDiv);
 
       // Inject footer
       const footer = document.createElement('div');
       footer.setAttribute('data-tmp', 'true');
-      footer.style.cssText = 'padding-top:14px;margin-top:14px;border-top:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;';
+      footer.style.cssText = 'padding-top:14px;margin-top:14px;border-top:1px solid #dcebef;display:flex;align-items:center;justify-content:space-between;';
       footer.innerHTML = `
-        <span style="font-size:10px;color:#9ca3af;">Answers sourced from the Holy Quran</span>
-        <span style="font-size:13px;font-weight:700;color:#7c3aed;">quran.co.in</span>
+        <span style="font-size:10px;color:#58717c;">Answers sourced from the Holy Quran</span>
+        <span style="font-size:13px;font-weight:700;color:#00636d;">quran.co.in</span>
       `;
       bubble.appendChild(footer);
 
@@ -317,20 +317,20 @@ export default function AskPage() {
       const drawBranding = (ctx: CanvasRenderingContext2D, pageNum: number, totalPages: number) => {
         const barY = IG_H - brandingH;
         // Subtle top border
-        ctx.strokeStyle = '#e5e7eb';
+        ctx.strokeStyle = '#dcebef';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(pad, barY);
         ctx.lineTo(IG_W - pad, barY);
         ctx.stroke();
         // "quran.co.in" right-aligned
-        ctx.fillStyle = '#7c3aed';
+        ctx.fillStyle = '#00636d';
         ctx.font = 'bold 28px system-ui, sans-serif';
         ctx.textAlign = 'right';
         ctx.fillText('quran.co.in', IG_W - pad, barY + 36);
         // Page indicator left-aligned
         if (totalPages > 1) {
-          ctx.fillStyle = '#9ca3af';
+          ctx.fillStyle = '#58717c';
           ctx.font = '24px system-ui, sans-serif';
           ctx.textAlign = 'left';
           ctx.fillText(`${pageNum} / ${totalPages}`, pad, barY + 34);
@@ -425,15 +425,15 @@ export default function AskPage() {
 
   return (
     <div className="min-h-screen bg-paper">
-      <div className="max-w-3xl mx-auto px-4 py-8 md:py-12 pb-44 md:pb-48">
+      <div className="mx-auto max-w-3xl px-4 py-8 pb-44 md:py-12 md:pb-48">
 
         {/* Header */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-accent-soft mb-4">
-            <Sparkles className="w-6 h-6 text-accent" />
+        <div className="mb-6">
+          <div className="mb-4 grid h-11 w-11 place-items-center rounded-full bg-accent-soft text-accent">
+            <Sparkles className="h-5 w-5" strokeWidth={1.6} />
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-ink mb-2">Ask the Quran</h1>
-          <p className="text-sm md:text-base text-muted max-w-lg mx-auto">
+          <h1 className="font-heading text-[clamp(26px,3.2vw,34px)] font-bold leading-[1.2] tracking-[-0.035em] text-ink">Ask the Quran</h1>
+          <p className="mt-3 max-w-xl text-[15px] leading-[1.7] text-muted">
             {mode === 'focused'
               ? 'Get answers grounded in semantically matched ayahs — every response is cited.'
               : 'Ask about any surah, ayah, or topic. The full Quran is open to you.'}
@@ -441,55 +441,55 @@ export default function AskPage() {
         </div>
 
         {/* Mode toggle */}
-        <div className="flex justify-center mb-8">
-          <div className="inline-flex items-center bg-line-soft rounded-full p-1 gap-1">
+        <div className="mb-7 flex">
+          <div className="inline-flex items-center gap-1 rounded-full border border-line bg-surface p-1">
             <button
               onClick={() => switchMode('focused')}
               className={cn(
-                'inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all',
-                mode === 'focused' ? 'bg-surface text-accent-strong shadow-sm' : 'text-muted hover:text-ink-soft'
+                'inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition-all',
+                mode === 'focused' ? 'bg-accent-soft text-accent-strong' : 'text-muted hover:text-ink-soft'
               )}
             >
-              <Focus className="w-3.5 h-3.5" /> Focused
+              <Focus className="h-3.5 w-3.5" /> Focused
             </button>
             <button
               onClick={() => switchMode('open')}
               className={cn(
-                'inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all',
-                mode === 'open' ? 'bg-surface text-accent-strong shadow-sm' : 'text-muted hover:text-ink-soft'
+                'inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition-all',
+                mode === 'open' ? 'bg-accent-soft text-accent-strong' : 'text-muted hover:text-ink-soft'
               )}
             >
-              <Globe className="w-3.5 h-3.5" /> Open Quran
+              <Globe className="h-3.5 w-3.5" /> Open Quran
             </button>
           </div>
         </div>
 
         {/* Chat area */}
-        <div className="space-y-6 mb-6">
+        <div className="mb-6 space-y-6">
 
           {/* Suggested questions */}
           {messages.length === 0 && (
             <>
               <div className={cn(
-                'text-xs text-center px-3 py-1.5 rounded-full w-fit mx-auto mb-4',
+                'mb-4 w-fit rounded-full border px-3 py-1.5 text-[11px] font-medium',
                 mode === 'focused'
-                  ? 'bg-accent-soft text-accent border border-accent-soft'
-                  : 'bg-gold-soft/40 text-gold-text border border-gold-soft'
+                  ? 'border-line bg-accent-soft text-accent-strong'
+                  : 'border-gold-soft bg-gold-soft text-gold-text'
               )}>
                 {mode === 'focused'
                   ? 'Answers are drawn from semantically related ayahs'
                   : 'Ask about any specific ayah, surah, or Quranic topic'}
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                 {SUGGESTED[mode].map((s) => (
                   <button
                     key={s}
                     onClick={() => ask(s)}
                     className={cn(
-                      'text-left text-sm px-4 py-3 rounded-xl border bg-surface transition-all',
+                      'rounded-2xl border bg-surface px-4 py-3.5 text-left text-[13px] leading-[1.6] text-ink-soft transition-all hover:shadow-card',
                       mode === 'focused'
-                        ? 'border-line hover:border-accent/40 hover:bg-accent-soft/50 text-ink-soft hover:text-accent-strong'
-                        : 'border-line hover:border-gold/50 hover:bg-gold-soft/40/50 text-ink-soft hover:text-gold-text'
+                        ? 'border-line hover:border-accent/30 hover:text-accent-strong'
+                        : 'border-line hover:border-gold/50 hover:text-gold-text'
                     )}
                   >
                     {s}
@@ -510,15 +510,15 @@ export default function AskPage() {
                 className={cn('flex', msg.role === 'user' ? 'justify-end' : 'justify-start')}
               >
                 {msg.role === 'user' ? (
-                  <div className="max-w-[85%] bg-accent text-white rounded-2xl rounded-tr-sm px-4 py-3 text-sm leading-relaxed">
+                  <div className="max-w-[85%] rounded-2xl rounded-tr-sm bg-accent px-4 py-3 text-[13px] leading-relaxed text-white">
                     {msg.content}
                   </div>
                 ) : (
                   <div className="w-full space-y-3">
                     {/* Answer bubble */}
-                    <div className="answer-bubble bg-surface border border-line-soft rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm">
+                    <div className="answer-bubble rounded-2xl rounded-tl-sm border border-line bg-surface px-5 py-4">
                       {msg.content ? (
-                        <div className="text-sm md:text-base space-y-0.5 msg-content">
+                        <div className="msg-content space-y-0.5 text-[14px] leading-[1.75] text-ink-soft md:text-[15px]">
                           {renderMarkdown(msg.content)}
                         </div>
                       ) : (
@@ -527,7 +527,7 @@ export default function AskPage() {
 
                       {/* Share as Image button */}
                       {msg.content && !loading && (
-                        <div data-share-btn="true" className="flex items-center gap-2 mt-3 pt-3 border-t border-line-soft">
+                        <div data-share-btn="true" className="mt-3 flex items-center gap-2 border-t border-line-soft pt-3">
                           <button
                             onClick={() => {
                               const qIdx = i - 1;
@@ -535,12 +535,12 @@ export default function AskPage() {
                               handleShareAnswer(q, i);
                             }}
                             disabled={sharingIdx === i}
-                            className="inline-flex items-center gap-1.5 text-xs font-medium text-muted hover:text-accent transition-colors disabled:opacity-50"
+                            className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-muted transition-colors hover:text-accent-strong disabled:opacity-50"
                           >
                             {sharingIdx === i ? (
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
                             ) : (
-                              <Share2 className="w-3.5 h-3.5" />
+                              <Share2 className="h-3.5 w-3.5" />
                             )}
                             {sharingIdx === i ? 'Generating…' : 'Share as Image'}
                           </button>
@@ -551,8 +551,8 @@ export default function AskPage() {
                     {/* Source ayahs */}
                     {msg.sources && msg.sources.length > 0 && (
                       <div className="space-y-1.5">
-                        <p className="text-xs font-semibold text-muted px-1 flex items-center gap-1">
-                          <BookOpen className="w-3 h-3" />
+                        <p className="flex items-center gap-1 px-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+                          <BookOpen className="h-3 w-3" />
                           {mode === 'focused' ? 'Referenced ayahs' : 'Context provided'}
                         </p>
                         <div className="flex flex-wrap gap-2">
@@ -561,14 +561,14 @@ export default function AskPage() {
                               key={`${s.surahNumber}:${s.ayahNumber}`}
                               href={`/quran/${s.surahNumber}?ayah=${s.ayahNumber}`}
                               className={cn(
-                                'inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-xs font-medium transition-colors',
+                                'inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-colors',
                                 mode === 'focused'
-                                  ? 'border-accent/30 bg-accent-soft text-accent-strong hover:bg-accent-soft'
-                                  : 'border-gold/40 bg-gold-soft/40 text-gold-text hover:bg-gold-soft'
+                                  ? 'border-line bg-accent-soft text-accent-strong hover:border-accent/30'
+                                  : 'border-gold-soft bg-gold-soft text-gold-text hover:border-gold/50'
                               )}
                             >
                               {s.englishName} {s.surahNumber}:{s.ayahNumber}
-                              <ExternalLink className="w-3 h-3 opacity-50" />
+                              <ExternalLink className="h-3 w-3 opacity-50" />
                             </Link>
                           ))}
                         </div>
@@ -585,22 +585,22 @@ export default function AskPage() {
 
         {/* Reset */}
         {messages.length > 0 && (
-          <div className="flex justify-center mb-4">
+          <div className="mb-4 flex justify-center">
             <button
               onClick={() => setMessages([])}
-              className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-ink-soft transition-colors"
+              className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-muted transition-colors hover:text-accent-strong"
             >
-              <RotateCcw className="w-3 h-3" /> New conversation
+              <RotateCcw className="h-3 w-3" /> New conversation
             </button>
           </div>
         )}
 
         {/* Input — fixed to viewport so it's always visible.
             On mobile, lift above the bottom tab bar (~3.5rem + safe-area); flush on md+. */}
-        <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] md:bottom-0 left-0 right-0 z-40 px-4 pb-4 pt-2 bg-gradient-to-t from-paper via-paper/95 to-transparent">
-          <div className="max-w-3xl mx-auto">
+        <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] md:bottom-0 left-0 right-0 z-40 bg-gradient-to-t from-paper via-paper/95 to-transparent px-4 pb-4 pt-2">
+          <div className="mx-auto max-w-3xl">
           <div className={cn(
-            'bg-surface border rounded-2xl shadow-lg overflow-hidden transition-all',
+            'overflow-hidden rounded-2xl border bg-surface shadow-card transition-all',
             mode === 'focused'
               ? 'border-line focus-within:border-accent/40 focus-within:ring-2 focus-within:ring-accent-soft'
               : 'border-line focus-within:border-gold/50 focus-within:ring-2 focus-within:ring-gold-soft'
@@ -617,7 +617,7 @@ export default function AskPage() {
                     : 'Ask about any ayah, surah, or topic…'
               }
               rows={2}
-              className="w-full px-4 pt-4 pb-2 text-sm md:text-base text-ink placeholder:text-muted resize-none focus:outline-none bg-transparent"
+              className="w-full resize-none bg-transparent px-4 pb-2 pt-4 text-[14px] text-ink placeholder:text-muted focus:outline-none"
             />
             <div className="flex items-center justify-between px-3 pb-3">
               <p className="text-[11px] text-muted">Enter to send · Shift+Enter for new line</p>
@@ -625,16 +625,16 @@ export default function AskPage() {
                 onClick={() => (signedIn ? ask(input) : signIn('google', { callbackUrl: '/ask' }))}
                 disabled={loading || (signedIn && !input.trim())}
                 className={cn(
-                  'inline-flex items-center gap-1.5 disabled:bg-line disabled:text-muted text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors',
-                  mode === 'focused' ? 'bg-accent hover:bg-accent-strong' : 'bg-gold-text hover:bg-gold-text'
+                  'inline-flex items-center gap-1.5 rounded-[10px] px-4 py-2.5 text-xs font-semibold text-white transition-colors disabled:bg-line disabled:text-muted',
+                  mode === 'focused' ? 'bg-accent hover:bg-accent-strong' : 'bg-gold-text hover:bg-gold-text/90'
                 )}
               >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 {signedIn ? 'Ask' : 'Sign in to Ask'}
               </button>
             </div>
           </div>
-          <p className="text-center text-[11px] text-muted mt-2">
+          <p className="mt-2 text-center text-[11px] text-muted">
             Not a substitute for scholarly guidance. Always refer to qualified scholars.
           </p>
           </div>

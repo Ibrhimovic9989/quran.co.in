@@ -8,8 +8,9 @@ import { Container } from '@/components/ui/container';
 
 export function HomeClientSection() {
   return (
-    <section className="pt-6 pb-0">
-      <Container>
+    // Carries the hero's paper straight down — the greeting is part of it.
+    <section className="bg-paper pb-2 pt-2">
+      <Container className="max-w-[960px]">
         <TimeGreeting />
         <BookmarksProvider>
           <ContinueReading />

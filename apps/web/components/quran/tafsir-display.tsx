@@ -52,22 +52,22 @@ export function TafsirDisplay({ tafsir, className }: TafsirDisplayProps) {
       {/* Selected Tafsir Content */}
       <Card className="overflow-hidden">
         {/* Author Header Section */}
-        <div className="mb-6 pb-4 border-b border-ink">
-          <Heading level={4} className="mb-2 text-white">
+        <div className="mb-6 border-b border-line pb-4">
+          <Heading level={4} className="mb-2">
             {selectedTafsir.author}
           </Heading>
           {selectedTafsir.groupVerse && (
-            <Text className="text-sm text-muted italic leading-relaxed">
+            <Text className="text-[11px] uppercase tracking-[0.14em] text-ink-muted">
               {selectedTafsir.groupVerse}
             </Text>
           )}
         </div>
 
         {/* Tafsir Content - Improved formatting */}
-        <div className="prose prose-invert max-w-none">
-          <TafsirContent 
+        <div className="prose max-w-none">
+          <TafsirContent
             content={selectedTafsir.content}
-            className="text-base leading-relaxed"
+            className="text-[15px] leading-[1.8] text-ink-soft"
           />
         </div>
       </Card>

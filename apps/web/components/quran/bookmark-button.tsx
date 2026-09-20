@@ -84,11 +84,11 @@ export function BookmarkButton({ surahNumber, ayahNumber, className, iconOnly = 
       onClick={handleBookmark}
       disabled={isLoadingBookmarks}
       className={cn(
-        'flex items-center justify-center gap-2 rounded-md transition-colors duration-200',
+        'flex items-center justify-center gap-2 rounded-full border transition-colors duration-200',
         bookmarked
-          ? 'bg-amber-50 text-amber-700 hover:bg-amber-100'
-          : 'bg-line-soft text-ink-soft hover:bg-line',
-        iconOnly ? 'h-9 w-9 rounded-full p-0' : 'px-3 py-1.5',
+          ? 'border-transparent bg-tint-sun text-gold-text hover:bg-gold-soft'
+          : 'border-line bg-surface text-ink-muted hover:bg-accent-soft/50 hover:text-accent-strong',
+        iconOnly ? 'h-9 w-9 p-0' : 'px-3.5 py-1.5',
         'disabled:opacity-50 disabled:cursor-not-allowed',
         className
       )}
@@ -101,7 +101,7 @@ export function BookmarkButton({ surahNumber, ayahNumber, className, iconOnly = 
         <Bookmark className="w-4 h-4" />
       )}
       {!iconOnly && (
-        <span className="text-xs font-medium">
+        <span className="text-[11px] font-semibold">
           {bookmarked ? 'Bookmarked' : 'Bookmark'}
         </span>
       )}

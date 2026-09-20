@@ -85,7 +85,7 @@ export function DuaBanner() {
           aria-label="A moment of duʿā"
         >
           <div
-            className="relative my-8 w-full max-w-lg rounded-2xl border border-line bg-surface p-8 text-center shadow-2xl sm:p-10"
+            className="relative my-8 w-full max-w-lg rounded-2xl border border-line bg-surface p-8 text-center shadow-card-hover sm:p-10"
             onClick={(e) => e.stopPropagation()}
           >
             <button

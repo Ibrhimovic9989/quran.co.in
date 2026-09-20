@@ -101,7 +101,7 @@ function Hub({ done, onOpen }: { done: Set<string>; onOpen: (i: number) => void 
   return (
     <>
       <p className="text-xs font-bold uppercase tracking-widest text-gold-text">From transliteration to the script</p>
-      <h1 className="mt-2 flex items-center gap-3 font-reading text-3xl font-bold text-ink md:text-4xl">
+      <h1 className="mt-2 flex items-center gap-3 font-heading text-[clamp(28px,3.4vw,38px)] font-bold tracking-[-0.035em] text-ink">
         <GraduationCap className="text-accent" size={30} /> Learn to Read
       </h1>
       <p className="mt-3 max-w-2xl leading-relaxed text-ink-soft">
@@ -110,7 +110,7 @@ function Hub({ done, onOpen }: { done: Set<string>; onOpen: (i: number) => void 
         leave it behind.
       </p>
 
-      <div className="mt-6 rounded-2xl bg-accent-soft/40 p-5">
+      <div className="mt-6 rounded-2xl border border-line bg-accent-soft p-5">
         <div className="flex items-baseline justify-between">
           <div>
             <span className="text-2xl font-extrabold text-ink">{count}</span>
@@ -134,7 +134,7 @@ function Hub({ done, onOpen }: { done: Set<string>; onOpen: (i: number) => void 
                 <button
                   key={l.slug}
                   onClick={() => onOpen(i)}
-                  className="flex w-full items-center gap-4 rounded-2xl border border-line bg-surface p-4 text-left shadow-card transition-colors hover:border-accent/40"
+                  className="flex w-full items-center gap-4 rounded-2xl border border-line bg-surface p-4 text-left transition-all hover:border-accent/30 hover:shadow-card"
                 >
                   <span
                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
@@ -144,7 +144,7 @@ function Hub({ done, onOpen }: { done: Set<string>; onOpen: (i: number) => void 
                     {isDone ? <Check size={20} /> : l.number}
                   </span>
                   <span className="flex-1">
-                    <span className="block font-bold text-ink">{l.title}</span>
+                    <span className="block font-heading text-[15px] font-bold tracking-[-0.02em] text-ink">{l.title}</span>
                     <span className="block font-arabic text-lg text-ink-muted" dir="rtl">{l.titleAr}</span>
                   </span>
                   <ChevronRight className="text-ink-muted" size={20} />
@@ -220,7 +220,7 @@ function LearnSeoContent() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) }} />
 
-      <h2 className="font-reading text-2xl font-bold text-ink">How to learn to read the Qurʾān, step by step</h2>
+      <h2 className="font-heading text-[22px] font-bold tracking-[-0.03em] text-ink">How to learn to read the Qurʾān, step by step</h2>
       <p className="mt-3 max-w-2xl leading-relaxed text-ink-soft">
         If you have only ever read the Qurʾān through English transliteration, learning to read the Arabic
         script can feel out of reach. It isn’t. Reading the Qurʾān is a single skill — turning the marks on
@@ -235,14 +235,14 @@ function LearnSeoContent() {
         beautifully. There is no signup and nothing to buy; your progress is saved on your device.
       </p>
 
-      <h3 className="mt-8 font-reading text-lg font-bold text-ink">Who this is for</h3>
+      <h3 className="mt-8 font-heading text-[17px] font-bold tracking-[-0.025em] text-ink">Who this is for</h3>
       <p className="mt-2 max-w-2xl leading-relaxed text-ink-soft">
         New Muslims and reverts, parents teaching their children, and anyone who reads the Qurʾān from
         transliteration and wants to graduate to the Arabic script. No prior Arabic is needed — the course
         begins at the very first letter.
       </p>
 
-      <h2 className="mt-10 font-reading text-2xl font-bold text-ink">Frequently asked questions</h2>
+      <h2 className="mt-10 font-heading text-[22px] font-bold tracking-[-0.03em] text-ink">Frequently asked questions</h2>
       <div className="mt-4 max-w-2xl space-y-5">
         {LEARN_FAQS.map((f) => (
           <div key={f.q}>
@@ -296,11 +296,11 @@ function Lesson({
 
       <p className="text-xs font-bold uppercase tracking-widest text-gold-text">Lesson {l.number} / 17</p>
       <h1 className="mt-1 flex flex-wrap items-baseline gap-3">
-        <span className="font-reading text-2xl font-bold text-ink md:text-3xl">{l.title}</span>
+        <span className="font-heading text-[24px] font-bold tracking-[-0.03em] text-ink md:text-[30px]">{l.title}</span>
         <span className="font-arabic text-xl text-gold-text" dir="rtl">{l.titleAr}</span>
       </h1>
 
-      <div className="mt-5 rounded-2xl bg-accent-soft/40 p-5">
+      <div className="mt-5 rounded-2xl border border-line bg-accent-soft p-5">
         <p className="leading-relaxed text-ink-soft">{l.teach}</p>
         {l.tip && (
           <p className="mt-3 flex gap-2 text-sm font-medium text-ink-muted">
@@ -320,7 +320,7 @@ function Lesson({
               <button
                 key={li}
                 onClick={() => setLetter(LETTERS[li])}
-                className="flex flex-col items-center rounded-xl border border-line bg-surface py-3 transition-colors hover:border-accent/40"
+                className="flex flex-col items-center rounded-xl border border-line bg-surface py-3 transition-colors hover:border-accent/30"
               >
                 <span className="font-arabic text-3xl leading-none text-ink" dir="rtl">{LETTERS[li].glyph}</span>
                 <span className="mt-1.5 text-[11px] font-medium text-ink-muted">{LETTERS[li].name}</span>
@@ -342,7 +342,7 @@ function Lesson({
                   <button
                     key={ti}
                     onClick={() => setToken(tk)}
-                    className="min-w-[72px] rounded-xl border border-line bg-surface px-3.5 py-2.5 transition-colors hover:border-accent/40"
+                    className="min-w-[72px] rounded-xl border border-line bg-surface px-3.5 py-2.5 transition-colors hover:border-accent/30"
                   >
                     <span className="block font-arabic text-3xl leading-relaxed text-ink" dir="rtl">{tk.ar}</span>
                     <span className="mt-0.5 block text-xs italic text-ink-muted" dir="ltr">{tk.translit}</span>
@@ -371,7 +371,7 @@ function Lesson({
       )}
 
       {l.bridge && (
-        <section className="mt-6 rounded-2xl border border-gold/50 bg-surface p-5">
+        <section className="mt-6 rounded-2xl border border-line bg-surface p-5">
           <p className="text-xs font-bold uppercase tracking-widest text-gold-text">From the Qurʾān</p>
           <p className="mt-3 text-center font-arabic text-3xl leading-loose text-ink" dir="rtl">{l.bridge.word}</p>
           <p className="mt-1 text-center text-sm italic text-ink-muted">{l.bridge.translit}</p>
@@ -379,13 +379,13 @@ function Lesson({
           <div className="mt-4 flex flex-wrap gap-3">
             <button
               onClick={() => play(l.bridge!.ref)}
-              className="inline-flex items-center gap-2 rounded-full border border-line px-4 py-2 text-sm font-medium text-accent hover:bg-accent-soft/40"
+              className="inline-flex items-center gap-2 rounded-[10px] border border-line px-4 py-3 text-xs font-semibold text-accent-strong hover:bg-accent-soft"
             >
               <Volume2 size={16} /> Hear it
             </button>
             <Link
               href={`/quran/${l.bridge.ref.split(':')[0]}`}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent/90"
+              className="inline-flex flex-1 items-center justify-center gap-2 rounded-[10px] bg-accent px-4 py-3 text-xs font-semibold text-white hover:bg-accent-strong"
             >
               <BookOpen size={16} /> Read in the muṣḥaf
             </Link>
@@ -395,8 +395,8 @@ function Lesson({
 
       <button
         onClick={() => onToggle(l.slug)}
-        className={`mt-8 flex w-full items-center justify-center gap-2 rounded-full border border-accent py-3 font-semibold transition-colors ${
-          isDone ? 'bg-accent text-white' : 'bg-surface text-accent hover:bg-accent-soft/40'
+        className={`mt-8 flex w-full items-center justify-center gap-2 rounded-[10px] border py-3 text-xs font-semibold transition-colors ${
+          isDone ? 'border-accent bg-accent text-white' : 'border-line bg-surface text-accent-strong hover:bg-accent-soft'
         }`}
       >
         {isDone ? <CheckCircle2 size={20} /> : <Check size={20} />}
@@ -435,9 +435,9 @@ function LetterSheet({ letter: l, onClose }: { letter: QLetter; onClose: () => v
   const forms = useMemo(() => formsOf(l.glyph), [l.glyph]);
   const chips: [string, string][] = [
     [l.region, 'bg-accent-soft text-accent'],
-    ...(l.heavy ? ([['Heavy', 'bg-amber-100 text-amber-800']] as [string, string][]) : []),
-    ...(l.qalqalah ? ([['Qalqalah', 'bg-red-100 text-red-700']] as [string, string][]) : []),
-    [l.sun ? 'Sun letter' : 'Moon letter', 'bg-gold/15 text-gold-text'],
+    ...(l.heavy ? ([['Heavy', 'bg-tint-sun text-ink']] as [string, string][]) : []),
+    ...(l.qalqalah ? ([['Qalqalah', 'bg-tint-peach text-ink']] as [string, string][]) : []),
+    [l.sun ? 'Sun letter' : 'Moon letter', 'bg-gold-soft text-gold-text'],
   ];
   const formCells: [string, string, boolean][] = [
     ['Isolated', forms.isolated, true],
@@ -448,18 +448,18 @@ function LetterSheet({ letter: l, onClose }: { letter: QLetter; onClose: () => v
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4" onClick={onClose}>
       <div
-        className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-paper p-6 shadow-2xl sm:rounded-3xl"
+        className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-[22px] border border-line bg-surface p-6 shadow-card sm:rounded-[22px]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
             <span className="font-arabic text-6xl leading-none text-ink" dir="rtl">{l.glyph}</span>
             <div>
-              <p className="text-lg font-bold text-ink">{l.name} · “{l.sound}”</p>
+              <p className="font-heading text-[17px] font-bold tracking-[-0.025em] text-ink">{l.name} · “{l.sound}”</p>
               <p className="font-arabic text-xl text-ink-muted" dir="rtl">{l.nameAr}</p>
             </div>
           </div>
-          <button onClick={onClose} className="rounded-full p-1 text-ink-muted hover:bg-line/50"><X size={20} /></button>
+          <button onClick={onClose} className="rounded-full p-1 text-ink-muted hover:bg-line-soft"><X size={20} /></button>
         </div>
 
         <div className="mt-3 flex flex-wrap gap-2">
@@ -481,7 +481,7 @@ function LetterSheet({ letter: l, onClose }: { letter: QLetter; onClose: () => v
         <div className="mt-3 grid grid-cols-4 gap-2">
           {formCells.map(([label, glyph, available]) => (
             <div key={label} className="flex flex-col items-center">
-              <div className={`flex h-16 w-full items-center justify-center rounded-xl border border-line ${available ? 'bg-accent-soft/30' : 'bg-line/20'}`}>
+              <div className={`flex h-16 w-full items-center justify-center rounded-xl border border-line ${available ? 'bg-accent-soft' : 'bg-line-soft'}`}>
                 <span className="font-arabic text-3xl text-ink" dir="rtl">{glyph}</span>
               </div>
               <span className="mt-1 text-[11px] text-ink-muted">{label}</span>
@@ -498,12 +498,12 @@ function LetterSheet({ letter: l, onClose }: { letter: QLetter; onClose: () => v
                 /* ignore */
               }
             }}
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent/90"
+            className="mt-6 inline-flex items-center gap-2 rounded-[10px] bg-accent px-4 py-3 text-xs font-semibold text-white hover:bg-accent-strong"
           >
             <Volume2 size={18} /> Hear {l.name}
           </button>
         ) : (
-          <div className="mt-6 flex items-center gap-3 rounded-xl bg-gold/10 p-3 text-sm text-ink-muted">
+          <div className="mt-6 flex items-center gap-3 rounded-xl bg-gold-soft p-3 text-sm text-ink-muted">
             <AudioLines className="shrink-0 text-gold-text" size={18} />
             Spoken pronunciation for each letter is coming soon.
           </div>
@@ -518,7 +518,7 @@ function TokenSheet({ token, onClose, onPlay }: { token: LearnToken; onClose: ()
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center sm:p-4" onClick={onClose}>
       <div
-        className="w-full max-w-sm rounded-t-3xl bg-paper p-6 text-center shadow-2xl sm:rounded-3xl"
+        className="w-full max-w-sm rounded-t-[22px] border border-line bg-surface p-6 text-center shadow-card sm:rounded-[22px]"
         onClick={(e) => e.stopPropagation()}
       >
         <p className="font-arabic text-5xl leading-loose text-ink" dir="rtl">{token.ar}</p>
@@ -532,7 +532,7 @@ function TokenSheet({ token, onClose, onPlay }: { token: LearnToken; onClose: ()
         {token.audioRef && (
           <button
             onClick={() => onPlay(token.audioRef!)}
-            className="mt-5 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent/90"
+            className="mt-5 inline-flex items-center gap-2 rounded-[10px] bg-accent px-4 py-3 text-xs font-semibold text-white hover:bg-accent-strong"
           >
             <Volume2 size={18} /> Hear it recited
           </button>

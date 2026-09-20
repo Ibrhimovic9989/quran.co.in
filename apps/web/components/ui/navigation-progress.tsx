@@ -67,7 +67,7 @@ export function NavigationProgress() {
 
   return (
     <div
-      className="fixed top-0 left-0 z-[9998] h-[2.5px] bg-teal-500 transition-all duration-150 ease-out pointer-events-none"
+      className="fixed top-0 left-0 z-[9998] h-[2.5px] bg-accent transition-all duration-150 ease-out pointer-events-none"
       style={{ width: `${progress}%` }}
       role="progressbar"
       aria-hidden="true"

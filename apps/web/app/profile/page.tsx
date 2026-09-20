@@ -59,10 +59,10 @@ export default function ProfilePage() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface">
+      <div className="flex min-h-[60vh] items-center justify-center bg-paper">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-line border-t-gray-900 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-ink-soft">Loading...</p>
+          <div className="mx-auto mb-4 h-7 w-7 animate-spin rounded-full border-2 border-line border-t-accent"></div>
+          <p className="text-[13px] text-muted">Loading...</p>
         </div>
       </div>
     );
@@ -102,19 +102,19 @@ export default function ProfilePage() {
     return 'u';
   };
 
-  // Get avatar background color based on first letter
+  // Get avatar background tint based on first letter
   const getAvatarColor = (char: string): string => {
     const colors = [
-      'bg-blue-500',
-      'bg-orange-500', // 'e' (101 % 10 = 1) maps to orange
-      'bg-green-500',
-      'bg-purple-500',
-      'bg-pink-500',
-      'bg-indigo-500',
-      'bg-red-500',
-      'bg-yellow-500',
-      'bg-teal-500',
-      'bg-cyan-500',
+      'bg-tint-sky',
+      'bg-tint-peach', // 'e' (101 % 10 = 1) maps to peach
+      'bg-tint-sage',
+      'bg-tint-lavender',
+      'bg-tint-peach',
+      'bg-tint-lavender',
+      'bg-tint-sun',
+      'bg-tint-sun',
+      'bg-tint-sage',
+      'bg-tint-sky',
     ];
     // Use lowercase for consistent color mapping
     const lowerChar = char.toLowerCase();
@@ -132,23 +132,23 @@ export default function ProfilePage() {
       <Container>
         <div className="py-6 md:py-12">
           {/* Header */}
-          <div className="mb-6 md:mb-8">
-            <Heading level={1} className="text-2xl md:text-4xl font-bold text-ink mb-2">
+          <div className="mb-7">
+            <Heading level={1} className="font-heading text-[clamp(26px,3.2vw,34px)] font-bold tracking-[-0.035em] text-ink">
               Profile
             </Heading>
-            <Text className="text-sm md:text-base text-ink-soft">
+            <Text className="mt-2 text-[13px] leading-[1.7] text-muted">
               Manage your account information and preferences
             </Text>
           </div>
 
           {/* Profile Card */}
-          <Card className="border border-line shadow-lg mb-6">
-            <div className="p-4 md:p-6">
+          <Card className="mb-3 rounded-2xl border border-line bg-surface p-0 shadow-none">
+            <div className="p-5 md:p-6">
               {/* User Info */}
               <div className="flex items-start gap-4 md:gap-6 mb-6">
                 {/* Avatar */}
                 <div className="flex-shrink-0">
-                  <div className={`w-16 h-16 md:w-20 md:h-20 ${avatarColor} rounded-full flex items-center justify-center`}>
+                  <div className={`flex h-16 w-16 items-center justify-center rounded-full border border-line ${avatarColor} md:h-20 md:w-20`}>
                     {session.user.image ? (
                       <img
                         src={session.user.image}
@@ -156,7 +156,7 @@ export default function ProfilePage() {
                         className="w-full h-full rounded-full object-cover"
                       />
                     ) : (
-                      <span className="text-white text-xl md:text-2xl font-semibold">
+                      <span className="font-heading text-xl font-bold text-ink md:text-2xl">
                         {displayInitials}
                       </span>
                     )}
@@ -165,7 +165,7 @@ export default function ProfilePage() {
 
                 {/* User Details */}
                 <div className="flex-1 min-w-0">
-                  <Heading level={2} className="text-xl md:text-2xl font-bold text-ink mb-1">
+                  <Heading level={2} className="font-heading text-[19px] font-bold tracking-[-0.025em] text-ink md:text-[22px]">
                     {session.user.name || 'User'}
                   </Heading>
                 </div>
@@ -175,10 +175,10 @@ export default function ProfilePage() {
               <div className="space-y-4 border-t border-line pt-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <User className="w-5 h-5 text-muted" />
+                    <User className="h-4 w-4 text-accent" strokeWidth={1.7} />
                     <div>
-                      <Text className="text-sm font-medium text-ink">Name</Text>
-                      <Text className="text-xs text-ink-soft">{session.user.name || 'Not provided'}</Text>
+                      <Text className="text-[13px] font-semibold text-ink">Name</Text>
+                      <Text className="text-[11px] text-muted">{session.user.name || 'Not provided'}</Text>
                     </div>
                   </div>
                 </div>
@@ -186,10 +186,10 @@ export default function ProfilePage() {
                 {session.user.email && (
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <Mail className="w-5 h-5 text-muted" />
+                      <Mail className="h-4 w-4 text-accent" strokeWidth={1.7} />
                       <div>
-                        <Text className="text-sm font-medium text-ink">Email</Text>
-                        <Text className="text-xs text-ink-soft">{session.user.email}</Text>
+                        <Text className="text-[13px] font-semibold text-ink">Email</Text>
+                        <Text className="text-[11px] text-muted">{session.user.email}</Text>
                       </div>
                     </div>
                   </div>
@@ -198,10 +198,10 @@ export default function ProfilePage() {
                 {userData?.createdAt && (
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <Calendar className="w-5 h-5 text-muted" />
+                      <Calendar className="h-4 w-4 text-accent" strokeWidth={1.7} />
                       <div>
-                        <Text className="text-sm font-medium text-ink">Member Since</Text>
-                        <Text className="text-xs text-ink-soft">
+                        <Text className="text-[13px] font-semibold text-ink">Member Since</Text>
+                        <Text className="text-[11px] text-muted">
                           {loadingUserData ? (
                             'Loading...'
                           ) : (
@@ -220,16 +220,16 @@ export default function ProfilePage() {
           </Card>
 
           {/* Actions */}
-          <Card className="border border-line shadow-lg">
-            <div className="p-4 md:p-6">
-              <Heading level={3} className="text-lg md:text-xl font-bold text-ink mb-4">
+          <Card className="rounded-2xl border border-line bg-surface p-0 shadow-none">
+            <div className="p-5 md:p-6">
+              <Heading level={3} className="mb-4 font-heading text-[17px] font-bold tracking-[-0.025em] text-ink">
                 Account Actions
               </Heading>
               <div className="space-y-3">
                 <Button
                   variant="secondary"
                   onClick={handleSignOut}
-                  className="w-full md:w-auto flex items-center justify-center gap-2"
+                  className="flex w-full items-center justify-center gap-2 rounded-[10px] border border-line bg-surface px-4 py-3 text-xs font-semibold text-accent-strong hover:bg-accent-soft md:w-auto"
                 >
                   <LogOut className="w-4 h-4" />
                   Sign Out

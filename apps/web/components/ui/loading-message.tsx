@@ -22,11 +22,12 @@ const typeIcons = {
   reminder: Lightbulb,
 };
 
+// Pastel tints carry the category; the ink stays quiet.
 const typeColors = {
-  quran: 'text-blue-600',
-  istighfar: 'text-emerald-600',
-  dua: 'text-purple-600',
-  reminder: 'text-amber-600',
+  quran: 'bg-tint-sky text-accent-strong',
+  istighfar: 'bg-tint-sage text-accent-strong',
+  dua: 'bg-tint-lavender text-ink-soft',
+  reminder: 'bg-tint-sun text-gold-text',
 };
 
 export function LoadingMessage({ className, showIcon = true }: LoadingMessageProps) {
@@ -37,15 +38,15 @@ export function LoadingMessage({ className, showIcon = true }: LoadingMessagePro
   return (
     <div className={cn("flex flex-col items-center justify-center gap-4 text-center max-w-2xl mx-auto px-4", className)}>
       {showIcon && Icon && (
-        <div className={cn("flex items-center justify-center w-12 h-12 rounded-full bg-line-soft", typeColors[message.type])}>
-          <Icon className="w-6 h-6" />
+        <div className={cn('grid h-11 w-11 place-items-center rounded-full', typeColors[message.type])}>
+          <Icon className="h-5 w-5" strokeWidth={1.6} />
         </div>
       )}
       <div className="space-y-2">
-        <Text className="text-lg md:text-xl text-ink-soft leading-relaxed italic">
+        <Text className="text-[15px] md:text-base leading-[1.75] text-ink-soft">
           "{message.text}"
         </Text>
-        <Text className="text-sm text-ink-soft font-medium">
+        <Text className="text-[11px] font-medium uppercase tracking-[0.14em] text-ink-muted">
           — {message.source}
         </Text>
       </div>

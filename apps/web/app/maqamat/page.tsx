@@ -34,14 +34,14 @@ function Hub({ onOpen, onCompare }: { onOpen: (i: number) => void; onCompare: ()
   return (
     <>
       <p className="text-xs font-bold uppercase tracking-widest text-gold-text">The melodies of recitation</p>
-      <h1 className="mt-2 font-reading text-3xl font-bold text-ink md:text-4xl">Maqāmāt</h1>
+      <h1 className="mt-2 font-heading text-[clamp(28px,3.4vw,38px)] font-bold tracking-[-0.035em] text-ink">Maqāmāt</h1>
       <p className="mt-3 max-w-2xl leading-relaxed text-ink-soft">
         Maqāmāt are the melodies of recitation. Every reciter moves the voice through three levels — and
         each maqām is a different path through them. Here you don’t just listen; you learn the shape.
       </p>
 
-      <div className="mt-6 rounded-2xl bg-accent-soft/40 p-5">
-        <h2 className="font-bold text-ink">The three registers</h2>
+      <div className="mt-6 rounded-2xl border border-line bg-accent-soft p-5">
+        <h2 className="font-heading text-[17px] font-bold tracking-[-0.025em] text-ink">The three registers</h2>
         <dl className="mt-3 space-y-2 text-sm">
           {[
             ['High', 'The peak — reaching out, the emotional climax.'],
@@ -64,10 +64,10 @@ function Hub({ onOpen, onCompare }: { onOpen: (i: number) => void; onCompare: ()
       <div className="mt-4 space-y-4">
         {MAQAM_LESSONS.map((l, i) => (
           <button key={l.maqam} onClick={() => onOpen(i)}
-            className="block w-full rounded-2xl border border-line bg-surface p-4 text-left shadow-card transition-colors hover:border-accent/40">
+            className="block w-full rounded-2xl border border-line bg-surface p-4 text-left transition-all hover:border-accent/30 hover:shadow-card">
             <div className="flex items-start justify-between">
               <div>
-                <div className="text-lg font-bold text-ink">{l.maqam}</div>
+                <div className="font-heading text-[17px] font-bold tracking-[-0.025em] text-ink">{l.maqam}</div>
                 <div className="text-xs font-semibold text-accent">{l.mood}</div>
               </div>
               <span className="font-arabic text-2xl text-gold-text" dir="rtl">{l.arabic}</span>
@@ -82,7 +82,7 @@ function Hub({ onOpen, onCompare }: { onOpen: (i: number) => void; onCompare: ()
       </div>
 
       <button onClick={onCompare}
-        className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-accent py-3 text-sm font-semibold text-accent transition-colors hover:bg-accent-soft/40">
+        className="mt-4 flex w-full items-center justify-center gap-2 rounded-[10px] border border-line bg-surface py-3 text-xs font-semibold text-accent-strong transition-colors hover:bg-accent-soft">
         See the shapes side by side
       </button>
 
@@ -139,7 +139,7 @@ function MaqamatSeoContent() {
   return (
     <section className="mt-14 border-t border-line pt-10">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
-      <h2 className="font-reading text-2xl font-bold text-ink">Learning the melodies of Qurʾān recitation</h2>
+      <h2 className="font-heading text-[22px] font-bold tracking-[-0.03em] text-ink">Learning the melodies of Qurʾān recitation</h2>
       <p className="mt-3 max-w-2xl leading-relaxed text-ink-soft">
         When you hear a reciter move you to tears, part of what you are hearing is a <strong>maqām</strong> — a
         melodic mode with its own scale and feeling. The maqāmāt are the shared musical language of Qurʾān
@@ -153,7 +153,7 @@ function MaqamatSeoContent() {
         top of correct reading.
       </p>
 
-      <h2 className="mt-10 font-reading text-2xl font-bold text-ink">Frequently asked questions</h2>
+      <h2 className="mt-10 font-heading text-[22px] font-bold tracking-[-0.03em] text-ink">Frequently asked questions</h2>
       <div className="mt-4 max-w-2xl space-y-5">
         {MAQAMAT_FAQS.map((f) => (
           <div key={f.q}>
@@ -244,7 +244,7 @@ function Lesson({ lesson, onBack }: { lesson: MaqamLesson; onBack: () => void })
         <ArrowLeft className="h-4 w-4" /> Maqāmāt
       </button>
       <div className="flex items-center gap-3">
-        <h1 className="text-2xl font-bold text-ink">{lesson.maqam}</h1>
+        <h1 className="font-heading text-[26px] font-bold tracking-[-0.035em] text-ink">{lesson.maqam}</h1>
         <span className="font-arabic text-2xl text-gold-text" dir="rtl">{lesson.arabic}</span>
       </div>
       <p className="mt-1 text-sm font-semibold text-accent">{lesson.mood}</p>
@@ -270,16 +270,16 @@ function Lesson({ lesson, onBack }: { lesson: MaqamLesson; onBack: () => void })
 
       <div className="mt-5 flex items-center gap-2.5">
         <button onClick={toggle}
-          className="flex flex-1 items-center justify-center gap-2 rounded-full bg-accent py-3.5 font-semibold text-white transition-colors hover:bg-accent/90">
+          className="flex flex-1 items-center justify-center gap-2 rounded-[10px] bg-accent py-3.5 text-xs font-semibold text-white transition-colors hover:bg-accent-strong">
           {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
           {playing ? 'Pause' : 'Listen'}
         </button>
         <button onClick={setSpeed}
-          className={`flex items-center gap-1.5 rounded-full border px-4 py-3 text-sm font-semibold transition-colors ${slow ? 'border-accent text-accent' : 'border-line text-ink-muted hover:text-ink'}`}>
+          className={`flex items-center gap-1.5 rounded-[10px] border px-4 py-3 text-xs font-semibold transition-colors ${slow ? 'border-accent bg-accent-soft text-accent-strong' : 'border-line bg-surface text-ink-muted hover:text-ink'}`}>
           <GaugeCircle className="h-4 w-4" /> {slow ? '0.75×' : '1×'}
         </button>
         <button onClick={restart}
-          className="flex items-center gap-1.5 rounded-full border border-line px-4 py-3 text-sm font-semibold text-ink-muted transition-colors hover:text-ink">
+          className="flex items-center gap-1.5 rounded-[10px] border border-line bg-surface px-4 py-3 text-xs font-semibold text-ink-muted transition-colors hover:text-ink">
           <RotateCcw className="h-4 w-4" /> Restart
         </button>
       </div>
@@ -293,7 +293,7 @@ function Lesson({ lesson, onBack }: { lesson: MaqamLesson; onBack: () => void })
           </div>
           <button
             onClick={recording ? stopRecording : startRecording}
-            className={`flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-white transition-colors ${recording ? 'bg-red-600 hover:bg-red-700' : 'bg-accent hover:bg-accent/90'}`}
+            className={`flex items-center gap-2 rounded-[10px] px-4 py-3 text-xs font-semibold text-white transition-colors ${recording ? 'bg-red-600 hover:bg-red-700' : 'bg-accent hover:bg-accent-strong'}`}
           >
             {recording ? <Square className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
             {recording ? 'Stop' : 'Your turn'}
@@ -333,7 +333,7 @@ function Compare({ onBack, onOpen }: { onBack: () => void; onOpen: (i: number) =
       <button onClick={onBack} className="mb-4 flex items-center gap-1.5 text-sm font-semibold text-ink-muted hover:text-ink">
         <ArrowLeft className="h-4 w-4" /> Maqāmāt
       </button>
-      <h1 className="text-2xl font-bold text-ink">Compare the shapes</h1>
+      <h1 className="font-heading text-[26px] font-bold tracking-[-0.035em] text-ink">Compare the shapes</h1>
       <p className="mt-2 leading-relaxed text-ink-soft">
         The same sūrah — four different journeys. Notice where each one climbs, lingers and resolves.
         Click any shape to learn it.

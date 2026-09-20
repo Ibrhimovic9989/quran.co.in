@@ -34,17 +34,17 @@ const icons: Record<ToastType, React.ElementType> = {
 };
 
 const styles: Record<ToastType, string> = {
-  success: 'bg-surface border-emerald-200 text-emerald-800',
+  success: 'bg-surface border-accent/25 text-ink',
   error: 'bg-surface border-red-200 text-red-800',
   info: 'bg-surface border-line text-ink',
-  warning: 'bg-surface border-amber-200 text-amber-800',
+  warning: 'bg-surface border-gold/50 text-ink',
 };
 
 const iconStyles: Record<ToastType, string> = {
-  success: 'text-emerald-500',
+  success: 'text-accent',
   error: 'text-red-500',
-  info: 'text-muted',
-  warning: 'text-amber-500',
+  info: 'text-ink-muted',
+  warning: 'text-gold-text',
 };
 
 function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string) => void }) {
@@ -71,7 +71,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
   return (
     <div
       className={cn(
-        'flex items-start gap-3 w-full max-w-sm px-4 py-3 rounded-xl border shadow-lg transition-all duration-300',
+        'flex w-full max-w-sm items-start gap-3 rounded-2xl border px-4 py-3 shadow-card transition-all duration-300',
         styles[toast.type],
         visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
       )}
@@ -79,13 +79,13 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
       aria-live="polite"
     >
       <Icon className={cn('w-5 h-5 mt-0.5 shrink-0', iconStyles[toast.type])} />
-      <p className="flex-1 text-sm font-medium leading-snug">{toast.message}</p>
+      <p className="flex-1 text-[13px] font-medium leading-snug">{toast.message}</p>
       <button
         onClick={() => {
           setVisible(false);
           setTimeout(() => onDismiss(toast.id), 300);
         }}
-        className="shrink-0 text-muted hover:text-ink-soft transition-colors"
+        className="shrink-0 text-ink-muted transition-colors hover:text-ink"
         aria-label="Dismiss notification"
       >
         <X className="w-4 h-4" />
@@ -117,7 +117,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {/* Toast container */}
       <div
         aria-label="Notifications"
-        className="fixed bottom-6 right-4 z-[9999] flex flex-col gap-2 items-end pointer-events-none"
+        className="pointer-events-none fixed bottom-36 right-4 z-[9999] flex flex-col items-end gap-2 md:bottom-20 md:right-6"
       >
         {toasts.map((t) => (
           <div key={t.id} className="pointer-events-auto">

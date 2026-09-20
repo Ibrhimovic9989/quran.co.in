@@ -32,8 +32,8 @@ export function SurahCard({ surah, className }: SurahCardProps) {
     >
       <Card
         className={cn(
-          'relative overflow-hidden border border-line bg-surface shadow-card',
-          'transition-all duration-300 ease-in-out hover:border-gold/50 hover:shadow-card-hover hover:-translate-y-0.5',
+          'relative overflow-hidden rounded-2xl border border-line bg-surface',
+          'transition-all duration-200 ease-out hover:border-accent/30 hover:shadow-card',
           'group/card cursor-pointer',
           loading && 'opacity-70',
           className
@@ -42,8 +42,8 @@ export function SurahCard({ surah, className }: SurahCardProps) {
         <div className="flex items-center gap-3 md:gap-4">
           {/* Gold diamond medallion */}
           <div className="relative flex h-10 w-10 shrink-0 items-center justify-center md:h-12 md:w-12">
-            <span className="absolute inset-0 rotate-45 rounded-[0.6rem] border border-gold/60 bg-gold-soft/30 transition-colors duration-300 group-hover/card:bg-gold-soft/60" />
-            <span className="relative text-sm font-semibold text-gold-text md:text-base">
+            <span className="absolute inset-0 rounded-full bg-accent-soft transition-colors duration-200 group-hover/card:bg-tint-sky" />
+            <span className="relative font-heading text-sm font-bold text-accent-strong md:text-base">
               {surah.surahNo}
             </span>
           </div>

@@ -12,7 +12,7 @@ interface TextProps {
 
 export function Text({ children, className, as: Component = 'p' }: TextProps) {
   return (
-    <Component className={cn('text-white', className)}>{children}</Component>
+    <Component className={cn('text-ink', className)}>{children}</Component>
   );
 }
 
@@ -27,14 +27,14 @@ export function Heading({
   className,
   level = 2,
 }: HeadingProps) {
-  const baseClasses = 'text-white font-semibold';
+  const baseClasses = 'font-heading text-ink font-semibold tracking-[-0.025em]';
   const levelClasses = {
-    1: 'text-4xl',
-    2: 'text-3xl',
-    3: 'text-2xl',
-    4: 'text-xl',
-    5: 'text-lg',
-    6: 'text-base',
+    1: 'text-3xl md:text-4xl leading-tight',
+    2: 'text-2xl md:text-3xl leading-tight',
+    3: 'text-xl leading-snug',
+    4: 'text-lg leading-snug',
+    5: 'text-base leading-snug',
+    6: 'text-sm leading-snug',
   };
 
   const HeadingTag = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';

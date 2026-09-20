@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
-import { Inter, Lora, Amiri, Noto_Naskh_Arabic } from 'next/font/google';
+import { DM_Sans, Manrope, Amiri, Noto_Naskh_Arabic } from 'next/font/google';
 import localFont from 'next/font/local';
 import { WebSiteSchema } from '@/components/seo/json-ld';
 import { AuthProvider } from '@/components/auth/auth-provider';
-import { Navbar } from '@/components/layout/navbar';
+import { AppShell } from '@/components/layout/app-shell';
 import { Footer } from '@/components/layout/footer';
 import { PageLoader } from '@/components/ui/page-loader';
 import { ToastProvider } from '@/components/ui/toast';
@@ -15,19 +15,25 @@ import { SWRegister } from '@/components/ui/sw-register';
 import { Suspense } from 'react';
 import '@/app/globals.css';
 
-// UI font — quiet, neutral chrome
-const inter = Inter({
+// UI + reading font — DM Sans carries body text and translations alike
+const dmSans = DM_Sans({
   subsets: ['latin'],
   variable: '--font-ui',
   display: 'swap',
 });
 
-// Reading font — warm serif for translations and editorial text
-const lora = Lora({
+// Reading text shares the body voice (one sans, two roles)
+const reading = DM_Sans({
   subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  style: ['normal', 'italic'],
   variable: '--font-reading',
+  display: 'swap',
+});
+
+// Display font — geometric, tightly tracked headings
+const manrope = Manrope({
+  subsets: ['latin'],
+  weight: ['500', '600', '700', '800'],
+  variable: '--font-heading',
   display: 'swap',
 });
 
@@ -173,7 +179,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} ${inter.variable} ${lora.variable} ${quranFont.variable} ${amiri.variable} ${notoNaskh.variable}`}>
+      <body className={`${dmSans.className} ${dmSans.variable} ${reading.variable} ${manrope.variable} ${quranFont.variable} ${amiri.variable} ${notoNaskh.variable}`}>
         <WebSiteSchema />
         <SeasonalThemeApplier />
         <SWRegister />
@@ -184,11 +190,10 @@ export default function RootLayout({
               <GAPageTracker measurementId={gaMeasurementId} />
             </Suspense>
             <PageLoader />
-            <Navbar />
-            <div className="pb-16 md:pb-0">
+            <AppShell>
               {children}
               <Footer />
-            </div>
+            </AppShell>
           </ToastProvider>
         </AuthProvider>
       </body>

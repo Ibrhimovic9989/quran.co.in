@@ -30,7 +30,7 @@ function BookmarksList() {
 
   if (isLoading) {
     return (
-      <div className="space-y-3" aria-label="Loading bookmarks...">
+      <div className="space-y-2.5" aria-label="Loading bookmarks...">
         {Array.from({ length: 4 }).map((_, i) => (
           <Skeleton key={i} className="h-20 w-full rounded-2xl" />
         ))}
@@ -40,27 +40,27 @@ function BookmarksList() {
 
   if (bookmarks.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6">
-          <Bookmark className="w-10 h-10 text-amber-400" />
+      <div className="flex flex-col items-center justify-center rounded-[22px] border border-line bg-surface px-6 py-16 text-center">
+        <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-tint-sun text-ink-soft">
+          <Bookmark className="h-7 w-7" strokeWidth={1.5} />
         </div>
-        <Heading level={3} className="text-xl font-bold text-ink mb-3">
+        <Heading level={3} className="font-heading text-[19px] font-bold tracking-[-0.025em] text-ink">
           No bookmarks yet
         </Heading>
-        <Text className="text-muted max-w-sm mb-2">
+        <Text className="mt-2.5 max-w-sm text-[13px] leading-[1.75] text-muted">
           You don't have any bookmarks yet. You can bookmark ayahs that touch your heart to revisit them later.
         </Text>
-        <Text className="text-muted text-xs max-w-xs mb-8 italic">
+        <Text className="mt-2 max-w-xs text-[11px] italic leading-[1.7] text-muted">
           Tap the bookmark icon on any verse while reading to save it here.
         </Text>
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="mt-7 flex flex-col gap-3 sm:flex-row">
           <Link
             href="/quran"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-semibold rounded-xl hover:bg-accent-strong transition-colors"
+            className="inline-flex items-center gap-2 rounded-[10px] bg-accent px-4 py-3 text-xs font-semibold text-white transition-colors hover:bg-accent-strong"
           >
-            <BookOpen className="w-4 h-4" />
+            <BookOpen className="h-4 w-4" />
             Go to Quran
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </div>
@@ -68,7 +68,7 @@ function BookmarksList() {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2.5">
       {bookmarks.map((bookmark) => {
         const surahUrl = `/quran/${bookmark.surahNumber}${bookmark.ayahNumber ? `?ayah=${bookmark.ayahNumber}` : ''}`;
         const surahName = bookmark.surah
@@ -80,38 +80,38 @@ function BookmarksList() {
         return (
           <div
             key={bookmark.id}
-            className="flex items-center gap-3 group"
+            className="group flex items-center gap-2"
           >
             <Link href={surahUrl} className="flex-1">
-              <Card className="p-4 border border-line-soft hover:border-line hover:shadow-md transition-all cursor-pointer group-hover:bg-surface-warm/50">
+              <Card className="cursor-pointer rounded-2xl border border-line bg-surface p-4 shadow-none transition-all hover:border-accent/30 hover:shadow-card">
                 <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 bg-amber-50 rounded-full flex items-center justify-center shrink-0">
-                      <BookmarkCheck className="w-4 h-4 text-amber-600" />
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-tint-sun text-ink-soft">
+                      <BookmarkCheck className="h-4 w-4" strokeWidth={1.7} />
                     </div>
                     <div className="min-w-0">
-                      <p className="font-semibold text-ink text-sm leading-tight">
+                      <p className="font-heading text-[13px] font-bold leading-tight tracking-[-0.02em] text-ink">
                         {bookmark.surahNumber}. {surahName}
                       </p>
                       {bookmark.ayahNumber && (
-                        <p className="text-xs text-muted mt-0.5">Verse {bookmark.ayahNumber}</p>
+                        <p className="mt-0.5 text-[11px] text-muted">Verse {bookmark.ayahNumber}</p>
                       )}
                       {bookmark.surah?.arabicName && (
                         <p className="text-base font-arabic text-ink-soft mt-1">{bookmark.surah.arabicName}</p>
                       )}
                     </div>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-muted group-hover:text-ink-soft transition-colors shrink-0" />
+                  <ArrowRight className="h-4 w-4 shrink-0 text-muted transition-colors group-hover:text-accent" />
                 </div>
               </Card>
             </Link>
             <button
               onClick={() => handleRemove(bookmark.surahNumber, bookmark.ayahNumber ?? undefined)}
-              className="p-2 text-muted hover:text-red-500 transition-colors rounded-lg hover:bg-red-50 shrink-0"
+              className="shrink-0 rounded-lg p-2 text-muted transition-colors hover:bg-red-50 hover:text-red-500"
               aria-label={`Remove bookmark for ${surahName}`}
               title="Remove bookmark"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="h-4 w-4" />
             </button>
           </div>
         );
@@ -132,8 +132,8 @@ export default function BookmarksPage() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-line border-t-gray-900 rounded-full animate-spin" />
+      <div className="flex min-h-[60vh] items-center justify-center bg-paper">
+        <div className="h-7 w-7 animate-spin rounded-full border-2 border-line border-t-accent" />
       </div>
     );
   }
@@ -146,17 +146,17 @@ export default function BookmarksPage() {
     <BookmarksProvider>
       <main className="min-h-screen bg-paper">
         <Container>
-          <div className="py-8 md:py-12 max-w-2xl mx-auto">
-            <div className="mb-8">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center">
-                  <Bookmark className="w-5 h-5 text-amber-600" />
+          <div className="mx-auto max-w-2xl py-8 md:py-12">
+            <div className="mb-7">
+              <div className="mb-2 flex items-center gap-3">
+                <div className="grid h-10 w-10 place-items-center rounded-full bg-tint-sun text-ink-soft">
+                  <Bookmark className="h-5 w-5" strokeWidth={1.6} />
                 </div>
-                <Heading level={1} className="text-2xl md:text-3xl font-bold text-ink">
+                <Heading level={1} className="font-heading text-[clamp(24px,3vw,32px)] font-bold tracking-[-0.035em] text-ink">
                   My Bookmarks
                 </Heading>
               </div>
-              <Text className="text-muted">
+              <Text className="text-[13px] leading-[1.7] text-muted">
                 Your saved verses for quick access
               </Text>
             </div>

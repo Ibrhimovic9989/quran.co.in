@@ -1,0 +1,170 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* ── Calm palette — cool paper, teal action, pastel tints ────────
+     Shared with quran.co.in: white cards on a faintly blue page, one
+     teal for every action, pastels for tiles (never for text). */
+  --paper: #f5fbfd;
+  --surface: #ffffff;
+  --surface-warm: #f7fcfd;
+  --ink: #213e4a;
+  --ink-soft: #3d5763;
+  --muted: #58717c;
+  --line: #dcebef;
+  --line-soft: #eaf4f7;
+
+  /* ── Teal — the single action accent ────────────────────────────── */
+  --accent: #007e87;
+  --accent-strong: #00636d;
+  --accent-soft: #e0f6f4;
+  --accent-ring: rgba(0, 126, 135, 0.35);
+
+  /* ── Pastel tints — cards and quiet callouts ────────────────────── */
+  --tint-sage: #e0f6f4;
+  --tint-sky: #e7f3ff;
+  --tint-peach: #ffe6d8;
+  --tint-sun: #fff2bc;
+  --tint-lavender: #eeebff;
+
+  /* ── Ornament — hairlines only; --gold-text is the one that may
+     carry text ─────────────────────────────────────────────────── */
+  --gold: #8fb6bb;
+  --gold-soft: #d7eaee;
+  --gold-text: #4a6b73;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
+}
+
+/* ── Themes — CSS-var overlays (persisted via data-theme) ────────── */
+
+/* Night: deep blue-teal, cool ivory ink */
+html[data-theme='night'] {
+  --paper: #08171c;
+  --surface: #0e2028;
+  --surface-warm: #0c1c23;
+  --ink: #e4f1f4;
+  --ink-soft: #b9d2d8;
+  --muted: #86a3ab;
+  --line: #1c3640;
+  --line-soft: #162c35;
+  --accent: #29b0b8;
+  --accent-strong: #4ec9cf;
+  --accent-soft: #10323a;
+  --accent-ring: rgba(41, 176, 184, 0.35);
+  --tint-sage: #10323a;
+  --tint-sky: #14283a;
+  --tint-peach: #33221b;
+  --tint-sun: #322c14;
+  --tint-lavender: #221f33;
+  --gold: #5f9aa2;
+  --gold-soft: #143039;
+  --gold-text: #8fc3cb;
+  color-scheme: dark;
+}
+
+/* Sepia: parchment page, same teal action */
+html[data-theme='sepia'] {
+  --paper: #f3e9d7;
+  --surface: #faf3e3;
+  --surface-warm: #f7efdd;
+  --ink: #433422;
+  --ink-soft: #5d4c36;
+  --muted: #8a7859;
+  --line: #e2d3b8;
+  --line-soft: #ece0c9;
+  --accent: #0b6b70;
+  --accent-strong: #08545a;
+  --accent-soft: #e4eeea;
+  --tint-sage: #e4eeea;
+  --tint-sky: #e6edf0;
+  --tint-peach: #f6e3d3;
+  --tint-sun: #f7ecc8;
+  --tint-lavender: #eae6f0;
+  --gold: #b79a6a;
+  --gold-soft: #e7d9ba;
+  --gold-text: #6b5320;
+}
+
+html {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-ui), system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading), var(--font-ui), system-ui, sans-serif;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+
+  h1 {
+    letter-spacing: -0.032em;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .font-heading {
+    font-family: var(--font-heading), var(--font-ui), system-ui, sans-serif;
+  }
+}
+
+/* Gold hairline divider with a small 8-point star at center */
+.rule-star {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--gold-soft) 20%,
+    var(--gold-soft) 80%,
+    transparent
+  );
+}
+.rule-star::after {
+  content: '✦';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--gold);
+  font-size: 0.65rem;
+  background: var(--paper);
+  padding: 0 0.6rem;
+  line-height: 1;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}

@@ -16,7 +16,7 @@ export const QURAN_TOPICS: QuranTopic[] = [
     arabic: 'التوحيد',
     description: 'The Oneness of Allah',
     emoji: '☝️',
-    color: 'bg-amber-50 border-amber-200 text-amber-800',
+    color: 'bg-tint-sun border-line text-gold-text',
     query: 'oneness of Allah, monotheism, tawhid, no god but Allah',
   },
   {
@@ -25,7 +25,7 @@ export const QURAN_TOPICS: QuranTopic[] = [
     arabic: 'الصلاة',
     description: 'Prayer and worship',
     emoji: '🕌',
-    color: 'bg-teal-50 border-teal-200 text-teal-800',
+    color: 'bg-tint-sage border-line text-accent-strong',
     query: 'prayer, salah, worship, prostration, establish prayer',
   },
   {
@@ -34,7 +34,7 @@ export const QURAN_TOPICS: QuranTopic[] = [
     arabic: 'التوكل',
     description: 'Trusting in Allah',
     emoji: '🤲',
-    color: 'bg-blue-50 border-blue-200 text-blue-800',
+    color: 'bg-tint-sky border-line text-ink-soft',
     query: 'trust in Allah, reliance on Allah, tawakkul, put trust in God',
   },
   {
@@ -43,7 +43,7 @@ export const QURAN_TOPICS: QuranTopic[] = [
     arabic: 'الدعاء',
     description: 'Supplication and calling upon Allah',
     emoji: '🙏',
-    color: 'bg-purple-50 border-purple-200 text-purple-800',
+    color: 'bg-tint-lavender border-line text-ink-soft',
     query: 'supplication, dua, calling upon Allah, asking Allah, invocation',
   },
   {
@@ -52,7 +52,7 @@ export const QURAN_TOPICS: QuranTopic[] = [
     arabic: 'التوبة',
     description: 'Repentance and returning to Allah',
     emoji: '💧',
-    color: 'bg-cyan-50 border-cyan-200 text-cyan-800',
+    color: 'bg-tint-sky border-line text-ink-soft',
     query: 'repentance, tawbah, seeking forgiveness, returning to Allah, turning back',
   },
 
@@ -72,7 +72,7 @@ export const QURAN_TOPICS: QuranTopic[] = [
     arabic: 'الشكر',
     description: 'Gratitude and thankfulness',
     emoji: '🌸',
-    color: 'bg-pink-50 border-pink-200 text-pink-800',
+    color: 'bg-tint-peach border-line text-ink-soft',
     query: 'gratitude, thankfulness, shukr, be grateful, thankful to Allah',
   },
   {
@@ -81,7 +81,7 @@ export const QURAN_TOPICS: QuranTopic[] = [
     arabic: 'المغفرة',
     description: "Allah's mercy and forgiving others",
     emoji: '💚',
-    color: 'bg-emerald-50 border-emerald-200 text-emerald-800',
+    color: 'bg-tint-sage border-line text-accent-strong',
     query: 'forgiveness, mercy, maghfirah, forgive others, Allah forgives sins',
   },
   {
@@ -90,7 +90,7 @@ export const QURAN_TOPICS: QuranTopic[] = [
     arabic: 'الصدق',
     description: 'Truthfulness and integrity',
     emoji: '🌟',
-    color: 'bg-yellow-50 border-yellow-200 text-yellow-800',
+    color: 'bg-tint-sun border-line text-gold-text',
     query: 'honesty, truthfulness, sidq, be truthful, speak the truth',
   },
   {
@@ -99,7 +99,7 @@ export const QURAN_TOPICS: QuranTopic[] = [
     arabic: 'العدل',
     description: "Fairness and upholding Allah's justice",
     emoji: '⚖️',
-    color: 'bg-indigo-50 border-indigo-200 text-indigo-800',
+    color: 'bg-tint-lavender border-line text-ink-soft',
     query: 'justice, fairness, adl, be just, stand firmly for justice',
   },
 
@@ -110,7 +110,7 @@ export const QURAN_TOPICS: QuranTopic[] = [
     arabic: 'الرزق',
     description: 'Sustenance and provisions from Allah',
     emoji: '🌾',
-    color: 'bg-lime-50 border-lime-200 text-lime-800',
+    color: 'bg-tint-sage border-line text-accent-strong',
     query: 'rizq, sustenance, provision, livelihood, Allah provides',
   },
   {
@@ -119,7 +119,7 @@ export const QURAN_TOPICS: QuranTopic[] = [
     arabic: 'العلم',
     description: 'Seeking knowledge and wisdom',
     emoji: '📖',
-    color: 'bg-violet-50 border-violet-200 text-violet-800',
+    color: 'bg-tint-lavender border-line text-ink-soft',
     query: 'knowledge, seek knowledge, wisdom, ilm, learning, understanding',
   },
   {
@@ -128,7 +128,7 @@ export const QURAN_TOPICS: QuranTopic[] = [
     arabic: 'الوالدان',
     description: 'Rights and duties towards parents',
     emoji: '👨‍👩‍👧',
-    color: 'bg-rose-50 border-rose-200 text-rose-800',
+    color: 'bg-tint-peach border-line text-ink-soft',
     query: 'parents, mother, father, be kind to parents, honor parents',
   },
   {
@@ -137,7 +137,7 @@ export const QURAN_TOPICS: QuranTopic[] = [
     arabic: 'الصدقة',
     description: 'Giving in the way of Allah',
     emoji: '💛',
-    color: 'bg-orange-50 border-orange-200 text-orange-800',
+    color: 'bg-tint-peach border-line text-ink-soft',
     query: 'charity, sadaqah, spending in the way of Allah, give to the poor, zakat',
   },
 
@@ -148,7 +148,7 @@ export const QURAN_TOPICS: QuranTopic[] = [
     arabic: 'الجنة',
     description: 'Paradise and its rewards',
     emoji: '🌿',
-    color: 'bg-green-50 border-green-200 text-green-800',
+    color: 'bg-tint-sage border-line text-accent-strong',
     query: 'paradise, jannah, garden, reward in the hereafter, believers in paradise',
   },
   {
@@ -157,7 +157,7 @@ export const QURAN_TOPICS: QuranTopic[] = [
     arabic: 'يوم القيامة',
     description: 'The Last Day and accountability',
     emoji: '⚡',
-    color: 'bg-red-50 border-red-200 text-red-800',
+    color: 'bg-tint-sage border-line text-accent-strong',
     query: 'day of judgment, akhirah, resurrection, accountability, last day',
   },
 ];

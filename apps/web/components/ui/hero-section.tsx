@@ -1,74 +1,148 @@
 // Hero Section Component
-// Calm, reader-first hero: the bismillah in the authentic mushaf script,
-// one warm headline, and a single obvious path into reading.
+// The calm opening: brand, one promise, one obvious way in.
+// Layout ported from Namaz.app — left-aligned, a tinted "start here" card,
+// then quick entries as cards rather than a centred wall of text.
 
 'use client';
 
-import { Heading, Text } from './typography';
-import { ArrowRight, BookOpen, Sun } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, BookOpen, Compass, GraduationCap, Sparkles, Sun } from 'lucide-react';
 import Link from 'next/link';
+
+const entries = [
+  {
+    href: '/quran',
+    tint: 'bg-tint-sage',
+    icon: BookOpen,
+    title: 'All 114 sūrahs',
+    body: 'Madinah Mushaf script, translations, tafsir and recitation.',
+  },
+  {
+    href: '/today',
+    tint: 'bg-tint-sun',
+    icon: Sun,
+    title: 'Verse of the day',
+    body: 'One āyah, chosen daily, with its meaning unpacked.',
+  },
+  {
+    href: '/ask',
+    tint: 'bg-tint-sky',
+    icon: Sparkles,
+    title: 'Ask a question',
+    body: 'Answers drawn from the āyāt themselves, always cited.',
+  },
+];
 
 export function HeroSection() {
   return (
-    <section className="relative w-full overflow-hidden bg-paper">
-      {/* girih texture, whisper-quiet */}
-      <div className="girih-bg pointer-events-none absolute inset-0 opacity-[0.035]" aria-hidden />
-      {/* soft warm glow behind the bismillah */}
-      <div
-        className="pointer-events-none absolute left-1/2 top-24 h-72 w-[36rem] max-w-full -translate-x-1/2 rounded-full bg-gold-soft/40 blur-3xl"
-        aria-hidden
-      />
-
-      <div className="relative mx-auto flex max-w-4xl flex-col items-center px-4 pb-16 pt-14 text-center sm:px-6 md:pb-24 md:pt-24">
-        {/* The Bismillah — mushaf script, the crown of the page */}
+    <section className="relative w-full bg-paper">
+      <div className="relative mx-auto max-w-[960px] px-4 pb-12 pt-10 sm:px-6 md:pb-16 md:pt-14">
+        {/* The Bismillah — quiet, in the mushaf hand */}
         <p
           lang="ar"
           dir="rtl"
-          className="font-arabic text-[2.6rem] leading-[1.9] text-ink sm:text-6xl md:text-[4.5rem]"
+          className="font-arabic text-[1.7rem] leading-[2] text-ink-soft md:text-[2.1rem]"
         >
           بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
         </p>
-        <Text className="mt-6 font-reading text-sm italic text-ink-muted md:mt-8 md:text-base">
-          In the name of Allah, the Most Gracious, the Most Merciful
-        </Text>
 
-        <div className="ayah-divider mt-8 w-full max-w-xs md:mt-10" />
+        {/* Brand lockup */}
+        <div className="mt-4 flex items-center gap-2.5">
+          <span className="grid h-[34px] w-[34px] place-items-center rounded-[10px] border border-[#bcdde0] bg-accent-soft text-accent-strong">
+            <BookOpen size={19} strokeWidth={1.6} />
+          </span>
+          <span className="font-heading text-[26px] font-extrabold leading-none tracking-[-0.04em] text-ink">
+            Quran<span className="text-accent">.</span>
+            <span className="text-[15px] font-bold text-accent-strong">co.in</span>
+          </span>
+        </div>
 
-        {/* Headline */}
-        <Heading
-          level={1}
-          className="mt-8 font-reading text-3xl font-medium leading-tight text-ink md:mt-10 md:text-5xl"
-        >
-          Read the Noble Quran,
-          <br className="hidden sm:block" /> beautifully.
-        </Heading>
-        <Text className="mt-4 max-w-xl font-reading text-base leading-relaxed text-ink-soft md:text-lg">
+        <h1 className="mt-3.5 font-heading text-[clamp(32px,4vw,48px)] font-bold leading-[1.25] tracking-[-0.035em] text-ink">
+          Read at your <em className="not-italic text-accent">pace</em>.
+        </h1>
+        <p className="mt-3.5 max-w-xl text-[15px] leading-[1.7] text-muted">
           All 114 sūrahs in the authentic Madinah Mushaf script — with translations,
-          recitations, tafsir, and answers drawn from the ayāt themselves.
-        </Text>
+          recitations, tafsir, and answers drawn from the āyāt themselves.
+        </p>
 
-        {/* CTAs — one obvious path in */}
-        <div className="mt-8 flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row md:mt-10">
+        {/* Start here */}
+        <div className="mt-7 flex flex-wrap items-center gap-4 rounded-[22px] border border-[#bce9e4] bg-[linear-gradient(115deg,var(--tint-sage),var(--tint-sky))] p-5 md:mt-8">
+          <BookOpen size={30} strokeWidth={1.4} className="shrink-0 text-accent" />
+          <div className="min-w-[180px] flex-1">
+            <h2 className="font-heading text-[17px] font-bold tracking-[-0.02em] text-ink">
+              New here?
+            </h2>
+            <p className="mt-1 text-[13px] text-ink-soft">
+              Start with Al-Fātiḥah — seven āyāt, and the opening of the Book.
+            </p>
+          </div>
           <Link
-            href="/quran"
-            className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent px-8 py-3.5 text-sm font-semibold text-white shadow-card transition-all hover:bg-accent-strong hover:shadow-card-hover sm:w-auto md:text-base"
+            href="/quran/1"
+            className="inline-flex items-center gap-2 rounded-[10px] bg-accent px-4 py-3 text-xs font-semibold text-white transition-colors hover:bg-accent-strong"
           >
-            <BookOpen className="h-4 w-4" />
-            Begin Reading
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Link>
-          <Link
-            href="/today"
-            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-line bg-surface px-8 py-3.5 text-sm font-semibold text-ink-soft transition-colors hover:border-gold/60 hover:text-ink sm:w-auto md:text-base"
-          >
-            <Sun className="h-4 w-4 text-gold-text" />
-            Verse of the Day
+            Begin
+            <ArrowRight size={15} />
           </Link>
         </div>
 
-        <Text className="mt-6 text-[11px] uppercase tracking-[0.18em] text-ink-muted md:text-xs">
+        {/* Where to begin */}
+        <div className="mt-9 flex items-center justify-between">
+          <h2 className="font-heading text-[19px] font-bold tracking-[-0.025em] text-ink">
+            Choose where to begin
+          </h2>
+          <Link
+            href="/quran"
+            className="flex items-center gap-1.5 text-[11px] font-semibold text-accent-strong transition-colors hover:text-accent"
+          >
+            See all
+            <ArrowRight size={14} />
+          </Link>
+        </div>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {entries.map(({ href, tint, icon: Icon, title, body }) => (
+            <Link
+              key={href}
+              href={href}
+              className="group flex flex-col rounded-2xl border border-line bg-surface p-5 transition-all hover:border-accent/30 hover:shadow-card"
+            >
+              <span className={`grid h-10 w-10 place-items-center rounded-full ${tint} text-ink-soft`}>
+                <Icon size={18} strokeWidth={1.6} />
+              </span>
+              <h3 className="mt-4 font-heading text-[15px] font-bold tracking-[-0.02em] text-ink">
+                {title}
+              </h3>
+              <p className="mt-1.5 text-xs leading-[1.7] text-muted">{body}</p>
+              <ArrowUpRight
+                size={16}
+                className="mt-4 self-end text-muted transition-colors group-hover:text-accent"
+              />
+            </Link>
+          ))}
+        </div>
+
+        {/* Two wider doors, in the pastel voice */}
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <Link
+            href="/learn"
+            className="flex items-center gap-3 rounded-2xl bg-tint-sun px-5 py-4 text-ink transition-opacity hover:opacity-90"
+          >
+            <GraduationCap size={19} strokeWidth={1.6} />
+            <span className="text-[13px] font-semibold">Learn to read the script</span>
+            <ArrowRight size={16} className="ml-auto" />
+          </Link>
+          <Link
+            href="/topics"
+            className="flex items-center gap-3 rounded-2xl bg-tint-lavender px-5 py-4 text-ink transition-opacity hover:opacity-90"
+          >
+            <Compass size={19} strokeWidth={1.6} />
+            <span className="text-[13px] font-semibold">Explore by topic</span>
+            <ArrowRight size={16} className="ml-auto" />
+          </Link>
+        </div>
+
+        <p className="mt-7 text-[11px] uppercase tracking-[0.18em] text-muted">
           Free for everyone · No sign-up required
-        </Text>
+        </p>
       </div>
     </section>
   );

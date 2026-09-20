@@ -40,38 +40,38 @@ export default function FAQPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <main className="min-h-screen bg-surface pt-32 pb-20">
+    <main className="min-h-screen bg-paper pb-16 pt-10 md:pt-14">
       <Container>
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-16">
-            <Heading level={1} className="text-4xl md:text-5xl font-bold mb-6">Frequently Asked Questions</Heading>
-            <Text className="text-lg text-ink-soft">
+        <div className="mx-auto max-w-3xl">
+          <div className="mb-8 md:mb-10">
+            <Heading level={1} className="font-heading text-[clamp(28px,3.6vw,40px)] font-bold leading-[1.2] tracking-[-0.035em] text-ink">Frequently Asked Questions</Heading>
+            <Text className="mt-3.5 max-w-xl text-[15px] leading-[1.7] text-muted">
               Find answers to common questions about using Quran.co.in, our sources, and our mission.
             </Text>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-2.5">
             {faqs.map((faq, index) => (
               <Card 
                 key={index} 
-                className={`overflow-hidden border border-line-soft transition-all ${openIndex === index ? 'shadow-md border-line' : 'hover:border-line'}`}
+                className={`overflow-hidden rounded-2xl border border-line bg-surface p-0 shadow-none transition-all ${openIndex === index ? 'border-accent/30' : 'hover:border-accent/30'}`}
               >
                 <button
                   onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                  className="w-full p-6 text-left flex items-center justify-between gap-4 group"
+                  className="group flex w-full items-center justify-between gap-4 p-5 text-left"
                 >
-                  <span className="text-lg font-bold text-ink group-hover:text-ink transition-colors">
+                  <span className="font-heading text-[15px] font-bold tracking-[-0.02em] text-ink">
                     {faq.question}
                   </span>
-                  <div className={`shrink-0 transition-transform duration-300 ${openIndex === index ? 'rotate-180' : ''}`}>
-                    {openIndex === index ? <Minus className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+                  <div className={`shrink-0 text-accent transition-transform duration-300 ${openIndex === index ? 'rotate-180' : ''}`}>
+                    {openIndex === index ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
                   </div>
                 </button>
                 
                 <div 
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${openIndex === index ? 'max-h-96' : 'max-h-0'}`}
                 >
-                  <div className="p-6 pt-0 text-ink-soft leading-relaxed border-t border-line-soft bg-surface-warm/30">
+                  <div className="border-t border-line-soft bg-surface-warm p-5 text-[13px] leading-[1.8] text-muted">
                     {faq.answer}
                   </div>
                 </div>
@@ -80,14 +80,14 @@ export default function FAQPage() {
           </div>
 
           {/* Bottom Card */}
-          <div className="mt-16 p-8 bg-emerald-50 rounded-3xl border border-emerald-100 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="mt-10 flex flex-col items-start justify-between gap-4 rounded-[22px] border border-line bg-accent-soft p-6 md:flex-row md:items-center">
             <div>
-              <Heading level={4} className="text-xl font-bold mb-2">Still have questions?</Heading>
-              <Text className="text-ink-soft">Can't find the answer you're looking for? Please chat to our friendly team.</Text>
+              <Heading level={4} className="font-heading text-[17px] font-bold tracking-[-0.025em] text-ink">Still have questions?</Heading>
+              <Text className="mt-1 text-[13px] leading-[1.7] text-ink-soft">Can't find the answer you're looking for? Please chat to our friendly team.</Text>
             </div>
             <a 
               href="/contact" 
-              className="px-6 py-3 bg-surface text-ink font-bold rounded-xl border border-line hover:shadow-sm transition-all whitespace-nowrap"
+              className="whitespace-nowrap rounded-[10px] bg-accent px-4 py-3 text-xs font-semibold text-white transition-colors hover:bg-accent-strong"
             >
               Get in touch
             </a>
