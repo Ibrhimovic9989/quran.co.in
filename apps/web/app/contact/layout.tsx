@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
+  alternates: { canonical: 'https://quran.co.in/contact' },
   title: 'Contact Us — Quran.co.in',
   description: 'Get in touch with the Quran.co.in team. We typically respond within 24–48 hours.',
   openGraph: {

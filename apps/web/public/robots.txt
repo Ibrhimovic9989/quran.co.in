@@ -6,6 +6,7 @@ Disallow: /api/
 Disallow: /sign-in
 Disallow: /dashboard
 Disallow: /profile
+Disallow: /bookmarks
 
 # Allow key content pages
 Allow: /quran

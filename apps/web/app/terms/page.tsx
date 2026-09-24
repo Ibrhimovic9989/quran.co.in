@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { Container } from '@/components/ui/container';
 
 export const metadata: Metadata = {
+  alternates: { canonical: 'https://quran.co.in/terms' },
   title: 'Terms of Service — Quran.co.in',
   description: 'Read the Quran.co.in terms of service and usage guidelines.',
   openGraph: {

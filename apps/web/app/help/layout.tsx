@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
+  alternates: { canonical: 'https://quran.co.in/help' },
   title: 'Help Center — Quran.co.in',
   description: 'Find guides, articles, and answers to help you get the most out of Quran.co.in.',
   openGraph: {

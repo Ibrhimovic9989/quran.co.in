@@ -48,6 +48,7 @@ export async function generateMetadata({
   return {
     title: `Mushaf — Page ${pageNo} of 604`,
     description: `Read page ${pageNo} of the Madinah Mushaf online — authentic script, page-faithful layout.`,
+    alternates: { canonical: `https://quran.co.in/mushaf/${pageNo}` },
   };
 }
 
