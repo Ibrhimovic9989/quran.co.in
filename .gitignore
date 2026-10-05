@@ -30,6 +30,15 @@ yarn-error.log*
 **/.env
 .env*.local
 .env
+**/.env.*
+!**/.env.example
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+.deploy-creds
+.cursor/debug.log
 
 # Vercel
 .vercel
