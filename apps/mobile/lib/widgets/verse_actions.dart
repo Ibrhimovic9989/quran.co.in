@@ -28,7 +28,11 @@ class _TafsirBody extends StatefulWidget {
   final int surah;
   final int ayah;
   final ScrollController controller;
-  const _TafsirBody({required this.surah, required this.ayah, required this.controller});
+  const _TafsirBody({
+    required this.surah,
+    required this.ayah,
+    required this.controller,
+  });
 
   @override
   State<_TafsirBody> createState() => _TafsirBodyState();
@@ -46,8 +50,11 @@ class _TafsirBodyState extends State<_TafsirBody> {
 
   Future<void> _load() async {
     try {
-      final data = await Api.instance
-          .getJson('/api/quran/tafsir/${widget.surah}/${widget.ayah}') as Map<String, dynamic>;
+      final data =
+          await Api.instance.getJson(
+                '/api/quran/tafsir/${widget.surah}/${widget.ayah}',
+              )
+              as Map<String, dynamic>;
       final t = data['tafsir'] as Map<String, dynamic>?;
       final list = (t?['tafsirs'] as List? ?? [])
           .map((e) => TafsirEntry.fromJson(e as Map<String, dynamic>))
@@ -65,18 +72,41 @@ class _TafsirBodyState extends State<_TafsirBody> {
       controller: widget.controller,
       padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
       children: [
-        Text('Tafsir · ${widget.surah}:${widget.ayah}',
-            style: TextStyle(fontSize: 12, letterSpacing: 1.5, fontWeight: FontWeight.w700, color: p.gold)),
+        Text(
+          'Tafsir · ${widget.surah}:${widget.ayah}',
+          style: TextStyle(
+            fontSize: 12,
+            letterSpacing: 1.5,
+            fontWeight: FontWeight.w700,
+            color: p.gold,
+          ),
+        ),
         const SizedBox(height: 12),
         if (_error != null)
-          Padding(padding: const EdgeInsets.only(top: 40), child: Center(child: Text(_error!)))
+          Padding(
+            padding: const EdgeInsets.only(top: 40),
+            child: Center(child: Text(_error!)),
+          )
         else if (_entries == null)
-          const Padding(padding: EdgeInsets.only(top: 60), child: Center(child: CircularProgressIndicator()))
+          const Padding(
+            padding: EdgeInsets.only(top: 60),
+            child: Center(child: CircularProgressIndicator()),
+          )
         else if (_entries!.isEmpty)
-          const Padding(padding: EdgeInsets.only(top: 40), child: Center(child: Text('No tafsir available.')))
+          const Padding(
+            padding: EdgeInsets.only(top: 40),
+            child: Center(child: Text('No tafsir available.')),
+          )
         else
           for (final e in _entries!) ...[
-            Text(e.author, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: p.accent)),
+            Text(
+              e.author,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: p.accent,
+              ),
+            ),
             const SizedBox(height: 8),
             MarkdownText(e.content, context),
             const SizedBox(height: 24),
@@ -86,8 +116,12 @@ class _TafsirBodyState extends State<_TafsirBody> {
   }
 }
 
-Future<void> showSimilarSheet(BuildContext context, int surah, int ayah,
-    void Function(int surah, int ayah) onOpen) {
+Future<void> showSimilarSheet(
+  BuildContext context,
+  int surah,
+  int ayah,
+  void Function(int surah, int ayah) onOpen,
+) {
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -97,8 +131,12 @@ Future<void> showSimilarSheet(BuildContext context, int surah, int ayah,
       initialChildSize: 0.7,
       maxChildSize: 0.95,
       minChildSize: 0.4,
-      builder: (context, controller) =>
-          _SimilarBody(surah: surah, ayah: ayah, controller: controller, onOpen: onOpen),
+      builder: (context, controller) => _SimilarBody(
+        surah: surah,
+        ayah: ayah,
+        controller: controller,
+        onOpen: onOpen,
+      ),
     ),
   );
 }
@@ -108,8 +146,12 @@ class _SimilarBody extends StatefulWidget {
   final int ayah;
   final ScrollController controller;
   final void Function(int surah, int ayah) onOpen;
-  const _SimilarBody(
-      {required this.surah, required this.ayah, required this.controller, required this.onOpen});
+  const _SimilarBody({
+    required this.surah,
+    required this.ayah,
+    required this.controller,
+    required this.onOpen,
+  });
 
   @override
   State<_SimilarBody> createState() => _SimilarBodyState();
@@ -127,11 +169,17 @@ class _SimilarBodyState extends State<_SimilarBody> {
 
   Future<void> _load() async {
     try {
-      final data = await Api.instance.getJson(
-          '/api/search/similar?surah=${widget.surah}&ayah=${widget.ayah}&limit=15') as Map<String, dynamic>;
+      final data =
+          await Api.instance.getJson(
+                '/api/search/similar?surah=${widget.surah}&ayah=${widget.ayah}&limit=15',
+              )
+              as Map<String, dynamic>;
       final list = (data['results'] as List? ?? [])
           .map((e) => SearchResult.fromJson(e as Map<String, dynamic>))
-          .where((r) => !(r.surahNumber == widget.surah && r.ayahNumber == widget.ayah))
+          .where(
+            (r) =>
+                !(r.surahNumber == widget.surah && r.ayahNumber == widget.ayah),
+          )
           .toList();
       if (mounted) setState(() => _results = list);
     } catch (_) {
@@ -148,16 +196,32 @@ class _SimilarBodyState extends State<_SimilarBody> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: Text('Similar to ${widget.surah}:${widget.ayah}',
-              style: TextStyle(fontSize: 12, letterSpacing: 1.5, fontWeight: FontWeight.w700, color: p.gold)),
+          child: Text(
+            'Similar to ${widget.surah}:${widget.ayah}',
+            style: TextStyle(
+              fontSize: 12,
+              letterSpacing: 1.5,
+              fontWeight: FontWeight.w700,
+              color: p.gold,
+            ),
+          ),
         ),
         const SizedBox(height: 12),
         if (_error != null)
-          Padding(padding: const EdgeInsets.only(top: 40), child: Center(child: Text(_error!)))
+          Padding(
+            padding: const EdgeInsets.only(top: 40),
+            child: Center(child: Text(_error!)),
+          )
         else if (_results == null)
-          const Padding(padding: EdgeInsets.only(top: 60), child: Center(child: CircularProgressIndicator()))
+          const Padding(
+            padding: EdgeInsets.only(top: 60),
+            child: Center(child: CircularProgressIndicator()),
+          )
         else if (_results!.isEmpty)
-          const Padding(padding: EdgeInsets.only(top: 40), child: Center(child: Text('No similar verses found.')))
+          const Padding(
+            padding: EdgeInsets.only(top: 40),
+            child: Center(child: Text('No similar verses found.')),
+          )
         else
           for (final r in _results!)
             VerseResultCard(
@@ -176,7 +240,11 @@ class _SimilarBodyState extends State<_SimilarBody> {
 class VerseResultCard extends StatelessWidget {
   final SearchResult result;
   final VoidCallback onOpen;
-  const VerseResultCard({super.key, required this.result, required this.onOpen});
+  const VerseResultCard({
+    super.key,
+    required this.result,
+    required this.onOpen,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -191,19 +259,30 @@ class VerseResultCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${result.englishName} · ${result.surahNumber}:${result.ayahNumber}',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: p.gold)),
+              Text(
+                '${result.englishName} · ${result.surahNumber}:${result.ayahNumber}',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: p.gold,
+                ),
+              ),
               const SizedBox(height: 8),
               Align(
                 alignment: Alignment.centerRight,
-                child: Text(result.arabicText,
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.right,
-                    style: quranStyle(size: 22, height: 1.9)),
+                child: Text(
+                  result.arabicText,
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.right,
+                  style: quranStyle(size: 22, height: 1.9),
+                ),
               ),
               if (result.translationText != null) ...[
                 const SizedBox(height: 8),
-                Text(result.translationText!, style: readingStyle(context, size: 14)),
+                Text(
+                  result.translationText!,
+                  style: readingStyle(context, size: 14),
+                ),
               ],
             ],
           ),
@@ -213,8 +292,13 @@ class VerseResultCard extends StatelessWidget {
   }
 }
 
-void copyAyah(BuildContext context, String arabic, String? translation, String ref) {
-  final text = [arabic, if (translation != null) translation, '— $ref'].join('\n');
+void copyAyah(
+  BuildContext context,
+  String arabic,
+  String? translation,
+  String ref,
+) {
+  final text = [arabic, ?translation, '— $ref'].join('\n');
   Clipboard.setData(ClipboardData(text: text));
   ScaffoldMessenger.of(context).showSnackBar(
     const SnackBar(content: Text('Copied'), duration: Duration(seconds: 1)),
@@ -230,7 +314,10 @@ class MarkdownText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lines = source.replaceAll('\\-', '-').replaceAll('\r', '').split('\n');
+    final lines = source
+        .replaceAll('\\-', '-')
+        .replaceAll('\r', '')
+        .split('\n');
     final widgets = <Widget>[];
     for (var raw in lines) {
       final line = raw.trim();
@@ -254,25 +341,39 @@ class MarkdownText extends StatelessWidget {
         size = 18;
         weight = FontWeight.w700;
       }
-      widgets.add(Padding(
-        padding: const EdgeInsets.only(bottom: 6),
-        child: _inline(context, text, size, weight),
-      ));
+      widgets.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 6),
+          child: _inline(context, text, size, weight),
+        ),
+      );
     }
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: widgets);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: widgets,
+    );
   }
 
-  Widget _inline(BuildContext context, String text, double size, FontWeight weight) {
+  Widget _inline(
+    BuildContext context,
+    String text,
+    double size,
+    FontWeight weight,
+  ) {
     // Split on ** for bold; keep the rest as-is.
     final spans = <TextSpan>[];
     final parts = text.split('**');
     for (var i = 0; i < parts.length; i++) {
-      spans.add(TextSpan(
-        text: parts[i],
-        style: TextStyle(fontWeight: i.isOdd ? FontWeight.w700 : weight),
-      ));
+      spans.add(
+        TextSpan(
+          text: parts[i],
+          style: TextStyle(fontWeight: i.isOdd ? FontWeight.w700 : weight),
+        ),
+      );
     }
     final base = readingStyle(context, size: size).copyWith(fontWeight: weight);
-    return RichText(text: TextSpan(style: base, children: spans));
+    return RichText(
+      text: TextSpan(style: base, children: spans),
+    );
   }
 }
