@@ -1,3 +1,4 @@
 # Code owners — automatically requested for review on every pull request.
-# The maintainer must approve before anything merges to `main`.
+# Maintainers review contributions. A second-person approval is not required;
+# authorized maintainers may merge their own PRs once required CI checks pass.
 * @Ibrhimovic9989 @AwsmAsim
