@@ -19,9 +19,9 @@ apps/
   mobile/    Flutter app (Android/iOS)     — native client over the same API
 ```
 
-Both clients talk to the **public API** at `https://api.quran.co.in` over HTTP
-(`NEXT_PUBLIC_API_URL`). This repo has **no database access and holds no
-secrets** — it's a pure client of the API.
+Both clients talk to the **public API**, hosted on **Google Cloud Run**, at
+`https://api.quran.co.in` over HTTPS (`NEXT_PUBLIC_API_URL`). This repo has **no
+database access and holds no secrets** — it's a pure client of the API.
 
 > **Backend & developer console** — the NestJS API, the credential-issuing
 > developer console, and the Prisma schema live in a **separate private repo**.
@@ -47,8 +47,17 @@ API base URL.
 ## Deployment
 
 **Web → Vercel**:
+
 1. Project setting **Root Directory: `apps/web`**.
 2. Env var `NEXT_PUBLIC_API_URL=https://api.quran.co.in`.
+
+**API → Google Cloud Run**:
+
+The production NestJS API runs on Google Cloud Run, not Render. Its custom
+domain remains **`https://api.quran.co.in`**. The hosting migration did not
+change the public API URL: use this domain in your app, not a Google-generated
+`*.run.app` service URL. The web frontend remains on Vercel; the API is a
+separate deployment maintained from the private backend repository.
 
 ## Public API
 
@@ -59,8 +68,14 @@ The same API that powers our apps is open for developers to build on.
   (guides + OAuth 2.0); console at
   [`console.developers.quran.co.in`](https://console.developers.quran.co.in).
 - **Docs:** Swagger UI at [`/api/docs`](https://api.quran.co.in/api/docs); OpenAPI
-  spec at `/api/docs-json` (generate a client with e.g.
+  spec at [`/api/docs-json`](https://api.quran.co.in/api/docs-json) (generate a client with e.g.
   `openapi-generator generate -i https://api.quran.co.in/api/docs-json -g <lang>`).
+
+The base URL is an API origin, not a landing page. Opening
+`https://api.quran.co.in/` directly currently returns **404** because there is
+no route at `/`; use the docs above or a complete endpoint such as
+[`/api/quran/surahs`](https://api.quran.co.in/api/quran/surahs). Endpoint paths
+include the `/api` prefix, as shown in the examples below.
 
 **Reading the Qurʾān needs no key** — the read endpoints are public:
 
