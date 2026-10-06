@@ -19,13 +19,14 @@ We'll acknowledge your report, work on a fix, and credit you when the fix ships
 
 ## What's in scope
 
-- The web app (`apps/web`), API (`apps/api`), and mobile app (`apps/mobile`).
+- The public web app (`apps/web`) and mobile app (`apps/mobile`).
+- Issues affecting the separately hosted API or developer console can also be
+  reported here privately; their current source is maintained separately.
 - Authentication, session/cookie handling, and the API's authorization.
 - Anything that could expose user data or allow abuse of the service.
 
 ## Not secrets in the repo
 
-Credentials, API keys, and database URLs are **never** committed here — they live
-only in each deployment's environment. If you believe you've found a secret in
+Credentials, API keys, and database URLs must not be committed here. If you believe you've found a secret in
 the code or git history, treat it as a vulnerability and report it privately so we
 can rotate it.
