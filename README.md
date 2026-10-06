@@ -25,20 +25,20 @@ database access and holds no secrets** — it's a pure client of the API.
 
 > **Backend & developer console** — the NestJS API, the credential-issuing
 > developer console, and the Prisma schema live in a **separate private repo**.
-> This mirrors the split Quran.com uses (open frontends/SDKs, closed backend +
-> console): the API itself is public to use and documented below, but its
+> The API itself is public to use and documented below, but its
 > source and the account/credential tooling are kept private. Nothing here
 > depends on them beyond the HTTP API.
 
 ## Development
 
 ```bash
-npm install                 # workspace install (root)
+npm ci                      # workspace install (root)
+cp apps/web/.env.example apps/web/.env.local
 npm run dev:web             # Next.js on :3000 (needs apps/web/.env.local)
 ```
 
-The web app finds the API via `NEXT_PUBLIC_API_URL` (default
-`https://api.quran.co.in`). No local backend or database is required to run the
+Set `NEXT_PUBLIC_API_URL=https://api.quran.co.in` using the supplied example.
+No local backend or database is required to run the
 frontend — it uses the live public API.
 
 The Flutter app lives in `apps/mobile` (`flutter run`); it points at the same
@@ -120,8 +120,8 @@ Licensed under the **Apache License 2.0** — see [LICENSE](LICENSE). You are fr
 to use, modify, and redistribute, including commercially, with attribution and
 the patent grant Apache 2.0 provides.
 
-Secrets, credentials, and production data are **never** in this repository; they
-live only in each deployment's environment.
+Production credentials and user data must stay out of this repository.
+The code license does not relicense third-party assets: see [THIRD_PARTY.md](THIRD_PARTY.md).
 
 ## History
 
@@ -129,3 +129,6 @@ The project began as a single full-stack Next.js app; the backend was split
 into a NestJS API so one API can serve web and mobile. The backend and developer
 console later moved to a private repository, leaving this repo as the
 open-source frontend + mobile client of the public API.
+
+Older public commits and branches contain the former backend code. Moving the
+current backend to a private repository does not remove already published copies.

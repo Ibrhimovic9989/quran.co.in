@@ -72,9 +72,12 @@ class _SurahScreenState extends State<SurahScreen> {
 
   Future<void> _load() async {
     try {
-      final data = await Api.instance.getJson('/api/quran/surah/${widget.surahNo}')
-          as Map<String, dynamic>;
-      final detail = SurahDetail.fromJson(data['surah'] as Map<String, dynamic>);
+      final data =
+          await Api.instance.getJson('/api/quran/surah/${widget.surahNo}')
+              as Map<String, dynamic>;
+      final detail = SurahDetail.fromJson(
+        data['surah'] as Map<String, dynamic>,
+      );
       if (!mounted) return;
       setState(() {
         _detail = detail;
@@ -84,11 +87,13 @@ class _SurahScreenState extends State<SurahScreen> {
         _hasMore = detail.ayahs.length < detail.info.totalAyah;
       });
       // Record where the reader is, and jump to a requested ayah.
-      Library.instance.recordRead(ReadPosition(
-        surahNumber: widget.surahNo,
-        ayahNumber: widget.initialAyah ?? 1,
-        surahName: detail.info.name,
-      ));
+      Library.instance.recordRead(
+        ReadPosition(
+          surahNumber: widget.surahNo,
+          ayahNumber: widget.initialAyah ?? 1,
+          surahName: detail.info.name,
+        ),
+      );
       if (widget.initialAyah != null && widget.initialAyah! > 1) {
         _jumpToAyah(widget.initialAyah!);
       }
@@ -118,19 +123,23 @@ class _SurahScreenState extends State<SurahScreen> {
     if (_loadingMore || !_hasMore || _detail == null) return;
     _loadingMore = true;
     try {
-      final data = await Api.instance.getJson(
-        '/api/quran/surah/${widget.surahNo}/ayahs?offset=${_ayahs.length}&limit=30',
-      ) as Map<String, dynamic>;
+      final data =
+          await Api.instance.getJson(
+                '/api/quran/surah/${widget.surahNo}/ayahs?offset=${_ayahs.length}&limit=30',
+              )
+              as Map<String, dynamic>;
       final rows = (data['ayahs'] as List).cast<Map<String, dynamic>>();
       if (!mounted) return;
       setState(() {
         for (final r in rows) {
-          _ayahs.add(Ayah(
-            number: r['number'] as int,
-            arabic: r['arabicText'] as String? ?? '',
-            translation: r['translationText'] as String?,
-            transliteration: r['transliteration'] as String?,
-          ));
+          _ayahs.add(
+            Ayah(
+              number: r['number'] as int,
+              arabic: r['arabicText'] as String? ?? '',
+              translation: r['translationText'] as String?,
+              transliteration: r['transliteration'] as String?,
+            ),
+          );
         }
         _hasMore = data['hasMore'] as bool? ?? false;
       });
@@ -144,8 +153,9 @@ class _SurahScreenState extends State<SurahScreen> {
   Future<void> _loadWords() async {
     if (_words != null) return;
     try {
-      final data = await Api.instance.getJson('/api/quran/surah/${widget.surahNo}/words')
-          as Map<String, dynamic>;
+      final data =
+          await Api.instance.getJson('/api/quran/surah/${widget.surahNo}/words')
+              as Map<String, dynamic>;
       final raw = data['words'] as Map<String, dynamic>? ?? {};
       final map = <int, List<WordUnit>>{};
       raw.forEach((k, v) {
@@ -163,13 +173,17 @@ class _SurahScreenState extends State<SurahScreen> {
   Future<void> _loadTajweed() async {
     if (_tajweedRuns != null) return;
     try {
-      final data = await Api.instance.getJson('/api/quran/surah/${widget.surahNo}/tajweed')
-          as Map<String, dynamic>;
+      final data =
+          await Api.instance.getJson(
+                '/api/quran/surah/${widget.surahNo}/tajweed',
+              )
+              as Map<String, dynamic>;
       final raw = data['tajweed'] as Map<String, dynamic>? ?? {};
       final map = <int, List<TajweedRun>>{};
       raw.forEach((k, v) {
-        map[int.parse(k)] =
-            (v as List).map((e) => TajweedRun.fromJson(e as Map<String, dynamic>)).toList();
+        map[int.parse(k)] = (v as List)
+            .map((e) => TajweedRun.fromJson(e as Map<String, dynamic>))
+            .toList();
       });
       if (mounted) setState(() => _tajweedRuns = map);
     } catch (_) {
@@ -179,8 +193,11 @@ class _SurahScreenState extends State<SurahScreen> {
 
   Future<String?> _resolveAudio(int ayahNo) async {
     try {
-      final data = await Api.instance
-          .getJson('/api/quran/audio/${widget.surahNo}/$ayahNo') as Map<String, dynamic>;
+      final data =
+          await Api.instance.getJson(
+                '/api/quran/audio/${widget.surahNo}/$ayahNo',
+              )
+              as Map<String, dynamic>;
       final audio = data['audio'] as Map<String, dynamic>?;
       if (audio == null || audio.isEmpty) return null;
       final chosen = audio[Settings.instance.reciterId] ?? audio.values.first;
@@ -209,11 +226,13 @@ class _SurahScreenState extends State<SurahScreen> {
     try {
       await _player.setUrl(url);
       await _player.play();
-      Library.instance.recordRead(ReadPosition(
-        surahNumber: widget.surahNo,
-        ayahNumber: ayahNo,
-        surahName: _detail?.info.name,
-      ));
+      Library.instance.recordRead(
+        ReadPosition(
+          surahNumber: widget.surahNo,
+          ayahNumber: ayahNo,
+          surahName: _detail?.info.name,
+        ),
+      );
     } catch (_) {
       if (mounted) setState(() => _playingAyah = null);
     }
@@ -233,8 +252,11 @@ class _SurahScreenState extends State<SurahScreen> {
       await _loadMore();
     }
     if (_scroll.hasClients) {
-      _scroll.animateTo(((next - 1) * 210.0).clamp(0, _scroll.position.maxScrollExtent),
-          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+      _scroll.animateTo(
+        ((next - 1) * 210.0).clamp(0, _scroll.position.maxScrollExtent),
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     }
     await _playAyah(next, continuous: true);
   }
@@ -253,17 +275,22 @@ class _SurahScreenState extends State<SurahScreen> {
 
   Future<void> _openMushaf() async {
     try {
-      final data = await Api.instance.getJson('/api/quran/surah/${widget.surahNo}/page')
-          as Map<String, dynamic>;
+      final data =
+          await Api.instance.getJson('/api/quran/surah/${widget.surahNo}/page')
+              as Map<String, dynamic>;
       final page = data['page'] as int? ?? 1;
       if (!mounted) return;
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) => MushafScreen(pageNo: page)));
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => MushafScreen(pageNo: page)));
     } catch (_) {}
   }
 
   void _openSurah(int surah, int ayah) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => SurahScreen(surahNo: surah, initialAyah: ayah)),
+      MaterialPageRoute(
+        builder: (_) => SurahScreen(surahNo: surah, initialAyah: ayah),
+      ),
     );
   }
 
@@ -302,7 +329,9 @@ class _SurahScreenState extends State<SurahScreen> {
                   });
                   if (_wordByWord) _loadWords();
                 case 'translit':
-                  Settings.instance.setTransliteration(!Settings.instance.showTransliteration);
+                  Settings.instance.setTransliteration(
+                    !Settings.instance.showTransliteration,
+                  );
                 case 'reciter':
                   _pickReciter();
                 case 'mushaf':
@@ -311,17 +340,30 @@ class _SurahScreenState extends State<SurahScreen> {
             },
             itemBuilder: (context) => [
               CheckedPopupMenuItem(
-                  value: 'tajweed', checked: _tajweed, child: const Text('Tajwīd colors')),
+                value: 'tajweed',
+                checked: _tajweed,
+                child: const Text('Tajwīd colors'),
+              ),
               if (_tajweed)
-                const PopupMenuItem(value: 'legend', child: Text('Tajwīd legend')),
+                const PopupMenuItem(
+                  value: 'legend',
+                  child: Text('Tajwīd legend'),
+                ),
               CheckedPopupMenuItem(
-                  value: 'wbw', checked: _wordByWord, child: const Text('Word by word')),
+                value: 'wbw',
+                checked: _wordByWord,
+                child: const Text('Word by word'),
+              ),
               CheckedPopupMenuItem(
-                  value: 'translit',
-                  checked: Settings.instance.showTransliteration,
-                  child: const Text('Transliteration')),
+                value: 'translit',
+                checked: Settings.instance.showTransliteration,
+                child: const Text('Transliteration'),
+              ),
               const PopupMenuItem(value: 'reciter', child: Text('Reciter')),
-              const PopupMenuItem(value: 'mushaf', child: Text('Open in Mushaf')),
+              const PopupMenuItem(
+                value: 'mushaf',
+                child: Text('Open in Mushaf'),
+              ),
             ],
           ),
         ],
@@ -329,29 +371,33 @@ class _SurahScreenState extends State<SurahScreen> {
       body: _error != null
           ? Center(child: Text(_error!))
           : _detail == null
-              ? const Center(child: CircularProgressIndicator())
-              : AnimatedBuilder(
-                  // Rebuild on bookmark changes AND setting changes, so toggling
-                  // transliteration from the menu repaints the ayāt immediately.
-                  animation: Listenable.merge([Library.instance.bookmarks, Settings.instance]),
-                  builder: (context, _) => ListView.builder(
-                    controller: _scroll,
-                    padding: const EdgeInsets.fromLTRB(12, 4, 12, 24),
-                    itemCount: _ayahs.length + (showBismillah ? 1 : 0) + 1,
-                    itemBuilder: (context, i) {
-                      if (i == 0) return _header(p, info!, showBismillah);
-                      final idx = i - 1;
-                      if (idx >= _ayahs.length) {
-                        return _hasMore
-                            ? const Padding(
-                                padding: EdgeInsets.all(24),
-                                child: Center(child: CircularProgressIndicator()))
-                            : const SizedBox(height: 24);
-                      }
-                      return _ayahCard(p, _ayahs[idx]);
-                    },
-                  ),
-                ),
+          ? const Center(child: CircularProgressIndicator())
+          : AnimatedBuilder(
+              // Rebuild on bookmark changes AND setting changes, so toggling
+              // transliteration from the menu repaints the ayāt immediately.
+              animation: Listenable.merge([
+                Library.instance.bookmarks,
+                Settings.instance,
+              ]),
+              builder: (context, _) => ListView.builder(
+                controller: _scroll,
+                padding: const EdgeInsets.fromLTRB(12, 4, 12, 24),
+                itemCount: _ayahs.length + (showBismillah ? 1 : 0) + 1,
+                itemBuilder: (context, i) {
+                  if (i == 0) return _header(p, info!, showBismillah);
+                  final idx = i - 1;
+                  if (idx >= _ayahs.length) {
+                    return _hasMore
+                        ? const Padding(
+                            padding: EdgeInsets.all(24),
+                            child: Center(child: CircularProgressIndicator()),
+                          )
+                        : const SizedBox(height: 24);
+                  }
+                  return _ayahCard(p, _ayahs[idx]);
+                },
+              ),
+            ),
     );
   }
 
@@ -363,13 +409,20 @@ class _SurahScreenState extends State<SurahScreen> {
           Text(
             'SŪRAH ${info.surahNo} ✦ ${info.revelationPlace.toUpperCase()} ✦ ${info.totalAyah} ĀYĀT',
             style: TextStyle(
-                fontSize: 10, letterSpacing: 2.2, fontWeight: FontWeight.w600, color: p.gold),
+              fontSize: 10,
+              letterSpacing: 2.2,
+              fontWeight: FontWeight.w600,
+              color: p.gold,
+            ),
           ),
           if (showBismillah)
             Padding(
               padding: const EdgeInsets.only(top: 12),
-              child: Text('بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ',
-                  textDirection: TextDirection.rtl, style: quranStyle(size: 26, height: 1.8)),
+              child: Text(
+                'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ',
+                textDirection: TextDirection.rtl,
+                style: quranStyle(size: 26, height: 1.8),
+              ),
             ),
         ],
       ),
@@ -388,43 +441,70 @@ class _SurahScreenState extends State<SurahScreen> {
           children: [
             Row(
               children: [
-                Text('${widget.surahNo}:${a.number}',
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: p.gold)),
+                Text(
+                  '${widget.surahNo}:${a.number}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                    color: p.gold,
+                  ),
+                ),
                 const Spacer(),
                 IconButton(
                   visualDensity: VisualDensity.compact,
-                  onPressed: () => Library.instance.toggleBookmark(Bookmark(
-                    surahNumber: widget.surahNo,
-                    ayahNumber: a.number,
-                    surahName: _detail?.info.name,
-                  )),
-                  icon: Icon(bookmarked ? Icons.bookmark : Icons.bookmark_border,
-                      color: bookmarked ? p.gold : p.muted),
+                  onPressed: () => Library.instance.toggleBookmark(
+                    Bookmark(
+                      surahNumber: widget.surahNo,
+                      ayahNumber: a.number,
+                      surahName: _detail?.info.name,
+                    ),
+                  ),
+                  icon: Icon(
+                    bookmarked ? Icons.bookmark : Icons.bookmark_border,
+                    color: bookmarked ? p.gold : p.muted,
+                  ),
                 ),
                 IconButton(
                   visualDensity: VisualDensity.compact,
                   onPressed: () => _playAyah(a.number),
-                  icon: Icon(playing ? Icons.stop_circle : Icons.play_circle, color: p.accent),
+                  icon: Icon(
+                    playing ? Icons.stop_circle : Icons.play_circle,
+                    color: p.accent,
+                  ),
                 ),
                 PopupMenuButton<String>(
                   icon: Icon(Icons.more_vert, color: p.muted),
                   onSelected: (v) {
-                    final ref = '${_detail?.info.name ?? 'Sūrah ${widget.surahNo}'} ${widget.surahNo}:${a.number}';
+                    final ref =
+                        '${_detail?.info.name ?? 'Sūrah ${widget.surahNo}'} ${widget.surahNo}:${a.number}';
                     switch (v) {
                       case 'tafsir':
                         showTafsirSheet(context, widget.surahNo, a.number);
                       case 'similar':
-                        showSimilarSheet(context, widget.surahNo, a.number, _openSurah);
+                        showSimilarSheet(
+                          context,
+                          widget.surahNo,
+                          a.number,
+                          _openSurah,
+                        );
                       case 'copy':
                         copyAyah(context, a.arabic, a.translation, ref);
                       case 'share':
-                        Share.share([a.arabic, if (a.translation != null) a.translation, '— $ref']
-                                .join('\n'));
+                        Share.share(
+                          [
+                            a.arabic,
+                            if (a.translation != null) a.translation,
+                            '— $ref',
+                          ].join('\n'),
+                        );
                     }
                   },
                   itemBuilder: (context) => const [
                     PopupMenuItem(value: 'tafsir', child: Text('Tafsir')),
-                    PopupMenuItem(value: 'similar', child: Text('Similar verses')),
+                    PopupMenuItem(
+                      value: 'similar',
+                      child: Text('Similar verses'),
+                    ),
                     PopupMenuItem(value: 'copy', child: Text('Copy')),
                     PopupMenuItem(value: 'share', child: Text('Share')),
                   ],
@@ -438,23 +518,34 @@ class _SurahScreenState extends State<SurahScreen> {
                 alignment: Alignment.centerRight,
                 child: (_tajweed && _tajweedRuns?[a.number] != null)
                     ? TajweedAyah(runs: _tajweedRuns![a.number]!)
-                    : Text(a.arabic,
+                    : Text(
+                        a.arabic,
                         textDirection: TextDirection.rtl,
                         textAlign: TextAlign.right,
-                        style: quranStyle(size: 26, height: 2.0)),
+                        style: quranStyle(size: 26, height: 2.0),
+                      ),
               ),
               if (Settings.instance.showTransliteration &&
                   a.transliteration != null &&
                   a.transliteration!.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child: Text(a.transliteration!,
-                      style: TextStyle(fontStyle: FontStyle.italic, fontSize: 13, color: p.muted)),
+                  child: Text(
+                    a.transliteration!,
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      fontSize: 13,
+                      color: p.muted,
+                    ),
+                  ),
                 ),
               if (a.translation != null && a.translation!.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
-                  child: Text(a.translation!, style: readingStyle(context, size: 15)),
+                  child: Text(
+                    a.translation!,
+                    style: readingStyle(context, size: 15),
+                  ),
                 ),
             ],
           ],
@@ -468,7 +559,13 @@ class _SurahScreenState extends State<SurahScreen> {
     if (words == null) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 16),
-        child: Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))),
+        child: Center(
+          child: SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
       );
     }
     return Padding(
@@ -486,13 +583,21 @@ class _SurahScreenState extends State<SurahScreen> {
                 children: [
                   Text(w.arabic, style: quranStyle(size: 24, height: 1.6)),
                   if (w.transliteration != null)
-                    Text(w.transliteration!,
-                        textDirection: TextDirection.ltr,
-                        style: TextStyle(fontSize: 11, fontStyle: FontStyle.italic, color: p.muted)),
+                    Text(
+                      w.transliteration!,
+                      textDirection: TextDirection.ltr,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontStyle: FontStyle.italic,
+                        color: p.muted,
+                      ),
+                    ),
                   if (w.translation != null)
-                    Text(w.translation!,
-                        textDirection: TextDirection.ltr,
-                        style: TextStyle(fontSize: 12, color: p.accent)),
+                    Text(
+                      w.translation!,
+                      textDirection: TextDirection.ltr,
+                      style: TextStyle(fontSize: 12, color: p.accent),
+                    ),
                 ],
               ),
           ],
@@ -505,13 +610,20 @@ class _SurahScreenState extends State<SurahScreen> {
     // Fetch the reciter roster from any ayah's audio payload.
     Map<String, dynamic>? audio;
     try {
-      final data = await Api.instance.getJson('/api/quran/audio/${widget.surahNo}/1')
-          as Map<String, dynamic>;
+      final data =
+          await Api.instance.getJson('/api/quran/audio/${widget.surahNo}/1')
+              as Map<String, dynamic>;
       audio = data['audio'] as Map<String, dynamic>?;
     } catch (_) {}
     if (audio == null || !mounted) return;
     final reciters = audio.entries
-        .map((e) => Reciter(id: e.key, name: (e.value['reciter'] ?? 'Reciter').toString(), url: ''))
+        .map(
+          (e) => Reciter(
+            id: e.key,
+            name: (e.value['reciter'] ?? 'Reciter').toString(),
+            url: '',
+          ),
+        )
         .toList();
     if (!mounted) return;
     showModalBottomSheet(
@@ -519,20 +631,19 @@ class _SurahScreenState extends State<SurahScreen> {
       showDragHandle: true,
       builder: (context) => AnimatedBuilder(
         animation: Settings.instance,
-        builder: (context, _) => ListView(
-          shrinkWrap: true,
-          children: [
-            for (final r in reciters)
-              RadioListTile<String>(
-                value: r.id,
-                groupValue: Settings.instance.reciterId,
-                title: Text(r.name),
-                onChanged: (v) {
-                  if (v != null) Settings.instance.setReciter(v);
-                  Navigator.of(context).pop();
-                },
-              ),
-          ],
+        builder: (context, _) => RadioGroup<String>(
+          groupValue: Settings.instance.reciterId,
+          onChanged: (v) {
+            if (v != null) Settings.instance.setReciter(v);
+            Navigator.of(context).pop();
+          },
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              for (final r in reciters)
+                RadioListTile<String>(value: r.id, title: Text(r.name)),
+            ],
+          ),
         ),
       ),
     );
